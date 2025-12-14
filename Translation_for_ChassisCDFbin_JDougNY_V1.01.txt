@@ -1,0 +1,1064 @@
+﻿Project cars
+Chassis translation
+by JDougNY
+
+Version 1.01 - April 4, 2018 - added Front/Center differential code.  Defined "Authentic" driving assists and other revisions (rough notes version)
+Version 1.0 - November 1, 2017 - Initial Release (rough notes version)
+
+# use this translation as a general guide to locate data in the file
+# search the hex strings []...just search using the first 3 bytes of the string
+# Sometimes there is no data entered after the hex string.
+# When that occurs the string begins with [28....]
+
+There are varying amounts of data after each string as defined by how
+the bytes are set for the end of the string.
+Some examples of hex string endings are....
+A2] = float, float
+03 00] = byte, byte, byte
+03 02] = byte, byte, float
+23 00] = float, byte, byte
+23 02] = float, byte, float
+83 00] = byte, float, byte
+83 02] = byte, float, float
+A3 00] = float, float, byte
+A3 02] = float, float, float
+
+******Byte Count Registers******
+0x0008-0x000B = {integer} // (little endian) Total byte count of entire file
+0x0014-0x0017 = {integer} // (little endian) Total byte count from 0x0028 to beginning of end section (see 0x0020 for end section length)
+0x0020-0x0023 = {integer} // (little endian) Total byte count of end section
+0x0024-0x0027 = {integer} // (little endian) Total byte count from beginning of file to beginning of end section (see 0x0020 for end section length)
+
+When adding/removing bytes from any data before the end section, you must 
+change 3 of the registers above (0x0008-0x000B, 0x0014-0x0017, 0x0024-0x0027)
+
+
+GENERAL
+
+#[28 FA D6 67 78]      ??Unknown
+#[28 B9 1B 6F 6E]      ??Unknown
+[20 9A 30 40 34]       GarageDisplayFlags={byte}X
+[20 96 5B FF BF]       FeelerFlags={byte}X
+[22 67 0B 57 AB]       Mass={float}XXXX.xx
+#[21 67 0B 57 AB]      Mass={integer}XXXX
+#[24 C2 40 3A 15 83 00] ??Unknown={byte}x, {float}XXXX.xx, {byte}X
+#[28 12 6D 1F D1]       ??Unknown // Setting value for above. No byte in code, which means zero setting
+[24 BB B3 9F 0B A3 02] Inertia=({float}XXXX.XX,{float}XXXX.xx{float}XXX.xx)
+
+#[24 BB B3 9F 0B 53 01] Inertia={integer}XXXX, {integer}XXXX, {integer}XXX
+[24 A0 53 0C 50 83 02] FuelTankPos=({byte}X, {float}XXXX.xx) {float}0.220) 
+#[24 A0 53 0C 50 A3 02] FuelTankPos=({float}0.0, {float}0.200) {float}0.220)
+[24 6F 70 F3 C7 A2]    FuelTankMotion=({float}560.0, {float}0.7)
+
+[26 3A 17 96 C2]       {byte}0  // CDF_UNKN_001
+
+[20 38 05 5C 3C]       Symmetric={byte}1
+[22 18 24 EA A8]       CGHeight={float}0.280
+
+[24 DF 8D 93 CF 23 00] CGRightRange={float}0.5, {byte}0, {byte}0
+#[24 DF 8D 93 CF A3 00] CGRightRange=({float}0.5, {float}0.0, {byte}0)
+
+[28 00 9D 8A CF]       CGRightSetting= No byte in code, which means zero setting
+
+[24 BE BA 67 7B 23 00] CGRearRange={float}0.XXX {byte}0, {byte}0
+#[24 BE BA 67 7B A3 00] CGRearRange=({float}0.XXX, {float}0.XXX, {byte}0)
+
+[28 D4 4C 53 C4]       CGRearSetting= No byte in code, which means zero setting
+#[24 5B 5E C8 CD A3 01] WeightJackerRange=({float}x.xx, {float}x.xx, {integer}0)
+
+#[21 B4 AF A9 DF]       WeightJackerSetting={integer}
+#[22 1E 5C 8F 56]       {float}0.001 // Unknown
+[24 86 9A 77 97 03 00] GraphicalOffset={byte}0, {byte}0, {byte}0
+[24 D2 CF F4 3D 03 00] CollisionOffset={byte}0, {byte}0, {byte}0
+#[24 D2 CF F4 3D 83 00] CollisionOffset=({byte}0, {float}0.XXX, {byte}0)
+
+[24 E9 DE D9 99 23 02] UndertrayZeroZero={float}X.XXX {byte}X {float}X.XXX
+#[24 E9 DE D9 99 A3 02] UndertrayZeroZero=({float}0.75, {float}0.02, {float}-1.40)
+
+[24 BA 61 42 62 23 02] UndertrayZeroOne={float}X.XXX {byte}X {float}X.XXX
+#[24 BA 61 42 62 A3 02] UndertrayZeroOne=({float}-0.75, {float}0.02, {float}-1.40)
+
+[24 AC 8D E9 39 23 02] UndertrayZeroTwo={float}X.XXX {byte}X {float}X.XXX
+#[24 AC 8D E9 39 A3 02] UndertrayZeroTwo=({float}0.75, {float}0.02, {float}1.0)
+
+[24 C7 C2 3D 06 23 02] UndertrayZeroThree={float}X.XXX {byte}X {float}X.XXX
+#[24 C7 C2 3D 06 A3 02] UndertrayZeroThree=({float}-0.75, {float}0.02, {float}1.0)
+[24 86 AE 66 2B 53 02] UndertrayParams={integer}XXXX {integer}XXXX {float}X.XXX
+#[24 86 AE 66 2B A3 02] UndertrayParams=({float}262500.00, {float}11600.00, {float}0.XXX)
+
+[26 E4 A7 89 37]       DryTireCompoundSetting={byte}X
+  // used for auto selection when condition is right
+[26 7B 83 4D 10]       WetTireCompoundSetting={byte}X  // used for auto selection when condition is right
+[26 A4 F8 37 C0]       IceTireCompoundSetting={byte}X  // used for auto selection when condition is right
+[26 F7 FA A8 5D]       AllTerrainTireCompoundSetting={byte}X  // used for auto selection when condition is right
+[24 19 38 99 74 A3 00] FuelRange=({float}1.0, {float}1.0, {byte}84)
+
+[20 99 F0 BB F8]       FuelSetting={byte}49
+
+[24 F7 05 73 EA 03 00] NumPitstopsRange=({byte}0, {byte}1, {byte}4)
+
+[20 6D DE 02 E8]       NumPitstopsSetting={byte}3
+
+[24 9B FA 80 6D 83 00] PitstopOneRange=({byte}0, {float}1.0, {byte}84)
+
+[20 03 EE A8 65]       PitstopOneSetting={byte}42
+
+[24 55 DE D0 64 83 00] PitstopTwoRange=({byte}0, {float}1.0, {byte}84)
+
+[20 85 22 52 46]       PitstopTwoSetting={byte}42
+
+[24 E8 12 23 11 83 00] PitstopThreeRange=({byte}0, {float}1.0, {byte}84)
+
+[20 26 BA 51 7D]       PitstopThreeSetting={byte}42
+
+[20 BB 1F 05 F3] AIMinPassesPerTick={byte}2
+
+[22 26 A9 8C 99] AIRotationThreshold={float}0.12
+
+[22 79 F4 A6 98] AIEvenSuspension={float}0.0
+[22 BC C7 CE E7] AISpringRate={float}1.0
+[22 2B 3F F8 6B] AIDamperSlow={float}0.1
+
+[22 C4 89 77 69] AIDamperFast={float}0.1
+
+[22 88 76 9A ED] AIDownforceZArm={float}0.150
+
+[22 15 6B 48 37] AIDownforceBias{float}0.0
+
+[24 2E 5D 54 E4 A3 02] AITorqueStab=({float}1.0, {float}1.0, {float}1.0)
+
+[22 CA 88 11 AF] ??Unknown={float}X.XXX
+[22 2E 9D EF 64] ??Unknown={float}X.XXX 
+[28 F6 B9 76 CF] ??Unknown= No byte in code, which means zero setting
+
+[E0 E4 12 24 BA] FRONT WING begins
+
+FRONT WING (or FRONT LEFT WING when FRONT RIGHT WING exists)
+
+[24 AD 3C 20 13 83 00] FWRange=({byte}0, {float}1.0, {byte}10)
+[20 06 A3 1F 94]       FWSetting={byte}1
+[24 09 A8 52 D9 21]    FWMaxHeight={float}(0.10)
+
+[24 2C FB 70 DA A3 02] FWDragParams=({float}0.005, {float}0.002, {float}0.00)
+[24 23 EC 21 2A A3 02] FWLiftParams=({float}-0.00, {float}-0.021, {float}0.00002)
+[24 06 F4 58 AC 21]    FWLiftHeight=({float}0.335)
+
+[24 96 D3 8A 17 21]    FWLiftSideways={float}(0.0)
+[24 54 6C CD BF A3 02] FWLeft=({float}-0.20, {float}0.0, {float}0.0)
+[24 C5 19 77 0C A3 02] FWRight=({float}0.20, {float}0.0, {float}0.0)
+[24 CD 98 5A 4C A3 02] FWUp=({float}0.0, {float}-0.30, {float}-0.001)
+[24 82 6E D8 E3 A3 02] FWDown=({float}0.0, {float}0.15, {float}0.001)
+[24 E4 3E 99 D8 A3 02] FWAft=({float}0.0, {float}0.02, {float}-0.2)
+[24 F5 42 E8 78 A3 02] FWFore=({float}0.0, {float}0.0, {float}0.0)
+[24 3D FD AB 72 A3 02] FWRot=({float}0.5, {float}0.25, {float}0.35)
+[24 EB DD A8 12 A3 02] FWCenter=({float}0.00, {float}-0.100, {float}-0.50)
+
+[E0 BE 70 BE 88] Front Right Wing Begins
+
+
+
+FRONT RIGHT WING // Same parameters as above
+.  Only included in some CDFbin files
+[24 96 A7 D0 8D 83 00] FWRange=({byte}0, {float}1.0, {byte}10)
+[20 B5 E8 1B 09]       RWSetting={byte}1
+[24 29 1A 69 42 21]    FWMaxHeight={float}0.10
+[24 CF 8B E1 A1 A3 02] FWDragParams=({float}0.005, {float}0.003, {float}0.00)
+
+[24 76 29 1C 37 A3 02] FWLiftParams=({float}-0.000, {float}-0.030, {float}0.00)
+[24 4B 1A 06 AD 21]    FWLiftHeight={float}0.335
+[24 81 05 80 FE 21]    FWLiftSideways={float}0.00
+[24 A3 72 BD EE A3 02] FWLeft=({float}-0.20, {float}0.0, {float}0.0)
+[24 E3 C5 15 C2 A3 02] FWRight=({float}0.20, {float}0.0, {float}0.0)
+[24 68 D5 13 6E A3 02] FWUp=({float}0.0, {float}-0.30, {float}-0.001)
+[24 41 68 8B 03 A3 02] FWDown=({float}0.0, {float}0.15, {float}0.001)
+[24 57 1E 68 BD A3 02] FWAft=({float}0.0, {float}0.02, {float}-0.2)
+[24 91 B8 03 C5 A3 02] FWFore=({float}0.0, {float}0.0, {float}0.0)
+[24 7B 00 64 6A A3 02] FWRot=({float}0.5, {float}0.25, {float}0.35)
+[24 87 7F E1 43 A3 02] FWCenter=({float}0.00, {float}-0.100, {float}-0.50)
+
+
+
+
+[E0 E1 83 3A A6] REAR WING begins
+
+REAR WING
+[24 15 76 54 86 83 00] RWRange=({byte}0, {float}1.0, {byte}7)
+[20 8A 98 EB 35]       RWSetting={byte}1
+[24 67 DC B6 B3 A3 02] RWDragParams=({float}0.005, {float}0.003, {float}0.00
+[24 83 D3 85 B9 A3 02] RWLiftParams=({float}-0.000, {float}-0.030, {float}0.00
+[24 7A 8F 77 C8 21]    RWLiftSideways={float}0.0
+[24 15 2E 20 37 A2]    RWPeakYaw={float}0.0, {float}0.00
+[24 34 3E C4 2F A3 02] RWLeft={float}-0.15, {float}0, {float}0
+[24 42 3B C2 6A A3 02] RWRight={float}0.15, {float}0, {float}0
+[24 EF B4 24 0A A3 02] RWUp={float}, {float}, {float}
+
+[24 65 F8 14 22 A3 02] RWDown=({float}0.0, {float}0.20, {float}0.002)
+
+[24 69 EC ED 3E A3 02] RWAft=({float}0.0, {float}0.03, {float}-0.4)
+[24 D5 07 F8 FE A3 02] RWFore=({float}0.0, {float}0.0, {float}0.0)
+[24 08 4B 50 B3 A3 02] RWRot=({float}0.7, {float}0.4, {float}0.5)
+[24 17 44 ED 31 A3 02] RWCenter=({float}0.00, {float}0.200, {float}0.6)
+
+[E0 3D D3 DA 1B] REAR RIGHT WING begins
+
+[24 1F 3D 69 0C 03 00] RWRange=00 00 00 
+[28 85 98 3C 01]       RWSetting=
+[24 6B 20 03 55 23 00] RWDragParams=CD CC CC 3D 00 00 
+[24 B8 2D 4D C4 03 00] RWLiftParams=00 00 00 
+[24 0A 2B 9B 22 01]    RWLiftSideways=00 
+[24 BD CD 13 89 02]    RWPeakYaw=00 00 
+[24 22 45 69 35 03 00] RWLeft=00 00 00 
+[24 51 1B 19 80 03 00] RWRight=00 00 00 
+[24 86 1A F2 5C 03 00] RWUp=00 00 00 
+[24 51 EE 77 72 03 00] RWDown=00 00 00 
+[24 46 77 39 74 03 00] RWAft=00 00 00 
+[24 2B 7E E4 47 03 00] RWFore=00 00 00 
+[24 99 E7 CC 64 03 00] RWRot=00 00 00 
+[24 8D 6C 15 A3 83 02] RWCenter=00 00 00 00 3F CD CC 4C 3F 
+[24 3F 66 C0 31 01] 00 
+[24 85 28 FC 0B 05 00 00 00 00 00 00 
+[24 93 CA AE FA 05 00 00 00 00 00 00 
+[24 A3 F6 05 9E 05 00 00 00 00 00 00 
+[24 BE 57 73 DA 05 00 00 00 00 00 00 
+[24 C7 39 90 0B 05 00 00 00 00 00 00 
+[24 7D 95 1C A7 05 00 00 00 00 00 00 
+[24 17 75 D3 04 05 00 00 00 00 00 00
+
+
+
+# Unknowns below are in some cdfbins
+
+
+#[24 DC 76 52 9B 21] 100 
+#[24 13 BF E2 BA A5 2A] 17.9, 0.5, 1000, -30, 30
+
+could be some of the attributes below?.....
+RWSettingLongG
+RWSettingLateralG
+RWSettingSteering
+RWSettingRate
+RWSettingButton1
+RWSettingForwardVel
+RWSettingThrottle
+RWSettingBraking
+RWMaxHeight
+RWLiftHeight
+
+[E0 2B DA 95 42] BODY AERO begins
+
+BODY AERO
+[24 33 63 ED FD 21]    BodyDragBase={float}0.30
+
+[24 67 CA A0 92 21]    BodyDragHeightAvg={float}0.2
+
+[24 1F 13 C1 85 21]    BodyDragHeightDiff={float}0.47
+
+[24 56 E0 A3 AB 21]    BodyMaxHeight={float}0.2
+
+[24 C5 A5 4E CE A3 02] BodyLeft={float}-0.80, {float}0.0, {float}0.0
+
+[24 6A 08 2A D4 A3 02] BodyRight=({float}0.80, {float}0.0, {float}0.0)
+
+[24 DC 57 D2 48 A3 02] BodyUp=({float}0.0, {float}-1.00, {float}0.0)
+[24 E3 A1 65 97 A3 02] BodyDown=({float}0.0, {float}0.5, {float}0.0)
+
+[24 08 B1 B6 50 A3 02] BodyAft=({float}0.0, {float}0.5, {float}-0.2)
+[24 DC 2F 52 E4 A3 02] BodyFore=({float}0.0, {float}-0.060, {float}0.435)
+[24 F8 26 31 A8 A3 02] BodyRot=({float}3.45, {float}3.0, {float}1.30)
+[24 38 D1 8E E7 A3 02] BodyCenter=({float}0.0, {float}0.50, {float}-1.40)
+
+[24 8E 02 D1 67 83 00] RadiatorRange=({byte}0, {float}1.0, {byte}4)
+[20 F7 CF 3C A8]       RadiatorSetting={byte}3
+[24 CD 9B D5 4E 21]    RadiatorDrag=({float}0.000)
+[24 0A 98 AA BD 21]    RadiatorLift=({float}0.00)
+[24 67 64 39 31 83 00] BrakeDuctRange=({byte}0, {float}1.0, {byte}5)
+
+[20 CF 01 35 71]       BrakeDuctSetting={byte}1
+[24 50 2D C5 AE 21]    BrakeDuctDrag=({float}0.000)
+
+[24 B7 28 36 3E 21]    BrakeDuctLift=({float}0.00)
+
+
+
+[E0 C9 41 A8 1C] DIFFUSER begins
+
+
+
+
+DIFFUSER
+
+[24 BE 0F 28 99 A3 02] DiffuserBase=({float}-0.00, {float}-0.50, {float}5.0)
+[24 47 D0 B1 DE 21]    DiffuserFrontHeight=({float}0.000)
+[24 20 B9 8D FF A3 02] DiffuserRake=({float}0.000, {float}-00.0, {float}00.0)
+[24 FF 59 46 C8 A3 02] DiffuserLimits=({float}0.000, {float}0.100, {float}0.055)
+[24 E0 A1 25 DE A2]    DiffuserStall=({float}0.0, {float}0.5)
+[24 E1 76 32 24 21]    DiffuserSideways=({float}0.0)
+[24 B8 97 56 8E A3 02] DiffuserCenter=({float}0.0, {float}0.10, {float}-1.30)
+********************************************************************
+AdjustSuspRates=1 // Adjust suspension rates due to motion ratio 
+(0 = direct measure of spring/damper rates, 1 = wheel rates)
+Switch to permit the spring and damper rates at the wheels to be changed 
+between two modes.
+
+=0 means the wheel rates are adjusted for the geometry of the pushrod and
+the location of the lower end of the pushrod relative to the inner and outer 
+mounts of the wishbones.
+
+=1 means the wheel rates are adjusted only for the location the lower end 
+of the pushrod relative to the inner and outer mounts of the wishbones.
+
+Note that =1 does not remove all the geometric implications from the 
+pushrod definition. Only removing the definitions of the pushrods 
+themselves from the [CORNER] sections will do that.
+************************************************************************
+[E0 C8 15 E2 23] SUSPENSION begins
+
+SUSPENSION
+
+#[28 6B 45 97 72]      ??Unknown
+#[20 E1 FF 94 B3] FF   ??Unknown
+[20 7D E0 90 64]       AdjustSuspRates={byte}1
+[20 B2 B4 93 40]       AlignWheels={byte}1
+
+[20 26 E9 82 B6]       SpringBasedAntiSway={byte}1
+
+[28 89 92 C5 F3]       FrontAntiSwayBase= // no value
+
+[24 E5 B9 A9 D6 A3 00] FrontAntiSwayRange=({float}10000.0, {float}10000.0, {byte}2)
+
+[20 7F C7 58 D5]       FrontAntiSwaySetting={byte}5
+
+[24 2E 06 8D A5 A2]    FrontAntiSwayRate=({float}1.36e11, {float}4.0)
+
+[20 70 FA E1 77]       FrontAntiSwaySetting={byte}5
+
+#[28 F3 9C 93 F0]      Unknown data
+[24 66 00 1E 25 A3 00] RearAntiSwayRange=({float}5000.0, {float}5000.0, {byte}8)
+
+[20 04 78 E9 91]       RearAntiSwaySetting={byte}3
+
+[24 50 E0 77 73 A2]    RearAntiSwayRate=({float}1.36e11, {float}4.0)
+[24 69 D4 9B 3B A3 00] FrontToeInRange=({float}2.0, {float}-0.1, {byte}41)
+
+[20 C3 36 57 CC]       FrontToeInSetting={byte}21
+
+[24 55 C9 EA 65 A3 00] RearToeInRange=({float}2.0, {float}-0.1, {byte}41)
+
+[20 FD F7 43 4F]       RearToeInSetting={byte}19
+
+[24 1A 73 FE 3E A3 00] LeftCasterRange=({float}0.0, {float}0.1, {byte}100)
+[20 FF D7 A7 D9]       LeftCastersetting={byte}20
+
+[24 33 76 33 73 A3 00] RightCasterRange=({float}0.0, {float}0.1, {byte}100)
+
+[20 A6 B8 E3 8F]       RightCastersetting={byte}20
+
+#[24 34 A8 C5 EB A3 00]LeftTrackbarRange=
+
+({float}x.x, {float}x.x, {byte}X)
+#[20 69 CB F2 CA]      LeftTrackbarSetting={byte}X
+#[24 E6 68 17 75 A3 00]RightTrackbarRange=({float}x.x, {float}x.x, {byte}X)
+#[20 AA 2B 55 28]      RightTrackbarSetting={byte}X
+
+[E0 08 0A 14 C5] CONTROLS begins
+
+CONTROLS
+
+[22 24 F5 34 B3]       SteeringFFBMult={float}0.9
+
+[22 FB 38 19 1C]       FFBGripMulti{float}0.11
+[24 6B 4E A0 77 A3 00] SteeringRatioRange={float}3.5, {float}0.5, {byte}35
+[20 0F 6A B7 B6]       SteeringRatioSetting={byte}24
+[22 27 A0 D3 AC]       {float}0.5         // CDF_UNKN_006
+
+
+[20 31 7B 74 DC]       {byte}1            // CDF_UNKN_007
+
+#[28 B1 21 88 BF]      ??Unknown // no data in code, which means zero. 
+
+[22 E8 09 B9 01]       {float}1.0         // CDF_UNKN_008
+
+#[24 B3 D2 E5 A0 A3 00] Traction Control Range={float}0.01, {float}0.01, {byte}99 // (ECU
+)
+#[20 63 9D 2B D2]       Traction Control Setting= {byte}9         // (ECU
+)
+[22 20 D5 05 AC]       {float}20.0     // CDF_UNKN_011
+
+[22 48 E1 7A 3F]       {byte}0	// CDF_UNKN_012
+
+[24 E0 D9 C8 5B 22]    UpshiftAlgorithm={float}0.99, {byte}0
+[24 A6 8D 9C E2 A3 02] DownshiftAlgorithm={float}0.85, {float}0.8, {float}0.8
+
+[24 30 43 CE 21 23 00] SteeringLockRange={float}34.0, {byte}0, {byte}0
+
+#[28 B7 C2 C5 7E]	//no value set. steeringlocksetting
+#[22 05 CF 7B 77]      ??Unknown={float}-1.0 
+#[22 52 FA 34 11]      ??Unknown={float}5.0
+[24 A6 32 13 57 83 00] RearBrakeRange={byte}0, {float}0.01, {byte}100
+[20 FD BA 64 73]       RearBrakeSetting={byte}45
+[24 D0 00 38 59 A3 00] BrakePressureRange={float}0.00, {float}0.02, {byte}100
+
+[20 DA BD B9 81]       BrakePressureSetting={byte}60
+[24 96 4B 29 B4 83 00] HandbrakeRange={byte}0, {float}0.01, {byte}100
+
+[20 52 30 1F D2]       HandbrakePressSetting={byte}60
+
+#[21 52 30 1F D2] same as above, but in integer
+[22 E3 5A 1D CA]    AutoUpshiftGripThresh={float}0.6
+
+[22 33 DE 0B C9]    AutoDownshiftGripThresh={float}0.6
+
+[24 07 F7 6E 47 A2] TractionControlGrip=({float}0.06, {float}0.16)
+[24 25 5A FB 23 A2] TractionControlLevel=({float}0.06, {float}0.16}
+
+*****New to PC2***
+[24 24 9E 03 13 83 00] {byte}0, {float}0.01, {byte}100 // (ECU) ABS Strength Range
+[20 B2 BE 8E 7E] {byte}85 // (ECU) ABS Strength Setting
+******************
+
+***AUTHENTIC DRIVING ASSIST OPTIONS****
+#[20 BC 12 66 E0]   {byte}1   // "Authentic" ABSFourWheel assist
+#[20 BC 90 7F 88]   {byte}1   // "Authentic" TC Traction Control assist (disable/enable)
+#[20 F2 9A F8 10]   {byte}1   // "Authentic" SC Stability Control assist (disable/enable)
+***************************************
+[20 FA CE 76 12]    {byte}1   //CDF_UNKN_016
+
+[20 D5 DD 9C 9B]    {byte}1   //CDF_UNKN_017
+
+[20 5B D1 F7 C8]    {byte}1   //CDF_UNKN_018
+
+[24 64 70 F5 FD 83 02] ({byte}0, {float}0.01, {float}200)  //CDF_UNKN_019
+
+[20 34 76 EE E3]       {byte}25 //CDF_UNKN_020
+
+[24 C8 1B AC AF 83 02] ({byte}0, {float}0.01, {float}200)  //CDF_UNKN_021
+
+[20 61 5A 10 D6]       {byte}100 //CDF_UNKN_022
+
+[24 D2 2F 18 AF 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_023
+
+[20 4D CA 34 17]       {byte}100      // CDF_UNKN_024
+
+[24 B3 85 4E E0 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_025
+
+[20 6C E5 6E 1B]       {byte}100      // CDF_UNKN_026
+
+[24 72 DE E1 17 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_027
+
+[20 99 3F 2A 3F]       {byte}100      // CDF_UNKN_028
+
+[24 5A AE 27 42 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_029
+
+[20 25 F7 FA 9E]       {byte}1  //CDF_UNKN_030
+
+[24 7A 49 7E 24 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_031
+Setting=(no value)
+
+[28 99 85 60 E9]
+[24 25 8E 3F 20 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_032
+Setting=(no value)
+
+[28 3C 50 F8 D7] 
+[24 6A 7D 42 63 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_033
+Setting=(no value)
+
+[28 A9 F7 13 BD] 
+************************************
+[24 98 CA 4E 61 03 02] {byte}231, {byte}1, {byte}50 //CDF_UNKN_034
+[20 77 E8 4F 5C] {byte}25
+************************************
+[24 09 DE B7 68 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_035
+Setting=(no value)
+
+[28 FF 26 A3 2B]
+[24 4B D5 82 72 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_036
+Setting=(no value)
+
+[28 E5 12 C1 5D] 
+[24 22 AC 0C 3A 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_037
+
+[20 17 7A 98 F5] {byte}100
+[24 9F C7 1E D1 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_039
+
+[20 C7 D5 99 C6]       {byte}100 //CDF_UNKN_040
+
+[24 67 8C A5 99 83 02] {byte}0, {float}0.01, {float}200)  //CDF_UNKN_041
+Setting=(no value)
+
+[28 BE A1 5C E1] 
+[24 8E 47 3C 20 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_042
+Setting=(no value)
+
+[28 ED 5F B5 79] 
+[24 23 F0 43 98 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_043
+Setting=(no value)
+
+[28 CA E1 FE 39] 
+[24 E7 6C F5 65 83 02] {byte}0, {float}0.1, {float}20)  //CDF_UNKN_044
+
+[28 31 6F DC CC] 
+
+
+
+[E0 3F 9E 45 98] ??Unknown Section begins
+
+****[20 D5 B3 F7 87] 01***
+[28 12 FA B3 EB] 
+
+[E0 9E F7 67 84] DRIVELINE begins
+
+DRIVELINE
+
+[22 1B CA 33 55] ClutchEngageRate={float}0.8
+
+[22 D3 1C F6 C6] ClutchInertia={float}0.0111
+
+[22 2E 33 DB 70] ClutchTorque={float}500.0
+#[28 7E 93 96 8C] //??
+[22 9B 56 A1 18] ClutchFriction={float}10.00
+
+[22 36 6E 87 07] BaulkTorque={float}575.0
+
+#[28 01 B6 85 A9] //?? might be related to shifting/clutch
+[20 1D EA 4C 3D] SemiAutomatic={byte}1 // 1=sequential/semiauto & 0=h pattern
+
+[20 74 73 B2 00] {byte}1        // ??related to shifting/clutch, CDF_UNKN_046
+
+[20 B5 19 EF 5C] {byte}1	// ??related to shifting/clutch, CDF_UNKN_047
+
+#[20 B9 E1 14 02] {byte}1	//??related to shifting/clutch
+[22 67 F7 AD 20] UpshiftDelay={float}0.1
+
+[22 9D 78 9E C9] UpshiftClutchTime={float}0.1
+
+[22 07 50 AF 26] DownshiftDelay={float}0.3
+
+[22 DB 0B FC 09] DownshiftClutchTime={float}0.3
+
+[22 3B 62 D3 1C] DownshiftBlipThrottle={float}0.7
+#[26 94 35 F2 CB] {byte}9	// ??related to shifting/clutch
+[20 C1 EB DC 28] FinalDriveSetting={byte}29
+
+[28 D6 71 85 B0] ReverseGearSetting // no value, which means zero
+[20 FF 0C 22 07] ForwardGears={byte}6
+
+[28 F4 CC 2F 1D] GearOneSetting={byte}1
+
+[20 8D 69 C2 DA] GearTwoSetting={byte}25
+
+[20 C0 25 93 C3] GearThreeSetting={byte}42
+
+[20 78 92 B7 5A] GearFourSetting={byte}57
+
+[20 78 4E 48 36] GearFiveSetting={byte}71
+
+[20 5F 2B A9 EE] GearSixSetting={byte}82
+
+#[20 49 EE 13 F6] GearSevenSetting={byte}6
+
+****FRONT DIFFERENTIAL CODE*****
+[24 39 9D AB CC 03 00] DiffFrontSpoolOption={byte},{byte},{byte} 
+[28 54 97 E2 18]       DiffFrontSpoolSetting=                
+         
+[24 37 9D CD EF 03 00] DiffFrontGearedLsdOption={byte},{byte},{byte} 
+[20 90 F8 1A C8]       DiffFrontGearedLsdSetting={byte} 
+[24 8D A5 C0 7B 83 00] DiffFrontBiasRatioPowerRange={byte},{float},{byte} 
+[20 8A F4 79 B8]       DiffFrontBiasRatioPowerSetting={byte} 
+[24 1D 41 94 BF 83 00] DiffFrontBiasRatioCoastRange={byte},{float},{byte} 
+[20 19 55 52 B5]       DiffFrontBiasRatioCoastSetting={byte}
+
+[24 41 E0 CD AE 03 00] DiffFrontClutchLsdOption={byte},{byte},{byte} 
+[28 4F A8 A9 16]       DiffFrontClutchLsdSetting=                     
+[24 F3 3F D6 98 03 00] DiffFrontClutchLsdPreloadRange={byte},{byte},{byte}
+[20 2A F6 3D 02]       DiffFrontClutchLsdPreloadSetting={byte}
+[24 CD 58 72 0A 03 00] DiffFrontClutchLsdPowerRampRange={byte},{byte},{byte}
+[20 09 AD 40 97]       DiffFrontClutchLsdPowerRampSetting={byte}
+[24 1E 69 4E 19 03 00] DiffFrontClutchLsdCoastRampRange={byte},{byte},{byte}
+[20 05 A4 AB 0A]       DiffFrontClutchLsdCoastRampSetting={byte}
+[24 89 07 4E C0 03 00] DiffFrontClutchLsd#ofClutchesRange={byte},{byte},{byte}
+[20 AB FF 0F D6]       DiffFrontClutchLsd#ofClutchesSetting={byte}
+
+[24 FB 34 85 B9 03 00] DiffFrontViscousLsdOption={byte},{byte},{byte}
+[28 81 B8 D8 08]       DiffFrontViscousLsdOptionSetting=                  
+[24 EC C5 0A D7 03 00] DiffFrontViscousLockRange={byte},{byte},{byte}
+[20 41 35 D2 61]       DiffFrontViscousLsdSetting={byte}
+
+[24 68 29 C2 1B 03 00] DiffFrontRatchetingRange={byte},{byte},{byte}
+[28 45 17 11 37]       DiffFrontRatchetingSetting
+
+****CENTER DIFFERENTIAL CODE*****
+[24 B2 DD 18 AC 03 00] DiffCenterSpoolOption={byte},{byte},{byte}
+[28 70 21 63 66]       DiffCenterSpoolSetting=       
+                  
+[24 5E D1 39 36 03 00] DiffCenterGearedLsdOption={byte},{byte},{byte}
+[28 BF 2A 7E 62]       DiffCenterGearedLsdSetting=
+[24 E1 71 4A 7B 83 00] DiffCenterBiasRatioPowerRange={byte},{float},{byte} 
+[28 66 5F E2 43]       DiffCenterBiasRatioPowerSetting=
+[24 3A 92 1E B0 83 00] DiffCenterBiasRatioCoastRange={byte},{float},{byte} 
+[28 FA EC CB BF]       DiffCenterBiasRatioCoastSetting={byte}
+
+[24 69 82 0A 41 03 00] DiffCenterClutchLsdOption={byte},{byte},{byte}
+[20 01 A1 6B F9]       DiffCenterClutchLsdSetting={byte}
+[24 73 9E 1C 3E 03 00] DiffCenterClutchLsdPreloadRange={byte},{byte},{byte}
+[20 9F F9 B4 26]       DiffCenterClutchLsdPreloadSetting={byte}
+[24 71 52 76 47 03 00] DiffCenterClutchLsdPowerRampRange={byte},{byte},{byte}
+[20 08 15 99 DF]       DiffCenterClutchLsdPowerRampSetting={byte}
+[24 97 AE 26 09 03 00] DiffCenterClutchLsdCoastRampRange={byte},{byte},{byte}
+[20 78 3A DD DA]       DiffCenterClutchLsdCoastRampSetting={byte}
+[24 94 D1 29 37 03 00] DiffCenterClutchLsd#ofClutchesRange={byte},{byte},{byte}
+[20 72 19 2E B0]       DiffCenterClutchLsd#ofClutchesSetting={byte}
+
+[24 AF 28 23 3F 03 00] DiffCenterViscousLsdOption={byte},{byte},{byte}
+[28 6A 83 DD EA]       DiffCenterViscousLsdOptionSetting=                  
+[24 C4 A7 09 F9 03 00] DiffCenterViscousLockRange={byte},{byte},{byte}
+[20 B2 B4 67 3D]       DiffCenterViscousLsdSetting={byte}
+
+[24 AB 12 1A 20 03 00] DiffCenterRatchetingRange={byte},{byte},{byte}
+[28 74 65 6C DA]       DiffCenterRatchetingSetting=
+[24 05 9C B8 6E 83 00] RearPowerBalance={byte},{byte},{byte}
+[20 5A D1 7D 93]       RearPowerBalanceSettinh={byte}
+
+****REAR DIFFERENTIAL CODE*****
+[24 EE 7A B8 C2 03 00] DiffRearSpoolOption={byte},{byte},{byte} // Rear Diff Spool Option off/on
+[28 5C 91 A5 85]       DiffRearSpoolSetting=                    // Rear Diff Spool setting.  No byte in code means zero (off)
+
+[24 9B E9 BD BB 03 00] DiffRearGearedLsdOption={byte},{byte},{byte}       // Rear Diff Geared LSD Option off/on
+[20 DC 47 B2 CE]       DiffRearGearedLsdSetting={byte}                    // Rear Diff Geared LSD setting.
+[24 25 9E 18 D6 83 00] DiffRearBiasRatioPowerRange={byte},{float},{byte}  // Rear Diff Bias Ratio Pwr(accel) Range
+[20 0A C0 52 BA]       DiffRearBiasRatioPowerSetting={byte}               // 
+[24 29 7D 8B D8 83 00] DiffRearBiasRatioCoastRange={byte},{float},{byte}  // Rear Diff Bias Ratio Coast(decel) Range
+[20 76 86 1F CA]       DiffRearBiasRatioCoastSetting={byte}               // Rear Diff Bias Ratio Coast(decel) Setting
+
+[24 04 80 3B 71 03 00] DiffRearClutchLsdOption={byte},{byte},{byte}       // Rear Diff Clutch LSD Option (off/on)
+[20 18 9A 45 B8]       DiffRearClutchLsdSetting={byte}                    // Rear Diff Clutch LSD Setting
+[24 AE 9E A6 41 03 00] DiffRearClutchLsdPreloadRange={byte},{byte},{byte} // Rear Diff Clutch LSD Preload Range
+***Fix base value by setting to zero.  Then change max range and setting values.
+[20 67 71 FD BF]       DiffRearClutchLsdPreloadSetting={byte}                 // Rear Diff Clutch LSD Preload Setting
+[24 16 B6 6F 96 03 00] DiffRearClutchLsdPowerRampRange={byte},{byte},{byte}   // Rear Diff Clutch LSD Pwr(accel) Ramp Range
+[20 81 2D 38 81]       DiffRearClutchLsdPowerRampSetting={byte}               // Rear Diff Clutch LSD Pwr(Accel) Ramp Setting
+[24 A6 F6 18 10 03 00] DiffRearClutchLsdCoastRampRange={byte},{byte},{byte}   // Rear Diff Clutch LSD Coast(decel) Ramp Range
+[20 71 BB 6F 28]       DiffRearClutchLsdCoastRampSetting={byte}               // Rear Diff Clutch LSD Coast(decel) Ramp Setting
+[24 1C 63 D7 1C 03 00] DiffRearClutchLsd#ofClutchesRange={byte},{byte},{byte} // Rear Diff Clutch LSD # of Clutches Range
+[20 D9 D4 45 63]       DiffRearClutchLsd#ofClutchesSetting={byte}             // Rear Diff Clutch LSD # of Clutches Setting
+
+[24 F4 97 51 CF 03 00] DiffRearViscousLsdOption={byte},{byte},{byte} // Rear Diff Viscous LSD Option (off/on)
+[28 5A 2F 78 7C]       DiffRearViscousLsdOptionSetting=              // Rear Diff Viscous LSD Setting
+[24 1E 6F 8D B1 03 00] DiffRearViscousLockRange={byte},{byte},{byte} // Note: 2nd value is x50. So "1" x50 = x50nm multiplier per ViscousLsdSetting
+[20 E0 EE A4 80]       DiffRearViscousLsdSetting={byte}              // a setting of "4" yields 4 x50 = 200nm lock
+
+[24 A6 12 F9 62 03 00] DiffRearRatchetingOption={byte},{byte},{byte} // Rear Diff Ratcheting Option (on/off)
+[28 F1 8A 0F 35]       DiffRearRatchetingSetting=                    // Rear Diff Ratcheting Setting.  No byte in code, which means zero(off)
+
+[22 D0 6B 69 F2] {float}1000.00 //RPM Governor for semi-auto gearchange. 1000 is added to idle rpm (shift must occur at or below ~5000 rpm)
+[22 69 56 28 63] {float}50.0    //??relates to shifting/clutch,CDF_UNKN_049
+
+[22 F9 8C C1 66] {float}0.5     // Lift & Shift or Full throttle shift.  Percentage of throttle allowed for upshift (1.0 = 100% or full throttle)
+
+[22 2E 33 BD 4C] {float}0.25     //??relates to shifting/clutch,CDF_UNKN_051
+
+[22 2D 62 77 4E] {float}0.001  //??relates to shifting/clutch,CDF_UNKN_052
+
+[22 C4 F7 E7 93] {float}0.001  //??relates to shifting/clutch,CDF_UNKN_053
+
+
+
+*******NEW SECTION FOR PC2**********
+
+
+[E0 12 BC 36 7D] 
+[22 2C 1D 1F 2F] {float}1.3 
+[21 D1 35 A6 C8] {integer}1000 
+[21 2D D9 FE 0F] {integer}1000 
+[24 09 A8 D0 1D 03 02] {byte}0, {byte}0, {float}0.15 
+[22 37 F3 B5 B2] {float}0.9 
+[22 AF AB 0F 8E] {float}1.0 
+[21 42 FD F1 BF] {integer}500 
+[21 AE BE 7F FA] {integer}200
+[24 3F BF 68 D5 03 02] {byte}0, {byte}0, {float}-0.45 
+[22 6A BC 43 1B] {float}0.9
+
+
+
+
+[E0 7D 16 E2 9F] = FRONT LEFT CORNER begins
+
+
+FRONT LEFT
+
+[22 B3 D8 21 F7] BumpTravel={float}-0.00
+
+[22 17 7B 8A 89] ReboundTravel={float}-0.18
+
+[21 7F C6 F8 41] BumpStopSpring={integer}150000 // ***hex string dictating integer data**
+#[22 7F C6 F8 41] BumpStopSpring={float}150000.0 //***Same as above but with float data**
+
+[22 CB 91 F1 63] BumpStopRisingSpring={float}4000000
+
+[22 71 74 6E EB] {float}50.0
+
+[22 DD D6 E1 75] {float}20.0
+
+[22 70 02 6D 2B] BumpStageTwo={float}0.09
+
+[22 1F 7D 2D 8E] ReboundStageTwo={float}-0.09
+
+[22 7F 0E 4C A5] FrictionTorque={float}9.5
+
+[22 57 51 0F 51] SpinInertia={float}1.35
+
+#[22 C9 2A 02 BB] {float}x.xx ??unknown
+#[28 C9 2A 02 BB] unknown like above but with zero value
+[24 BE B9 BB AB A3 02] PushrodSpindle=({float}-0.10, {float}-0.150, {float}0.000)
+
+[24 19 11 EA CE A3 02] PushrodBody=({float}-0.10, {float}0.320, {float}0.000)
+[24 24 E1 9C B2 A3 00] CamberRange=({float}-3.5, {float}0.1, {byte}60)
+
+[20 C1 72 F3 09]       CamberSetting={byte}20
+
+[24 A6 DA C6 BF A3 00] PressureRange={float}180.0, {float}1.0, {byte}106
+
+[20 BB 96 16 F6]       PressureSetting={byte}50
+
+[24 BB 59 2C D5 83 00] PackerRange=({byte}0, {float}0.001, {byte}30)
+
+[20 D8 7D 17 14]       PackerSetting={byte}1
+
+[22 44 49 5D 88]       SpringMult={float}1.0
+[24 A5 12 3D 0D A3 00] SpringRange=({float}60000.0, {float}5000.0, {byte}6)
+
+[20 CE AA 7A 97]       SpringSetting={byte}1
+
+[24 D7 C6 0D 7A A3 00] RideHeightRange=({float}0.105, {float}-0.0055, {byte}10)
+
+[20 6D 04 94 05]       RideHeightSetting={byte}1
+
+[22 51 37 41 53]       DamperMult={float}1.0
+[24 0C 43 D9 D0 A3 00] SlowBumpRange=({float}3000.0, {float}300.0, {byte}6)
+[20 D1 9E 2C 0A]       SlowBumpSetting={byte}1
+
+[24 30 89 EC 3D A3 00] FastBumpRange=({float}1500.0, {float}200.0, {byte}6)
+[20 38 38 25 87]       FastBumpSetting={byte}1
+
+[24 BC C0 A2 91 A3 00] SlowReboundRange=({float}6000.0, {float}300.0, {byte}6)
+[20 22 73 D7 81]       SlowReboundSetting={byte}1
+
+[24 BC 6D 0E F7 A3 00] FastReboundRange{float}4400, {float}250, {byte}16
+[20 B8 B0 02 2E]       FastReboundSetting={byte}10
+#[24 5E 57 34 B3 13 00] BumpTransitionRange={integer}XXXX, {byte}x, {byte}x
+#[20 36 84 0B 9B]       BumpTransitionSetting={byte}x
+#[24 5C 47 9E 9E 13 00] ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 
+#[20 D6 CD E0 06]       ReboundTransitionSetting={byte}x
+[24 09 7A D2 4B 23 00] BrakeDiscRange={float}0.035, {byte}0, {byte}0
+
+[24 ED 3F C2 21 03 00] BrakePadRange=({byte}0, {byte}1, {byte}5)
+[20 64 D7 A9 E6]       BrakePadSetting={byte}2
+[22 B9 CF 18 D1] BrakeDiscInertia={float}0.001
+[22 AB 02 4B 3C] BrakeOptimumTemp={float}500.0
+[22 02 3F 01 F1] {float}0.34	//CDF_UNKN_059
+
+[22 45 81 36 93] {float}0.95	//CDF_UNKN_060
+
+[22 E7 95 A8 D0] {float}900.0
+
+[22 D0 03 18 55] {float}950.0
+
+[22 1E E5 B6 4C]    BrakeWearRate={float}3e-11
+
+[24 BD 59 C8 42 A2] BrakeFailure={float}0.01, {float}0.003
+
+[22 4B A4 81 7A]    BrakeTorque={float}3200
+
+[22 6E A6 0D FB]    BrakeHeating={float}0.000275
+
+[24 1C D5 5C 78 A2] BrakeCooling({float}0.007, {float}7e-06)
+
+[22 A2 67 26 E9]    BrakeDuctCooling={float}5e-07
+
+42
+
+
+FRONT RIGHT
+
+[22 B3 D8 21 F7] BumpTravel={float}-0.00
+
+[22 17 7B 8A 89] ReboundTravel={float}-0.18
+
+[21 7F C6 F8 41] BumpStopSpring={integer}150000 // ***hex string dictating integer data**
+#[22 7F C6 F8 41] BumpStopSpring={float}150000.0 //***Same as above but with float data**
+
+[22 CB 91 F1 63] BumpStopRisingSpring={float}4000000
+
+[22 71 74 6E EB] {float}50.0
+
+[22 DD D6 E1 75] {float}20.0
+
+[22 70 02 6D 2B] BumpStageTwo={float}0.09
+
+[22 1F 7D 2D 8E] ReboundStageTwo={float}-0.09
+
+[22 7F 0E 4C A5] FrictionTorque={float}9.5
+
+[22 57 51 0F 51] SpinInertia={float}1.35
+
+#[22 C9 2A 02 BB] {float}x.xx ??unknown
+#[28 C9 2A 02 BB] unknown like above but with zero value
+[24 BE B9 BB AB A3 02] PushrodSpindle=({float}0.10, {float}-0.150, {float}0.000)
+
+[24 19 11 EA CE A3 02] PushrodBody=({float}0.10, {float}0.320, {float}0.000)
+[24 24 E1 9C B2 A3 00] CamberRange=({float}-3.5, {float}0.1, {byte}60)
+
+[20 C1 72 F3 09]       CamberSetting={byte}20
+
+[24 A6 DA C6 BF A3 00] PressureRange={float}180.0, {float}1.0, {byte}106
+
+[20 BB 96 16 F6]       PressureSetting={byte}50
+
+[24 BB 59 2C D5 83 00] PackerRange=({byte}0, {float}0.001, {byte}30)
+
+[20 D8 7D 17 14]       PackerSetting={byte}1
+
+[22 44 49 5D 88]       SpringMult={float}1.0
+[24 A5 12 3D 0D A3 00] SpringRange=({float}60000.0, {float}5000.0, {byte}6)
+
+[20 CE AA 7A 97]       SpringSetting={byte}1
+
+[24 D7 C6 0D 7A A3 00] RideHeightRange=({float}0.105, {float}-0.0055, {byte}10)
+
+[20 6D 04 94 05]       RideHeightSetting={byte}1
+
+[22 51 37 41 53]       DamperMult={float}1.0
+[24 0C 43 D9 D0 A3 00] SlowBumpRange=({float}3000.0, {float}300.0, {byte}6)
+[20 D1 9E 2C 0A]       SlowBumpSetting={byte}1
+
+[24 30 89 EC 3D A3 00] FastBumpRange=({float}1500.0, {float}200.0, {byte}6)
+[20 38 38 25 87]       FastBumpSetting={byte}1
+
+[24 BC C0 A2 91 A3 00] SlowReboundRange=({float}6000.0, {float}300.0, {byte}6)
+[20 22 73 D7 81]       SlowReboundSetting={byte}1
+
+[24 BC 6D 0E F7 A3 00] FastReboundRange{float}4400, {float}250, {byte}16
+
+[20 B8 B0 02 2E]       FastReboundSetting={byte}10
+#[24 5E 57 34 B3 13 00] BumpTransitionRange={integer}XXXX, {byte}x, {byte}x
+#[20 36 84 0B 9B]       BumpTransitionSetting={byte}x
+#[24 5C 47 9E 9E 13 00] ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 
+#[20 D6 CD E0 06]       ReboundTransitionSetting={byte}x
+[24 09 7A D2 4B 23 00] BrakeDiscRange={float}0.035, {byte}0, {byte}0
+
+[24 ED 3F C2 21 03 00] BrakePadRange=({byte}0, {byte}1, {byte}5)
+[20 64 D7 A9 E6]       BrakePadSetting={byte}2
+[22 B9 CF 18 D1] BrakeDiscInertia={float}0.001
+
+[22 AB 02 4B 3C] BrakeOptimumTemp={float}500.0
+[22 02 3F 01 F1] {float}0.34		//CDF_UNKN_059
+
+[22 45 81 36 93] {float}0.95		//CDF_UNKN_060
+
+[22 E7 95 A8 D0] {float}900.0
+
+[22 D0 03 18 55] {float}950.0
+
+[22 1E E5 B6 4C]    BrakeWearRate={float}3e-11
+
+[24 BD 59 C8 42 A2] BrakeFailure={float}0.01, {float}0.003
+
+[22 4B A4 81 7A]    BrakeTorque={float}3200
+
+[22 6E A6 0D FB]    BrakeHeating={float}0.000275
+
+[24 1C D5 5C 78 A2] BrakeCooling({float}0.007, {float}7e-06)
+
+[22 A2 67 26 E9]    BrakeDuctCooling={float}5e-07
+
+
+
+
+
+REAR LEFT
+
+[22 B3 D8 21 F7] BumpTravel={float}-0.00
+
+[22 17 7B 8A 89] ReboundTravel={float}-0.2
+
+[21 7F C6 F8 41] BumpStopSpring={integer}150000 // ***hex string dictating integer data**
+#[22 7F C6 F8 41] BumpStopSpring={float}150000.0 //***Same as above but with float data**
+
+[22 CB 91 F1 63] BumpStopRisingSpring={float}4000000
+
+[22 71 74 6E EB] {float}50.0
+
+[22 DD D6 E1 75] {float}20.0
+
+[22 70 02 6D 2B] BumpStageTwo={float}0.09
+
+[22 1F 7D 2D 8E] ReboundStageTwo={float}-0.09
+
+[22 7F 0E 4C A5] FrictionTorque={float}12.5
+
+[22 57 51 0F 51] SpinInertia={float}1.427
+
+#[22 C9 2A 02 BB] {float}x.xx ??unknown
+#[28 C9 2A 02 BB] unknown like above but with zero value
+[24 BE B9 BB AB A3 02] PushrodSpindle=({float}-0.10, {float}-0.150, {float}0.000)
+
+[24 19 11 EA CE A3 02] PushrodBody=({float}-0.10, {float}0.320, {float}0.000)
+[24 24 E1 9C B2 A3 00] CamberRange=({float}-3.5, {float}0.1, {byte}60)
+
+[20 C1 72 F3 09]       CamberSetting={byte}25
+
+[24 A6 DA C6 BF A3 00] PressureRange={float}180.0, {float}1.0, {byte}106
+
+[20 BB 96 16 F6]       PressureSetting={byte}50
+
+[24 BB 59 2C D5 83 00] PackerRange=({byte}0, {float}0.001, {byte}30)
+
+[20 D8 7D 17 14]       PackerSetting={byte}1
+
+[22 44 49 5D 88]       SpringMult={float}1.0
+[24 A5 12 3D 0D A3 00] SpringRange=({float}50000.0, {float}4166.0, {byte}6)
+
+[20 CE AA 7A 97]       SpringSetting={byte}1
+
+[24 D7 C6 0D 7A A3 00] RideHeightRange=({float}0.11, {float}-0.0055, {byte}10)
+
+[20 6D 04 94 05]       RideHeightSetting={byte}1
+
+[22 51 37 41 53]       DamperMult={float}1.0
+[24 0C 43 D9 D0 A3 00] SlowBumpRange=({float}2500.0, {float}300.0, {byte}6)
+[20 D1 9E 2C 0A]       SlowBumpSetting={byte}1
+
+[24 30 89 EC 3D A3 00] FastBumpRange=({float}1200.0, {float}200.0, {byte}6)
+[20 38 38 25 87]       FastBumpSetting={byte}1
+
+[24 BC C0 A2 91 A3 00] SlowReboundRange=({float}5000.0, {float}300.0, {byte}6)
+[20 22 73 D7 81]       SlowReboundSetting={byte}1
+
+[24 BC 6D 0E F7 A3 00] FastReboundRange{float}2500, {float}250, {byte}16
+[20 B8 B0 02 2E]       FastReboundSetting={byte}10
+#[24 5E 57 34 B3 13 00] BumpTransitionRange={integer}XXXX, {byte}x, {byte}x
+#[20 36 84 0B 9B]       BumpTransitionSetting={byte}x
+#[24 5C 47 9E 9E 13 00] ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 
+#[20 D6 CD E0 06]       ReboundTransitionSetting={byte}x
+[24 09 7A D2 4B 23 00] BrakeDiscRange={float}0.032, {byte}0, {byte}0
+
+[24 ED 3F C2 21 03 00] BrakePadRange=({byte}0, {byte}1, {byte}5)
+[20 64 D7 A9 E6]       BrakePadSetting={byte}2
+[22 B9 CF 18 D1] BrakeDiscInertia={float}0.001
+[22 AB 02 4B 3C] BrakeOptimumTemp={float}500.0
+[22 02 3F 01 F1] {float}0.34		//CDF_UNKN_059
+
+[22 45 81 36 93] {float}0.95		//CDF_UNKN_060
+
+[22 E7 95 A8 D0] {float}900.0
+
+[22 D0 03 18 55] {float}950.0
+
+[22 1E E5 B6 4C]    BrakeWearRate={float}3e-11
+
+[24 BD 59 C8 42 A2] BrakeFailure={float}0.01, {float}0.003
+
+[22 4B A4 81 7A]    BrakeTorque={float}2200
+
+[22 6E A6 0D FB]    BrakeHeating={float}0.000275
+
+[24 1C D5 5C 78 A2] BrakeCooling({float}0.007, {float}7e-06)
+
+[22 A2 67 26 E9]    BrakeDuctCooling={float}5e-07
+
+
+
+
+
+REAR RIGHT
+
+[22 B3 D8 21 F7] BumpTravel={float}-0.00
+
+[22 17 7B 8A 89] ReboundTravel={float}-0.2
+
+[21 7F C6 F8 41] BumpStopSpring={integer}150000 // ***hex string dictating integer data**
+#[22 7F C6 F8 41] BumpStopSpring={float}150000.0 //***Same as above but with float data**
+
+[22 CB 91 F1 63] BumpStopRisingSpring={float}4000000
+
+[22 71 74 6E EB] {float}50.0
+
+[22 DD D6 E1 75] {float}20.0
+
+[22 70 02 6D 2B] BumpStageTwo={float}0.09
+
+[22 1F 7D 2D 8E] ReboundStageTwo={float}-0.09
+
+[22 7F 0E 4C A5] FrictionTorque={float}12.5
+
+[22 57 51 0F 51] SpinInertia={float}1.427
+
+#[22 C9 2A 02 BB] {float}x.xx ??unknown
+#[28 C9 2A 02 BB] ?? unknown like above but with zero value
+[24 BE B9 BB AB A3 02] PushrodSpindle=({float}0.10, {float}-0.150, {float}0.000)
+
+[24 19 11 EA CE A3 02] PushrodBody=({float}0.10, {float}0.320, {float}0.000)
+[24 24 E1 9C B2 A3 00] CamberRange=({float}-3.5, {float}0.1, {byte}60)
+
+[20 C1 72 F3 09]       CamberSetting={byte}25
+
+[24 A6 DA C6 BF A3 00] PressureRange={float}180.0, {float}1.0, {byte}106
+
+[20 BB 96 16 F6]       PressureSetting={byte}50
+
+[24 BB 59 2C D5 83 00] PackerRange=({byte}0, {float}0.001, {byte}30)
+
+[20 D8 7D 17 14]       PackerSetting={byte}1
+
+[22 44 49 5D 88]       SpringMult={float}1.0
+[24 A5 12 3D 0D A3 00] SpringRange=({float}50000.0, {float}4166.0, {byte}6)
+
+[20 CE AA 7A 97]       SpringSetting={byte}1
+
+[24 D7 C6 0D 7A A3 00] RideHeightRange=({float}0.11, {float}-0.0055, {byte}10)
+
+[20 6D 04 94 05]       RideHeightSetting={byte}1
+
+[22 51 37 41 53]       DamperMult={float}1.0
+[24 0C 43 D9 D0 A3 00] SlowBumpRange=({float}2500.0, {float}300.0, {byte}6)
+[20 D1 9E 2C 0A]       SlowBumpSetting={byte}1
+
+[24 30 89 EC 3D A3 00] FastBumpRange=({float}1200.0, {float}200.0, {byte}6)
+[20 38 38 25 87]       FastBumpSetting={byte}1
+
+[24 BC C0 A2 91 A3 00] SlowReboundRange=({float}5000.0, {float}300.0, {byte}6)
+[20 22 73 D7 81]       SlowReboundSetting={byte}1
+
+[24 BC 6D 0E F7 A3 00] FastReboundRange{float}2500, {float}250, {byte}16
+[20 B8 B0 02 2E]       FastReboundSetting={byte}10
+#[24 5E 57 34 B3 13 00] BumpTransitionRange={integer}XXXX, {byte}x, {byte}x
+#[20 36 84 0B 9B]       BumpTransitionSetting={byte}x
+#[24 5C 47 9E 9E 13 00] ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 
+#[20 D6 CD E0 06]       ReboundTransitionSetting={byte}x
+[24 09 7A D2 4B 23 00] BrakeDiscRange={float}0.032, {byte}0, {byte}0
+
+[24 ED 3F C2 21 03 00] BrakePadRange=({byte}0, {byte}1, {byte}5)
+[20 64 D7 A9 E6]       BrakePadSetting={byte}2
+[22 B9 CF 18 D1] BrakeDiscInertia={float}0.001
+
+[22 AB 02 4B 3C] BrakeOptimumTemp={float}500.0
+[22 02 3F 01 F1] {float}0.34		//CDF_UNKN_059
+
+[22 45 81 36 93] {float}0.95		//CDF_UNKN_060
+
+[22 E7 95 A8 D0] {float}900.0
+
+[22 D0 03 18 55] {float}950.0
+
+[22 1E E5 B6 4C]    BrakeWearRate={float}3e-11
+
+[24 BD 59 C8 42 A2] BrakeFailure={float}0.01, {float}0.003
+
+[22 4B A4 81 7A]    BrakeTorque={float}2200
+
+[22 6E A6 0D FB]    BrakeHeating={float}0.000275
+
+[24 1C D5 5C 78 A2] BrakeCooling({float}0.007, {float}7e-06)
+
+[22 A2 67 26 E9]    BrakeDuctCooling={float}5e-07
+
+
