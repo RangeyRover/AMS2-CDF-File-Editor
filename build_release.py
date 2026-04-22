@@ -7,6 +7,7 @@ Generates both a portable standalone executable (--onefile) and a portable direc
 import os
 import subprocess
 import shutil
+import glob
 
 def generate_internal_dict():
     """Converts the XML into a python string so PyInstaller can compile it natively."""
@@ -63,6 +64,17 @@ def run_build():
         "--name", "AMS2_CDF_Editor_Portable",
         "cdf_editor_gui.py"
     ], check=True, cwd=base_dir)
+
+    # Copy the templates and translations to the portable directory
+    portable_dir = os.path.join(dist_dir, "AMS2_CDF_Editor_Portable")
+    xml_path = os.path.join(base_dir, "cdf-hex-map.xml")
+    
+    if os.path.exists(portable_dir):
+        if os.path.exists(xml_path):
+            shutil.copy2(xml_path, portable_dir)
+        for txt_file in glob.glob(os.path.join(base_dir, "Translation*.txt")):
+            shutil.copy2(txt_file, portable_dir)
+        print("Successfully copied cdf-hex-map.xml and Translation files to the portable directory.")
 
     print("\nBuild process complete. Check the 'dist' directory.")
 
