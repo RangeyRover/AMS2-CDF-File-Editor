@@ -561,7 +561,7 @@ class CdfEditorApp(tk.Tk):
 
         try:
             new_values = self._parse_editor_values(inst.definition.layout, self._editor_vars)
-            new_raw = encode_payload(inst.definition.layout, new_values)
+            new_raw = cdf_parser.encode_payload(inst.definition.layout, new_values)
             if len(new_raw) != len(inst.raw_value_bytes):
                 raise ValueError("Edit would change payload size (not allowed in-place).")
 

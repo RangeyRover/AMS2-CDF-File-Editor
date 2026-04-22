@@ -46,20 +46,18 @@ class TestCdfParser(unittest.TestCase):
         notes_found = any(len(d.notes) > 0 for d in defs)
         self.assertTrue(notes_found, "At least one CdfFieldDef should have notes populated from XML")
 
-    @patch('sys._MEIPASS', 'fake_meipass_dir', create=True)
-    @patch('os.path.exists')
-    def test_sys_meipass_fallback(self, mock_exists):
-        """Test that PyInstaller _MEIPASS is checked first"""
-        # Setup mock to simulate that cdf-hex-map.xml exists in fake_meipass_dir
-        mock_exists.side_effect = lambda path: path == os.path.join('fake_meipass_dir', 'cdf-hex-map.xml')
-        
+    def test_internal_dictionary_fallback(self):
+        """Test that default_dictionary.py is used when no path is provided"""
         try:
-            # We must mock the actual file parsing so it doesn't try to open fake path
-            with patch('xml.etree.ElementTree.parse') as mock_parse:
+            with patch('xml.etree.ElementTree.fromstring') as mock_fromstring:
+                from default_dictionary import XML_CONTENT
+                # mock fromstring to return a dummy Element to prevent crashes down the line
+                import xml.etree.ElementTree as ET
+                mock_fromstring.return_value = ET.Element('root')
                 load_dictionary()
-                mock_parse.assert_called_once_with(os.path.join('fake_meipass_dir', 'cdf-hex-map.xml'))
-        except FileNotFoundError:
-            self.fail("Should have used the fake _MEIPASS path")
+                mock_fromstring.assert_called_once_with(XML_CONTENT)
+        except ImportError:
+            self.fail("default_dictionary.py should be importable for internal fallback")
 
 if __name__ == '__main__':
     unittest.main()
