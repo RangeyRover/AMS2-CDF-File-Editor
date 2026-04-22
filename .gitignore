@@ -49,7 +49,6 @@ missing_items.txt
 
 # Experimental & Spec Files
 specs/
-Translation*.txt
 cdf_defs_legacy.py
 check_general.py
 extract.py
