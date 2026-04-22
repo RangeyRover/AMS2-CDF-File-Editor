@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv
+venv/
+ENV/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# VS Code / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific ignores
+Extracted_CDFs/
+reports/
+scratch*.py
+apply_speculative*.py
+temp_legacy.py
+missing_items.txt
+*.bff
+*.cdf
+*.edf
+*.log
+
+# Keep only the core program files, the main XML, translations, and readme.

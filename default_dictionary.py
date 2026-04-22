@@ -1,0 +1,3294 @@
+"""Auto-generated during build. Do not edit."""
+XML_CONTENT = r"""<?xml version='1.0' encoding='utf-8'?>
+<cdf-hex-map version="0.2" byteorder="little" float="ieee754-32" int32="twos-complement-32">
+  <types>
+    <type name="byte" size="1" />
+    <type name="int16" size="2" signed="true" />
+    <type name="int32" size="4" signed="true" />
+    <type name="float" size="4" ieee754="true" />
+  </types>
+  <parameters>
+    <section name="GENERAL">
+      <group name="Mass">
+        <block name="Mass_Int16" signature="21 67 0B 57 AB">
+          <notes>Mass={integer}XXXX</notes>
+          <value_range>[160..4950] (avg 1040.7213)</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="Mass" signature="22 67 0B 57 AB">
+          <notes>Mass={float}XXXX.xx</notes>
+          <value_range>[483..1185] (avg 648.5342)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="GeneralParam_24C240" signature="24 C2 40 3A 15 83 00">
+          <notes>AMS2: 0, 1, 70. PC2 unknown
+??Unknown={byte}x, {float}XXXX.xx, {byte}X
+ams2 24 C2 40 3A 15 83 00 0, 1, 70</notes>
+          <value_range>[0], [1], [0..100] (avg 55.2083)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="Mass_ZeroSetting" signature="28 12 6D 1F D1">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Follows Mass (57x)</rationale>
+        </block>
+      </group>
+      <group name="inertia">
+        <block name="Inertia" signature="24 BB B3 9F 0B A3 02">
+          <notes>Inertia=({float}XXXX.XX,{float}XXXX.xx{float}XXX.xx)</notes>
+          <value_range>[28.8048..9792.4443] (avg 1282.7482), [35.8048..11504.1514] (avg 1419.5813), [9.6217..2088.0562] (avg 262.9563)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="Inertia" signature="24 BB B3 9F 0B 53 01">
+          <notes>Inertia={integer}XXXX, {integer}XXXX, {integer}XXX</notes>
+          <value_range>[680..2250] (avg 1112.6667), [720..2400] (avg 1208.4861), [128..475] (avg 194.3889)</value_range>
+          <field name="value1" type="int32" />
+          <field name="value2" type="int32" />
+          <field name="value3" type="int32" />
+        </block>
+      </group>
+      <group name="fuel tank">
+        <block name="FuelTankMotion" signature="24 6F 70 F3 C7 A2">
+          <notes>FuelTankMotion=({float}560.0, {float}0.7)
+FuelTankMotion=({float}560.0, {float}0.7) ams2: 981, 0.67</notes>
+          <value_range>[392.4,490.5,560], [0.5..0.7] (avg 0.6638)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="FuelTankPos" signature="24 A0 53 0C 50 A3 02">
+          <notes>FuelTankPos=({float}0.0, {float}0.200) {float}0.220)</notes>
+          <value_range>[-0.32], [0.2], [0.5]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FuelTankPos" signature="24 A0 53 0C 50 83 02">
+          <notes>FuelTankPos=({byte}X, {float}XXXX.xx) {float}0.220)</notes>
+          <value_range>[0], [0.05..0.4] (avg 0.1777), [-2.5..0.6986] (avg -1.1186)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FuelTankSymmetricFlag" signature="26 3A 17 96 C2">
+          <notes>[SPECULATIVE] {byte} Precedes Symmetric.</notes>
+          <value_range>[0]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="cg">
+        <block name="Symmetric" signature="20 38 05 5C 3C">
+          <notes>Symmetric={byte}1</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="CGHeight" signature="22 18 24 EA A8">
+          <notes>CGHeight={float}0.280
+ams2 1.2= lower cg height 911 cup 0.2775</notes>
+          <value_range>[0.1765..0.732] (avg 0.2582)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="CGRearRange" signature="24 BE BA 67 7B A3 00">
+          <notes>CGRearRange=({float}0.XXX, {float}0.XXX, {byte}0)</notes>
+          <value_range>[0.438..0.602] (avg 0.5423), [0.001..0.01] (avg 0.0022), [0..20] (avg 7.3264)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="CGRearRange" signature="24 BE BA 67 7B 23 00">
+          <notes>CGRearRange={float}0.XXX {byte}0, {byte}0</notes>
+          <value_range>[0.37..0.674] (avg 0.534), [0], [0]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="CGRightRange" signature="24 DF 8D 93 CF A3 00">
+          <notes>CGRightRange=({float}0.5, {float}0.0, {byte}0)</notes>
+          <value_range>[0.46..0.5] (avg 0.4731), [0.001..0.01] (avg 0.0021), [0..255] (avg 22.9919)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="CGRightRange" signature="24 DF 8D 93 CF 23 00">
+          <notes>CGRightRange={float}0.5, {byte}0, {byte}0</notes>
+          <value_range>[0.49,0.5], [0], [0,1]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="CGRearSetting" signature="28 D4 4C 53 C4">
+          <notes>CGRearSetting= No byte in code, which means zero setting</notes>
+        </block>
+        <block name="CGRightSetting" signature="28 00 9D 8A CF">
+          <notes>CGRightSetting= No byte in code, which means zero setting</notes>
+        </block>
+      </group>
+      <group name="WeightJacker">
+        <block name="WeightJackerSetting" signature="21 B4 AF A9 DF">
+          <notes>WeightJackerSetting={integer}</notes>
+          <field name="value1" type="int32" />
+        </block>
+        <block name="ClutchWearRate" signature="22 1E 5C 8F 56">
+          <notes>[SPECULATIVE] {float} V1.4 L73: unknown float near clutch params. Possible clutch wear rate.</notes>
+          <value_range>[-0.0025,-0.0004]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="WeightJackerRange" signature="24 5B 5E C8 CD A3 01">
+          <notes>WeightJackerRange=({float}x.xx, {float}x.xx, {integer}0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="int32" />
+        </block>
+      </group>
+      <group name="Offsets: Visual and Collision">
+        <block name="CollisionOffset" signature="24 D2 CF F4 3D 83 00">
+          <notes>CollisionOffset=({byte}0, {float}0.XXX, {byte}0)</notes>
+          <value_range>[0], [0.1,0.15], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="CollisionOffset" signature="24 D2 CF F4 3D 03 00">
+          <notes>CollisionOffset={byte}0, {byte}0, {byte}0</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="GraphicalOffset" signature="24 86 9A 77 97 03 00">
+          <notes>GraphicalOffset={byte}0, {byte}0, {byte}0
+ams2 22 0C DF CA 05 CD CC CC 3D</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="Undertray">
+        <block name="UndertrayParams" signature="24 86 AE 66 2B A3 02">
+          <notes>UndertrayParams=({float}262500.00, {float}11600.00, {float}0.XXX)
+AMS2 additions
+ams 24 F3 14 15 24 A3 02 0.35, 0.05, -0.6
+ams 24 12 40 9D 39 A3 02 -0.35, 0.05, -0.6
+ams 24 FB 50 F7 6F A3 02 0.5, 0.05, 0.6
+ams 24 42 34 18 59 A3 02 -0.5, 0.05, 0.6
+ams 24 A2 43 C6 15 A3 02 0.2, 0.05, -1.6
+ams 24 E4 F9 61 17 A3 02 -0.2, 0.05, -1.6
+ams 24 68 60 EB 06 83 00 0, 0.1, 0
+ams 24 86 AE 66 2B 53 02
+ams 20 A1 07 00 E8 03 00 0, 0.35
+Note
+UndertrayZeroZero TO UndertrayParams = 83 bytes (pc2) versus 201 (ams2) = 118
+undertray camaro ss 207 bytes undertray jaguar 83 bytes -124</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayParams" signature="24 86 AE 66 2B 53 02">
+          <notes>UndertrayParams={integer}XXXX {integer}XXXX {float}X.XXX</notes>
+          <value_range>[10000..500000] (avg 259604.8239), [200..32000] (avg 8467.6842), [0.2..2] (avg 1.1275)</value_range>
+          <field name="value1" type="int32" />
+          <field name="value2" type="int32" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroOne" signature="24 BA 61 42 62 23 02">
+          <notes>UndertrayZeroOne={float}X.XXX {byte}X {float}X.XXX</notes>
+          <value_range>[-0.9149..-0.01] (avg -0.5382), [0], [-2.0179..-0.432] (avg -1.4912)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroOne" signature="24 BA 61 42 62 A3 02">
+          <notes>UndertrayZeroOne=({float}-0.75, {float}0.02, {float}-1.40)</notes>
+          <value_range>[-0.6161], [0.0307], [-1.7455]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroThree" signature="24 C7 C2 3D 06 A3 02">
+          <notes>UndertrayZeroThree=({float}-0.75, {float}0.02, {float}1.0)</notes>
+          <value_range>[-0.6161], [0.0307], [1.7455]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroThree" signature="24 C7 C2 3D 06 23 02">
+          <notes>UndertrayZeroThree={float}X.XXX {byte}X {float}X.XXX</notes>
+          <value_range>[-0.9149..-0.01] (avg -0.5384), [0], [0.521..2.9] (avg 1.5012)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroTwo" signature="24 AC 8D E9 39 A3 02">
+          <notes>UndertrayZeroTwo=({float}0.75, {float}0.02, {float}1.0)</notes>
+          <value_range>[0.6161], [0.0307], [1.7455]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroTwo" signature="24 AC 8D E9 39 23 02">
+          <notes>UndertrayZeroTwo={float}X.XXX {byte}X {float}X.XXX</notes>
+          <value_range>[0.01..0.9149] (avg 0.5384), [0], [0.521..2.9] (avg 1.502)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroZero" signature="24 E9 DE D9 99 23 02">
+          <notes>UndertrayZeroZero={float}X.XXX {byte}X {float}X.XXX</notes>
+          <value_range>[0.01..0.9149] (avg 0.5382), [0], [-2.0179..-0.432] (avg -1.4912)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="UndertrayZeroZero" signature="24 E9 DE D9 99 A3 02">
+          <notes>UndertrayZeroZero=({float}0.75, {float}0.02, {float}-1.40)</notes>
+          <value_range>[0.6161], [0.0307], [-1.7455]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+      </group>
+      <group name="Tire Types">
+        <block name="AllTerrainTireCompoundSetting" signature="26 F7 FA A8 5D">
+          <notes>AllTerrainTireCompoundSetting={byte}X  // used for auto selection when condition is right
+AllTerrainTireCompoundSetting={byte}X // used for auto selection when condition is right
+ams 22 D2 F3 2A C0 0.96 0.84 ##1.2 (911cup) 0.825 (prev. 0.84)
+ams 22 8E 3E 79 A1 0.88 (AI cog multiplier?) 0.765 ##1.2 (911cup) 0.745 (prev.0.76)
+ams 22 3B CC 6A AF 0.92 1
+ams 22 42 76 E9 03 0.82 (Ultima) 1.002
+ams 22 D2 64 1F 43 0.8225 (Ultima) 1.005 ##1.2 (911cup) 1.12 (prev.1.01)
+ams 22 67 84 19 B2 0.5 0.422
+ams 20 2F 48 27 58 byte 50 (post 1.1.1.1.) ##1.2 (911cup) 75 (prev.60)
+ams 22 0B 6E A9 83 0.07 (post 1.1.1.1.)
+ams 22 8C 23 4A AB 0.2 (start off the line?) 0.05
+ams 22 A1 E3 C0 8F 50 50
+ams 28 09 FC D2 89 no value (post 1.1.1.1.)
+ams 22 FA CF 45 C7 1 0.65
+ams 22 6D C7 7D 59 1.5 0.8
+ams 22 F8 C2 B0 FD 1.8 2.15 ##1.2 (911cup) 1.35 (prev.1.25)
+ams 22 11 00 04 90 12 10 ##1.2 (911cup) 6 (prev. 10)
+ams 22 53 4E 46 23 4 5 ##1.2 (911cup) 3 (prev. 5)
+new in 0.9.6 (new AI logic?)
+ams 22 AB 00 EC BC 0.88 0.965
+ams 24 F1 5E D9 7A A3 02 80, 100, 115 70, 100, 120
+new in 1.1.2.0</notes>
+          <value_range>[0..19] (avg 6.482)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DryTireCompoundSetting" signature="26 E4 A7 89 37">
+          <notes>DryTireCompoundSetting={byte}X
+// used for auto selection when condition is right
+DryTireCompoundSetting={byte}X // used for auto selection when condition is right</notes>
+          <value_range>[0,1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="IceTireCompoundSetting" signature="26 A4 F8 37 C0">
+          <notes>IceTireCompoundSetting={byte}X  // used for auto selection when condition is right
+IceTireCompoundSetting={byte}X // used for auto selection when condition is right</notes>
+          <value_range>[0..19] (avg 6.522)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="WetTireCompoundSetting" signature="26 7B 83 4D 10">
+          <notes>WetTireCompoundSetting={byte}X  // used for auto selection when condition is right
+WetTireCompoundSetting={byte}X // used for auto selection when condition is right</notes>
+          <value_range>[0..19] (avg 6.522)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="ams2: values below probably affect AI">
+        <block name="AIAccelerationFactor" signature="22 23 9D 28 65">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. ##1.2 (911cup) 0.7 (prev. 1).</notes>
+          <value_range>[0.2..1] (avg 0.7054)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AISuspCompression" signature="22 2B 0D 4D BD">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.875,0.925]</value_range>
+        </block>
+        <block name="AISpeedFactor1" signature="22 30 C3 44 03">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[1.4,1.5,1.7]</value_range>
+        </block>
+        <block name="AIUndersteerCorrection" signature="22 50 D4 76 7F">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.02..0.165] (avg 0.0879)</value_range>
+        </block>
+        <block name="AIGripMultiplier" signature="22 5E 3F 89 F8">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Likely a global multiplier.</notes>
+          <value_range>[1.05]</value_range>
+          <rationale>Constant across all 500 vehicles.</rationale>
+        </block>
+        <block name="AIAeroBalance" signature="22 61 1F 8B C4">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.1..0.322] (avg 0.1814)</value_range>
+        </block>
+        <block name="AITireGripRear" signature="22 79 68 2D 63">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Pairs with AITireGripFront (front/rear pattern).</notes>
+          <value_range>[0.15..0.9] (avg 0.4004)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIRollingResistance" signature="22 82 25 69 C0">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. ##1.2 0.2775.</notes>
+          <value_range>[0.35,0.36]</value_range>
+          <rationale>Near-constant.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AILiftCoefficient" signature="22 8D C4 52 2C">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.05..0.15] (avg 0.1423)</value_range>
+          <rationale>Present in 494/500 vehicles (absent from karts).</rationale>
+        </block>
+        <block name="AICorneringFactor" signature="22 99 21 AA 40">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Varies with vehicle type.</notes>
+          <value_range>[0.1..0.5] (avg 0.1682)</value_range>
+        </block>
+        <block name="AIWeightTransfer" signature="22 B2 13 CD B5">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.5..0.8] (avg 0.5323)</value_range>
+        </block>
+        <block name="AIYawDamping" signature="22 B3 0C 9A FD">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.1..0.4] (avg 0.2177)</value_range>
+        </block>
+        <block name="AIThrottleResponse" signature="22 B3 50 98 73">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.6..1] (avg 0.9668)</value_range>
+        </block>
+        <block name="AITireGripFront" signature="22 BD AC 12 AD">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Possible AI front tire grip coefficient.</notes>
+          <value_range>[0.2..0.6] (avg 0.4413)</value_range>
+          <rationale>Always follows AISpeedTriplet (500/500).</rationale>
+        </block>
+        <block name="AIStabilityLow" signature="22 C1 F2 D7 45">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Paired with AIStabilityHigh.</notes>
+          <value_range>[0.975,0.995]</value_range>
+        </block>
+        <block name="AIOversteerCorrection" signature="22 C6 1D 63 0D">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. ##1.2 (911cup) 0.35 (prev. 0.25).</notes>
+          <value_range>[0.0625..0.6875] (avg 0.3653)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AISpeedFactor2" signature="22 CE C8 DF 0A">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. ##1.2 (911cup) 1.1 (prev. 1.12).</notes>
+          <value_range>[1.5,1.6,1.8]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIStabilityHigh" signature="22 DE F7 0D 39">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Near-unity damping coefficient.</notes>
+          <value_range>[0.99,0.995]</value_range>
+        </block>
+        <block name="AIDownforceSensitivity" signature="22 E4 8F F7 78">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.1..0.6] (avg 0.3905)</value_range>
+        </block>
+        <block name="AIBrakingFactor" signature="22 ED 75 D0 08">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. Higher for heavier vehicles.</notes>
+          <value_range>[1..2.75] (avg 1.6405)</value_range>
+        </block>
+        <block name="AIFuelConsumptionFactor" signature="22 ED F4 7C 23">
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0. ##1.2 0.03.</notes>
+          <value_range>[0.1..0.975] (avg 0.8239)</value_range>
+          <rationale>Precedes FuelSetting in 435/486 vehicles.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AISlipAngle" signature="22 F4 07 65 E3">
+          <field name="value1" type="float" />
+          <notes>[SPECULATIVE] {float} AMS2 1.1.2.0.</notes>
+          <value_range>[0.1..0.44] (avg 0.2304)</value_range>
+        </block>
+        <block name="AMS2_112_Separator_ZeroSetting" signature="28 0B EC 7F 64">
+          <notes>[SPECULATIVE] 28-prefix zero marker. Block separator within AI param sequence.</notes>
+          <rationale>Between AIStabilityLow and AIThrottleResponse in all 500 vehicles.</rationale>
+        </block>
+      </group>
+      <group name="fuel">
+        <block name="FuelSetting" signature="20 99 F0 BB F8">
+          <notes>FuelSetting={byte}49</notes>
+          <value_range>[4..62] (avg 29.944)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FuelRange" signature="24 19 38 99 74 A3 00">
+          <notes>FuelRange=({float}1.0, {float}1.0, {byte}84)</notes>
+          <value_range>[1], [1], [35..121] (avg 85.7692)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="Pitstops">
+        <block name="NumPitstopsSetting" signature="20 6D DE 02 E8">
+          <notes>NumPitstopsSetting={byte}3</notes>
+          <value_range>[1..4] (avg 2.2292)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PitstopOneSetting" signature="20 03 EE A8 65">
+          <notes>PitstopOneSetting={byte}42</notes>
+          <value_range>[4..54] (avg 29.2407)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PitstopThreeSetting" signature="20 26 BA 51 7D">
+          <notes>PitstopThreeSetting={byte}42</notes>
+          <value_range>[4..54] (avg 29.2593)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PitstopTwoSetting" signature="20 85 22 52 46">
+          <notes>PitstopTwoSetting={byte}42</notes>
+          <value_range>[4..54] (avg 29.2593)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="NumPitstopsRange" signature="24 F7 05 73 EA 03 00">
+          <notes>NumPitstopsRange=({byte}0, {byte}1, {byte}4)</notes>
+          <value_range>[0], [1], [4..30] (avg 10.0943)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="PitstopOneRange" signature="24 9B FA 80 6D 83 00">
+          <notes>PitstopOneRange=({byte}0, {float}1.0, {byte}84)</notes>
+          <value_range>[0,1], [0.1,1], [40..125] (avg 95.86)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="PitstopThreeRange" signature="24 E8 12 23 11 83 00">
+          <notes>PitstopThreeRange=({byte}0, {float}1.0, {byte}84)</notes>
+          <value_range>[0,1], [0.1,1], [40..125] (avg 95.86)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="PitstopTwoRange" signature="24 55 DE D0 64 83 00">
+          <notes>PitstopTwoRange=({byte}0, {float}1.0, {byte}84)</notes>
+          <value_range>[0,1], [0.1,1], [40..125] (avg 95.86)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="AI: legacy values">
+        <block name="AIMinPassesPerTick" signature="20 BB 1F 05 F3">
+          <notes>AIMinPassesPerTick={byte}2</notes>
+          <value_range>[2]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AIDamperFast" signature="22 C4 89 77 69">
+          <notes>AIDamperFast={float}0.1</notes>
+          <value_range>[0.1..1] (avg 0.3241)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIDamperSlow" signature="22 2B 3F F8 6B">
+          <notes>AIDamperSlow={float}0.1</notes>
+          <value_range>[0.05..0.95] (avg 0.1961)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIDownforceBias" signature="22 15 6B 48 37">
+          <notes>[SPECULATIVE] {float} Negative values suggest rearward bias.</notes>
+          <value_range>[0.02..0.95] (avg 0.2)</value_range>
+          <rationale>Present in 298/500 (60%).</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIDownforceZArm" signature="22 88 76 9A ED">
+          <notes>AIDownforceZArm={float}0.150</notes>
+          <value_range>[-0.01,0.1]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIEvenSuspension" signature="22 79 F4 A6 98">
+          <notes>AIEvenSuspension={float}0.0
+AIEvenSuspension={float}1.0</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIRotationThreshold" signature="22 26 A9 8C 99">
+          <notes>AIRotationThreshold={float}0.12</notes>
+          <value_range>[0.12]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AISpringRate" signature="22 BC C7 CE E7">
+          <notes>AISpringRate={float}1.0</notes>
+          <value_range>[0.6..1] (avg 0.9909)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AIDownforceBias" signature="22 2E 9D EF 64">
+          <notes>[SPECULATIVE] {float} Negative values suggest rearward bias.</notes>
+          <value_range>[-0.5,-0.05,-0.044]</value_range>
+          <rationale>Present in 298/500 (60%).</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AITireFalloff" signature="22 CA 88 11 AF">
+          <notes>[SPECULATIVE] {float} V1.4: CDF_UNKN_002. AI tire grip falloff rate.</notes>
+          <value_range>[0.01,0.015,0.1]</value_range>
+          <rationale>Always follows AITorqueStab (497/497).</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AITorqueStab" signature="24 2E 5D 54 E4 A3 02">
+          <notes>AITorqueStab=({float}1.0, {float}1.0, {float}1.0)</notes>
+          <value_range>[1,1.25], [1,1.25], [1..1.8] (avg 1.2135)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FrontWing_ZeroSetting" signature="28 F6 B9 76 CF">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Precedes Section_FrontWing (400x)</rationale>
+        </block>
+      </group>
+      <group name="General">
+        <block name="FeelerFlags" signature="20 96 5B FF BF">
+          <notes>FeelerFlags={byte}X
+elerFlags={byte}X</notes>
+          <value_range>[8]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GarageDisplayFlags" signature="20 9A 30 40 34">
+          <notes>GarageDisplayFlags={byte}X</notes>
+          <value_range>[7]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AISpeedParam" signature="22 8C 23 4A AB">
+          <field name="value1" type="float" />
+          <value_range>[0.02..0.73] (avg 0.325)</value_range>
+        </block>
+        <block name="AISpeedTriplet" signature="24 F1 5E D9 7A A3 02">
+          <field name="value1" type="float" />
+          <value_range>[40,50], [100], [120,128]</value_range>
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWSettingSteering_Variant" signature="24 17 75 D3 04 05 00">
+          <notes>[SPECULATIVE] Follows RWSettingSteering.</notes>
+        </block>
+        <block name="RWSettingSpeed_Variant" signature="24 3F 66 C0 31 01">
+          <notes>[SPECULATIVE] Precedes RWSettingSpeed.</notes>
+        </block>
+        <block name="RWSettingBraking_Variant" signature="24 BE 57 73 DA 05 00">
+          <notes>[SPECULATIVE] Follows RWSettingBraking.</notes>
+        </block>
+        <block name="FileHeaderMarker_ZeroSetting" signature="28 B9 1B 6F 6E">
+          <notes>[SPECULATIVE] 28-prefix zero marker. File/section boundary marker.</notes>
+          <rationale>Present in 500/500. Precedes GarageDisplayFlags (403x).</rationale>
+        </block>
+        <block name="GeneralSectionEnd_ZeroSetting" signature="28 FA D6 67 78">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Present in 270/500. Precedes FileHeaderMarker in some vehicles.</rationale>
+        </block>
+        <block name="Section_E0_7D_16_E2_9F" signature="E0 7D 16 E2 9F">
+          <notes>= FRONT LEFT CORNER begins
+FRONT LEFT
+= FRONT LEFT CORNER</notes>
+        </block>
+      </group>
+      <group name="HP multiplier">
+        <block name="GeneralPowerMult" signature="22 C3 66 7D 2E">
+          <field name="value1" type="float" />
+          <value_range>[0.7..1.32] (avg 1.0362)</value_range>
+        </block>
+        <block name="HpMultiplier" signature="22 A3 BF 1E 60">
+          <notes>increases HP / HP multiplier. Set it to 1.0: 00 00 80 3F</notes>
+          <value_range>[0.7..1.34] (avg 1.0366)</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="General">
+        <block name="HpMultiplierFlag" signature="20 12 FA B3 EB">
+          <field name="value1" type="byte" />
+          <notes>[SPECULATIVE] {byte} Precedes HpMultiplier.</notes>
+          <value_range>[1]</value_range>
+        </block>
+        <block name="GeneralParam_E0_3F_Flag" signature="20 D5 B3 F7 87">
+          <field name="value1" type="byte" />
+          <notes>[SPECULATIVE] {byte} Follows Section_E0_3F_9E_45_98.</notes>
+          <value_range>[1]</value_range>
+        </block>
+      </group>
+      <group name="General">
+        <block name="HpMultiplier_ZeroSetting" signature="28 12 FA B3 EB">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Precedes HpMultiplier (12x)</rationale>
+        </block>
+      </group>
+    </section>
+    <section name="FRONT WING">
+      <group name="range">
+        <block name="FWSetting" signature="20 06 A3 1F 94">
+          <notes>FWSetting={byte}1</notes>
+          <value_range>[1..48] (avg 12.6997)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FWMaxHeight" signature="24 09 A8 52 D9 21">
+          <notes>FWMaxHeight={float}(0.10)</notes>
+          <value_range>[0.08..0.4] (avg 0.1676)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="FWRange" signature="24 AD 3C 20 13 83 00">
+          <notes>FWRange=({byte}0, {float}1.0, {byte}10)
+FWRange=({byte}0, {float}1.0, {byte}4)</notes>
+          <value_range>[0], [1], [0..48] (avg 13.6498)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="drag">
+        <block name="FWDragParams" signature="24 2C FB 70 DA A3 02">
+          <notes>FWDragParams=({float}0.005, {float}0.002, {float}0.00)</notes>
+          <value_range>[0.002..0.1923] (avg 0.0436), [0.0006..0.0086] (avg 0.0021), [0..0.001] (avg 0.0001)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+      </group>
+      <group name="lift">
+        <block name="FWLiftHeight" signature="24 06 F4 58 AC 21">
+          <notes>FWLiftHeight=({float}0.335)
+FWLiftHeight=({float}0.335) !!!!!!!!!!ams 0.1</notes>
+          <value_range>[0.075..3] (avg 1.0787)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="FWLiftParams" signature="24 23 EC 21 2A A3 02">
+          <notes>FWLiftParams=({float}-0.00, {float}-0.021, {float}0.00002)
+FWLiftParams=({float}-0.264, {float}-0.021, {float}0.00002) -0.095
+ams 20 A1 3E B2 5A 01</notes>
+          <value_range>[-0.4088..0.04] (avg -0.2426), [-0.0412..-0.0076] (avg -0.0193), [0..0.0015] (avg 0.0002)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWLiftSideways" signature="24 96 D3 8A 17 21">
+          <notes>FWLiftSideways={float}(0.0)
+FWLiftSideways={float}(0.0) ##1.2 (911cup) 0.5 (prev. 0.35)
+ams 24 BE AD 3D 21 82 05, 1.001</notes>
+          <value_range>[0.1..0.8] (avg 0.7432)</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="3d plane">
+        <block name="FWAft" signature="24 E4 3E 99 D8 A3 02">
+          <notes>FWAft=({float}0.0, {float}0.02, {float}-0.2)
+FWAft=({float}0.0, {float}0.02, {float}-0.2) 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWCenter" signature="24 EB DD A8 12 A3 02">
+          <notes>FWCenter=({float}0.00, {float}-0.100, {float}-0.50)
+FWCenter=({float}0.00, {float}-0.100, {float}-0.50) !!!ams last byte</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWDown" signature="24 82 6E D8 E3 A3 02">
+          <notes>FWDown=({float}0.0, {float}0.15, {float}0.001)
+FWDown=({float}0.0, {float}0.15, {float}0.001) ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWFore" signature="24 F5 42 E8 78 A3 02">
+          <notes>FWFore=({float}0.0, {float}0.0, {float}0.0)
+FWFore=({float}0.0, {float}0.0, {float}0.0) 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWLeft" signature="24 54 6C CD BF A3 02">
+          <notes>FWLeft=({float}-0.20, {float}0.0, {float}0.0)
+FWLeft=({float}-0.20, {float}0.0, {float}0.0) !!!!!ams -0.15</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWRight" signature="24 C5 19 77 0C A3 02">
+          <notes>FWRight=({float}0.20, {float}0.0, {float}0.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWRot" signature="24 3D FD AB 72 A3 02">
+          <notes>FWRot=({float}0.5, {float}0.25, {float}0.35)
+FWRot=({float}0.5, {float}0.25, {float}0.35) ams 0</notes>
+          <value_range>[0.05,0.1,0.2], [0.025,0.2], [0.075,0.1]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWUp" signature="24 CD 98 5A 4C A3 02">
+          <notes>FWUp=({float}0.0, {float}-0.30, {float}-0.001)
+FWUp=({float}0.0, {float}-0.30, {float}-0.001) !!!ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWParam_24_9C_84" signature="24 9C 84 12 FF 21">
+          <field name="value1" type="float" />
+          <notes>Front wing related param</notes>
+        </block>
+      </group>
+      <group name="General">
+        <block name="Section_FrontWing" signature="E0 E4 12 24 BA">
+          <notes>FRONT WING begins
+FRONT WING (or FRONT LEFT WING when FRONT RIGHT WING exists)
+Note</notes>
+        </block>
+      </group>
+    </section>
+    <section name="FRONT RIGHT WING">
+      <group name="General">
+        <block name="FRWSetting" signature="20 B5 E8 1B 09">
+          <notes>RWSetting={byte}1</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FRWAft" signature="24 57 1E 68 BD A3 02">
+          <notes>FWAft=({float}0.0, {float}0.02, {float}-0.2)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWCenter" signature="24 87 7F E1 43 A3 02">
+          <notes>FWCenter=({float}0.00, {float}-0.100, {float}-0.50)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWDown" signature="24 41 68 8B 03 A3 02">
+          <notes>FWDown=({float}0.0, {float}0.15, {float}0.001)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWDragParams" signature="24 CF 8B E1 A1 A3 02">
+          <notes>FWDragParams=({float}0.005, {float}0.003, {float}0.00)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWFore" signature="24 91 B8 03 C5 A3 02">
+          <notes>FWFore=({float}0.0, {float}0.0, {float}0.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWLeft" signature="24 A3 72 BD EE A3 02">
+          <notes>FWLeft=({float}-0.20, {float}0.0, {float}0.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWLiftHeight" signature="24 4B 1A 06 AD 21">
+          <notes>FWLiftHeight={float}0.335</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="FRWLiftParams" signature="24 76 29 1C 37 A3 02">
+          <notes>FWLiftParams=({float}-0.000, {float}-0.030, {float}0.00)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWLiftSideways" signature="24 81 05 80 FE 21">
+          <notes>FWLiftSideways={float}0.00</notes>
+          <value_range>[0.4,0.7,1]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="FRWMaxHeight" signature="24 29 1A 69 42 21">
+          <notes>FWMaxHeight={float}0.10</notes>
+          <value_range>[0.2,0.25]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="FRWRange" signature="24 96 A7 D0 8D 83 00">
+          <notes>FWRange=({byte}0, {float}1.0, {byte}10)</notes>
+          <value_range>[0], [0.1,1], [0..100] (avg 50)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="FRWRight" signature="24 E3 C5 15 C2 A3 02">
+          <notes>FWRight=({float}0.20, {float}0.0, {float}0.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWRot" signature="24 7B 00 64 6A A3 02">
+          <notes>FWRot=({float}0.5, {float}0.25, {float}0.35)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FRWUp" signature="24 68 D5 13 6E A3 02">
+          <notes>FWUp=({float}0.0, {float}-0.30, {float}-0.001)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="FWSettingThrottle" signature="24 7C 98 63 3A A5 2A">
+          <notes>FWSettingThrottle</notes>
+        </block>
+        <block name="FRWParam_24_7D_2B" signature="24 7D 2B 67 E8 21 00">
+          <field name="value1" type="byte" />
+          <notes>Front right wing related param</notes>
+          <value_range>[0]</value_range>
+        </block>
+        <block name="FWSettingSpeed" signature="24 87 8C 07 BE A5 2A">
+          <notes>FWSettingSpeed</notes>
+        </block>
+        <block name="FW_DRS_Button" signature="24 A3 37 75 01 05 00">
+          <notes>FW DRS Button
+Note
+As I understand,
+the first number is the speed (or the percentage of top speed) at which this effect will appear the second, it depends. Either it is a speed or this is a percentage of move (1 for full throttle, full steering etc)
+third, I don't really know.
+fourth is the the position of the wing before it moves setting
+fifth is the proper move setting
+the last one is the max angle?
+the settings are on the each wing range at the beginning</notes>
+        </block>
+        <block name="FWSettingBraking" signature="24 BA 8F 41 41 A5 22">
+          <notes>FWSettingBraking</notes>
+        </block>
+        <block name="Section_FrontRightWing" signature="E0 BE 70 BE 88">
+          <notes>Front Right Wing Begins
+FRONT RIGHT WING // Same parameters as above
+.  Only included in some CDFbin files
+Attention
+This is not present in AMS2 in the cars I've examined so far.
+FRONT RIGHT WING // Same parameters as above Only included in some CDFbin files</notes>
+        </block>
+      </group>
+    </section>
+    <section name="REAR WING">
+      <group name="range">
+        <block name="RWSetting" signature="20 8A 98 EB 35">
+          <notes>RWSetting={byte}1</notes>
+          <value_range>[1..48] (avg 6.9091)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RWRange" signature="24 15 76 54 86 83 00">
+          <notes>RWRange=({byte}0, {float}1.0, {byte}7)</notes>
+          <value_range>[0], [1], [3..48] (avg 10.885)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="drag">
+        <block name="RWDragParams" signature="24 67 DC B6 B3 A3 02">
+          <notes>RWDragParams=({float}0.005, {float}0.003, {float}0.00
+RWDragParams=({float}0.005, {float}0.003, {float}0.00 0,224/0,304=0,78</notes>
+          <value_range>[0.01..0.2] (avg 0.1169), [0.002..0.0176] (avg 0.0079), [0..0.0018] (avg 0.0006)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+      </group>
+      <group name="lift">
+        <block name="RWLiftParams" signature="24 83 D3 85 B9 A3 02">
+          <notes>RWLiftParams=({float}-0.000, {float}-0.030, {float}0.00
+RWLiftParams=({float}-0.24, {float}-0.016, {float}0.00 0,264/0,336=0.78
+ams2 20 6D B2 33 90 01?</notes>
+          <value_range>[-0.378..0.04] (avg -0.1748), [-0.062..-0.0014] (avg -0.0272), [0..0.0041] (avg 0.0005)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWLiftSideways" signature="24 7A 8F 77 C8 21">
+          <notes>RWLiftSideways={float}0.0
+RWLiftSideways={float}0.0 ##1.2 (911cup) 0.65 (prev. 0.5)
+ams 24 45 48 1D 86 82 02 1.01???????????????????????????</notes>
+          <value_range>[0.25..1.2] (avg 1.0523)</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="3d plane">
+        <block name="RWAft" signature="24 69 EC ED 3E A3 02">
+          <notes>RWAft=({float}0.0, {float}0.03, {float}-0.4)
+RWAft=({float}0.0, {float}0.03, {float}-0.4) $$$ !!! ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWCenter" signature="24 17 44 ED 31 A3 02">
+          <notes>RWCenter=({float}0.00, {float}0.200, {float}0.6)
+RWCenter=({float}0.00, {float}0.200, {float}0.6) $$$ !!! ams 0
+`24 DC 76 52 9B 21
+`24 D6 00 BE 0B A5 2A
+`24 F1 54 C6 5F 05
+`24 13 BF E2 BA A5 22
+`24 38 01 84 A9 25 2A
+`24 92 8C 3D DF 05
+`24 A1 24 1A A8 A5 22
+`24 2F 2D 7A FC 05</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWDown" signature="24 65 F8 14 22 A3 02">
+          <notes>RWDown=({float}0.0, {float}0.20, {float}0.002)
+RWDown=({float}0.0, {float}0.20, {float}0.002) !!! ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWFore" signature="24 D5 07 F8 FE A3 02">
+          <notes>RWFore=({float}0.0, {float}0.0, {float}0.0)
+RWFore=({float}0.0, {float}0.0, {float}0.0) --- !!! ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWLeft" signature="24 34 3E C4 2F A3 02">
+          <notes>RWLeft={float}-0.15, {float}0, {float}0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWRight" signature="24 42 3B C2 6A A3 02">
+          <notes>RWRight={float}0.15, {float}0, {float}0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWRot" signature="24 08 4B 50 B3 A3 02">
+          <notes>RWRot=({float}0.7, {float}0.4, {float}0.5)
+RWRot=({float}0.7, {float}0.4, {float}0.5) $$$ !!! ams 0</notes>
+          <value_range>[0.08,0.1,0.2], [0.05,0.1,0.3], [0.1,0.11]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWUp" signature="24 EF B4 24 0A A3 02">
+          <notes>RWUp={float}, {float}, {float}
+RWUp={float}, {float}, {float} !!! ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RWSettingThrottle" signature="24 C7 39 90 0B 05 00">
+      
+    </block>
+      </group>
+      <group name="yaw">
+        <block name="RWPeakYaw" signature="24 15 2E 20 37 A2">
+          <notes>RWPeakYaw={float}0.0, {float}0.00
+RWPeakYaw={float}0.0, {float}0.00 $$$</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+      </group>
+      <group name="steering">
+        <block name="RWSettingSteering" signature="24 7D 95 1C A7 05 00">
+      
+    </block>
+      </group>
+      <group name="General">
+        <block name="RWSettingSpeed" signature="24 85 28 FC 0B 05 00">
+      
+    </block>
+        <block name="RWSettingButton1" signature="24 93 CA AE FA 05 00">
+      
+    </block>
+        <block name="RWSettingBraking" signature="24 A3 F6 05 9E 05 00">
+      
+    </block>
+        <block name="Section_RearWing" signature="E0 E1 83 3A A6">
+          <notes>REAR WING begins
+REAR WING</notes>
+        </block>
+      </group>
+    </section>
+    <section name="REAR RIGHT WING">
+      <group name="General">
+        <block name="RRWAft" signature="24 46 77 39 74 03 00">
+          <notes>RWAft=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWCenter" signature="24 8D 6C 15 A3 83 02">
+          <notes>RWCenter=00 00 00 00 3F CD CC 4C 3F</notes>
+          <value_range>[0], [0.5..0.75] (avg 0.6882), [-0.7..1.2] (avg -0.0706)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RRWDown" signature="24 51 EE 77 72 03 00">
+          <notes>RWDown=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWDragParams" signature="24 6B 20 03 55 23 00">
+          <notes>RWDragParams=CD CC CC 3D 00 00</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWFore" signature="24 2B 7E E4 47 03 00">
+          <notes>RWFore=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWLeft" signature="24 22 45 69 35 03 00">
+          <notes>RWLeft=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWLiftParams" signature="24 B8 2D 4D C4 03 00">
+          <notes>RWLiftParams=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWLiftSideways" signature="24 0A 2B 9B 22 01">
+          <notes>RWLiftSideways=00</notes>
+          <value_range>[0]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RRWPeakYaw" signature="24 BD CD 13 89 02">
+          <notes>RWPeakYaw=00 00</notes>
+          <value_range>[0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+        </block>
+        <block name="RRWRange" signature="24 1F 3D 69 0C 03 00">
+          <notes>RWRange=00 00 00</notes>
+          <value_range>[0], [0,1], [0,100]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWRight" signature="24 51 1B 19 80 03 00">
+          <notes>RWRight=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWRot" signature="24 99 E7 CC 64 03 00">
+          <notes>RWRot=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RRWUp" signature="24 86 1A F2 5C 03 00">
+          <notes>RWUp=00 00 00</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RWSettingSpeed_Variant" signature="24 3F 66 C0 31 01 00">
+          <notes>[SPECULATIVE] Precedes RWSettingSpeed.</notes>
+        </block>
+        <block name="RWSetting" signature="28 85 98 3C 01">
+          <notes>RWSetting=</notes>
+        </block>
+        <block name="Section_RearRightWing" signature="E0 3D D3 DA 1B">
+          <notes>REAR RIGHT WING begins</notes>
+        </block>
+      </group>
+    </section>
+    <section name="UNKNOWNS">
+      <group name="General">
+        <block name="RWSettingParam" signature="24 13 BF E2 BA A5 2A">
+          <notes>Could be RWSettingLongG/LateralG/ForwardVel. Float5: 17.9, 0.5, 1000, -30, 30
+.9, 0.5, 1000, -30, 30
+could be some of the attributes below?
+RWSettingLongG
+RWSettingLateralG
+RWSettingSteering
+RWSettingRate
+RWSettingButton1
+RWSettingForwardVel
+RWSettingThrottle
+RWSettingBraking
+RWMaxHeight
+RWLiftHeight</notes>
+        </block>
+        <block name="RWMaxHeight_Alt" signature="24 DC 76 52 9B 21 10">
+          <notes>Rear wing max height alternate. value=100
+0</notes>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+    </section>
+    <section name="BODY AERO">
+      <group name="drag">
+        <block name="BodyDragBase" signature="24 33 63 ED FD 21">
+          <notes>BodyDragBase={float}0.30</notes>
+          <value_range>[0.1..1.5] (avg 0.3951)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BodyDragHeightAvg" signature="24 67 CA A0 92 21">
+          <notes>BodyDragHeightAvg={float}0.2</notes>
+          <value_range>[0.1..1.25] (avg 0.4457)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BodyDragHeightDiff" signature="24 1F 13 C1 85 21">
+          <notes>BodyDragHeightDiff={float}0.47
+BodyDragHeightDiff={float}0.47 ams 0</notes>
+          <value_range>[-0.1..2.4] (avg 0.6357)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BodyMaxHeight" signature="24 56 E0 A3 AB 21">
+          <notes>BodyMaxHeight={float}0.2
+ams 20 3F D7 58 A3 1
+ams 20 7A 5A 13 BD 1</notes>
+          <value_range>[0.075..0.4] (avg 0.143)</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="3d plane">
+        <block name="BodyAft" signature="24 08 B1 B6 50 A3 02">
+          <notes>BodyAft=({float}0.0, {float}0.5, {float}-0.2)
+BodyAft=({float}0.0, {float}0.5, {float}-0.2) $$$</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyCenter" signature="24 38 D1 8E E7 A3 02">
+          <notes>BodyCenter=({float}0.0, {float}0.50, {float}-1.40)
+BodyCenter=({float}0.0, {float}0.50, {float}-1.40) $$$</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyDown" signature="24 E3 A1 65 97 A3 02">
+          <notes>BodyDown=({float}0.0, {float}0.5, {float}0.0)
+BodyDown=({float}0.0, {float}0.5, {float}0.0) !!ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyFore" signature="24 DC 2F 52 E4 A3 02">
+          <notes>BodyFore=({float}0.0, {float}-0.060, {float}0.435)
+BodyFore=({float}0.0, {float}-0.060, {float}0.435) -- !!ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyLeft" signature="24 C5 A5 4E CE A3 02">
+          <notes>BodyLeft={float}-0.80, {float}0.0, {float}0.0
+BodyLeft={float}-0.80, {float}0.0, {float}0.0 $$$ ams -1.1</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyRight" signature="24 6A 08 2A D4 A3 02">
+          <notes>BodyRight=({float}0.80, {float}0.0, {float}0.0)
+BodyRight=({float}0.80, {float}0.0, {float}0.0) $$$</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyRot" signature="24 F8 26 31 A8 A3 02">
+          <notes>BodyRot=({float}3.45, {float}3.0, {float}1.30)
+BodyRot=({float}3.45, {float}3.0, {float}1.30) - !!ams bytes high values</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="BodyUp" signature="24 DC 57 D2 48 A3 02">
+          <notes>BodyUp=({float}0.0, {float}-1.00, {float}0.0)
+BodyUp=({float}0.0, {float}-1.00, {float}0.0) $$$ !!ams 0</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+      </group>
+      <group name="radiator">
+        <block name="RadiatorSetting" signature="20 F7 CF 3C A8">
+          <notes>RadiatorSetting={byte}3</notes>
+          <value_range>[5..20] (avg 14.0691)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RadiatorDrag" signature="24 CD 9B D5 4E 21">
+          <notes>RadiatorDrag=({float}0.000)</notes>
+          <value_range>[0.0002..0.0006] (avg 0.0002)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="RadiatorLift" signature="24 0A 98 AA BD 21">
+          <notes>RadiatorLift=({float}0.00)</notes>
+          <value_range>[0.0002,0.0002,0.0004]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="RadiatorRange" signature="24 8E 02 D1 67 83 00">
+          <notes>RadiatorRange=({byte}0, {float}1.0, {byte}4)</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="brake ducts">
+        <block name="BrakeDuctSetting" signature="20 CF 01 35 71">
+          <notes>BrakeDuctSetting={byte}1</notes>
+          <value_range>[4,10]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="BrakeDuctDrag" signature="24 50 2D C5 AE 21">
+          <notes>BrakeDuctDrag=({float}0.000)</notes>
+          <value_range>[0.0002..0.0004] (avg 0.0002)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeDuctLift" signature="24 B7 28 36 3E 21">
+          <notes>BrakeDuctLift=({float}0.00)</notes>
+          <value_range>[0.0002,0.0002,0.0003]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeDuctRange" signature="24 67 64 39 31 83 00">
+          <notes>BrakeDuctRange=({byte}0, {float}1.0, {byte}5)</notes>
+          <value_range>[0], [1], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="General">
+        <block name="Section_BodyAero" signature="E0 2B DA 95 42">
+          <notes>BODY AERO begins
+BODY AERO</notes>
+        </block>
+      </group>
+    </section>
+    <section name="DIFFUSER">
+      <group name="General">
+        <block name="DiffuserParam" signature="20 56 8D F4 59">
+          <notes>Diffuser-related param. AMS2
+?</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffuserBase" signature="24 BE 0F 28 99 A3 02">
+          <notes>DiffuserBase=({float}-0.00, {float}-0.50, {float}5.0)</notes>
+          <value_range>[-1.5686..-0.1] (avg -1.1662), [-20.1765..-0.05] (avg -14.392), [0.4..180.7843] (avg 148.8917)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="DiffuserCenter" signature="24 B8 97 56 8E A3 02">
+          <notes>DiffuserCenter=({float}0.0, {float}0.10, {float}-1.30)
+********************************************************************
+(0 = direct measure of spring/damper rates, 1 = wheel rates)
+Switch to permit the spring and damper rates at the wheels to be changed
+=0 means the wheel rates are adjusted for the geometry of the pushrod and
+the location of the lower end of the pushrod relative to the inner and outer
+mounts of the wishbones.
+=1 means the wheel rates are adjusted only for the location the lower end
+of the pushrod relative to the inner and outer mounts of the wishbones.
+Note that =1 does not remove all the geometric implications from the
+pushrod definition. Only removing the definitions of the pushrods
+themselves from the [CORNER] sections will do that.
+************************************************************************
+DiffuserCenter=({float}0.0, {float}0.10, {float}-1.30) ##1.2 (911cup) -0.8 (prev. -0.75)
+Attention
+Switch to permit the spring and damper rates at the wheels to be changed between two modes.
+=0 means the wheel rates are adjusted for the geometry of the pushrod and the location of the lower end of the pushrod relative to the inner and outer mounts of the wishbones.
+=1 means the wheel rates are adjusted only for the location the lower end of the pushrod relative to the inner and outer mounts of the wishbones.
+Note that =1 does not remove all the geometric implications from the pushrod definition. Only removing the definitions of the pushrods themselves from the CORNER sections will do that.</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="DiffuserFrontHeight" signature="24 47 D0 B1 DE 21">
+          <notes>DiffuserFrontHeight=({float}0.000)</notes>
+          <value_range>[0.1..12.8931] (avg 4.843)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="DiffuserLimits" signature="24 FF 59 46 C8 A3 02">
+          <notes>DiffuserLimits=({float}0.000, {float}0.100, {float}0.055)</notes>
+          <value_range>[0.005..0.09] (avg 0.0246), [0.05..0.38] (avg 0.1412), [0.05..0.6] (avg 0.1426)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="DiffuserRake" signature="24 20 B9 8D FF A3 02">
+          <notes>DiffuserRake=({float}0.000, {float}-00.0, {float}00.0)</notes>
+          <value_range>[-0.035..0.02] (avg -0.0179), [-4.0351,-3.965], [80.7029,125.1701]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="DiffuserSideways" signature="24 E1 76 32 24 21">
+          <notes>DiffuserSideways=({float}0.0)
+DiffuserSideways=({float}0.0) ##1.2 (911cup) 0.5 (prev. 0.4)</notes>
+          <value_range>[0.5..0.75] (avg 0.7407)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="DiffuserStall" signature="24 E0 A1 25 DE A2">
+          <notes>DiffuserStall=({float}0.0, {float}0.5)</notes>
+          <value_range>[-0.4..0.75] (avg 0.0666), [0.01..1] (avg 0.5877)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="Section_Diffuser" signature="E0 C9 41 A8 1C">
+          <notes>DIFFUSER begins
+DIFFUSER</notes>
+        </block>
+      </group>
+    </section>
+    <section name="SUSPENSION">
+      <group name="suspension rate">
+        <block name="AdjustSuspRates" signature="20 7D E0 90 64">
+          <notes>AdjustSuspRates={byte}1
+justSuspRates={byte}1</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AlignWheels" signature="20 B2 B4 93 40">
+          <notes>AlignWheels={byte}1</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="rollbars">
+        <block name="FrontAntiSwaySetting" signature="20 7F C7 58 D5">
+          <notes>FrontAntiSwaySetting={byte}5</notes>
+          <value_range>[1..40] (avg 9.7158)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FrontAntiSwaySetting" signature="20 70 FA E1 77">
+          <notes>FrontAntiSwaySetting={byte}5</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RearAntiSwaySetting" signature="20 04 78 E9 91">
+          <notes>RearAntiSwaySetting={byte}3</notes>
+          <value_range>[1..18] (avg 7.8805)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SpringBasedAntiSway" signature="20 26 E9 82 B6">
+          <notes>SpringBasedAntiSway={byte}1
+ams 20 70 FA E1 77 byte 01
+ams 28 4A 05 C9 38</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FrontAntiSwayRange" signature="24 E5 B9 A9 D6 A3 00">
+          <notes>FrontAntiSwayRange=({float}10000.0, {float}10000.0, {byte}2)</notes>
+          <value_range>[10000,60000,70000], [2000,2500,5000], [20]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="FrontAntiSwayRate" signature="24 2E 06 8D A5 A2">
+          <notes>FrontAntiSwayRate=({float}1.36e11, {float}4.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="RearAntiSwayRange" signature="24 66 00 1E 25 A3 00">
+          <notes>RearAntiSwayRange=({float}5000.0, {float}5000.0, {byte}8)</notes>
+          <value_range>[10000,25000,40000], [2000,2500,5000], [20]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RearAntiSwayRate" signature="24 50 E0 77 73 A2">
+          <notes>RearAntiSwayRate=({float}1.36e11, {float}4.0)</notes>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="FrontAntiSwayBase" signature="28 89 92 C5 F3">
+          <notes>FrontAntiSwayBase= // no value</notes>
+        </block>
+        <block name="AntiSway_ZeroSetting" signature="28 F3 9C 93 F0">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Between FrontAntiSwaySetting and RearAntiSwaySetting</rationale>
+        </block>
+      </group>
+      <group name="toe">
+        <block name="FrontToeInSetting" signature="20 C3 36 57 CC">
+          <notes>FrontToeInSetting={byte}21</notes>
+          <value_range>[1..28] (avg 9.2341)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RearToeInSetting" signature="20 FD F7 43 4F">
+          <notes>RearToeInSetting={byte}19</notes>
+          <value_range>[1..23] (avg 4.4621)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FrontToeInRange" signature="24 69 D4 9B 3B A3 00">
+          <notes>FrontToeInRange=({float}2.0, {float}-0.1, {byte}41)</notes>
+          <value_range>[-2..-0.25] (avg -0.9665), [0.05,0.1,0.2], [4..40] (avg 16.8333)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RearToeInRange" signature="24 55 C9 EA 65 A3 00">
+          <notes>RearToeInRange=({float}2.0, {float}-0.1, {byte}41)</notes>
+          <value_range>[-2..-0.6] (avg -0.8774), [0.1], [15..40] (avg 19.8925)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="caster">
+        <block name="LeftCasterSetting" signature="20 FF D7 A7 D9">
+          <notes>LeftCastersetting={byte}20</notes>
+          <value_range>[1..80] (avg 10.8252)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RightCasterSetting" signature="20 A6 B8 E3 8F">
+          <notes>RightCastersetting={byte}20
+({float}x.x, {float}x.x, {byte}X)</notes>
+          <value_range>[1..80] (avg 11.0194)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="LeftCasterRange" signature="24 1A 73 FE 3E A3 00">
+          <notes>LeftCasterRange=({float}0.0, {float}0.1, {byte}100)</notes>
+          <value_range>[2.5..10.5] (avg 3.7403), [0.1,0.5], [0..90] (avg 54.009)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RightCasterRange" signature="24 33 76 33 73 A3 00">
+          <notes>RightCasterRange=({float}0.0, {float}0.1, {byte}100)</notes>
+          <value_range>[2.5..10.5] (avg 3.7403), [0.1,0.5], [0..90] (avg 54.009)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="trackbar">
+        <block name="LeftTrackbarSetting" signature="20 69 CB F2 CA">
+          <notes>LeftTrackbarSetting={byte}X</notes>
+          <value_range>[2,4]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RightTrackbarSetting" signature="20 AA 2B 55 28">
+          <notes>RightTrackbarSetting={byte}X</notes>
+          <value_range>[4..8] (avg 6.2)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="LeftTrackbarRange" signature="24 34 A8 C5 EB A3 00">
+          <notes>LeftTrackbarRange=({float}x.x, {float}x.x, {byte}X)</notes>
+          <value_range>[0.188], [0.005], [30]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="RightTrackbarRange" signature="24 E6 68 17 75 A3 00">
+          <notes>RightTrackbarRange=({float}x.x, {float}x.x, {byte}X)</notes>
+          <value_range>[0.188], [0.005], [30]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="General">
+        <block name="SuspensionParam" signature="20 E1 FF 94 B3">
+          <notes>??Unknown suspension-related byte
+??Unknown
+ams 28 41 A8 35 03</notes>
+          <value_range>[255]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AlignWheels_ZeroSetting" signature="28 6B 45 97 72">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Precedes AlignWheels (156x)</rationale>
+        </block>
+        <block name="Section_Suspension" signature="E0 C8 15 E2 23">
+          <notes>SUSPENSION begins
+SUSPENSION</notes>
+        </block>
+      </group>
+    </section>
+    <section name="CONTROLS">
+      <group name="Legacy FFb settings">
+        <block name="FFBGripMulti" signature="22 FB 38 19 1C">
+          <notes>FFBGripMulti{float}0.11</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="SteeringFFBMult" signature="22 24 F5 34 B3">
+          <notes>SteeringFFBMult={float}0.9</notes>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="ams2 FFB new section">
+        <block name="FFBMode" signature="20 60 DD 9A 44">
+          <notes>FFB mode byte. 2=Lexus, 1=911R
+byte 2 Lexus || 1 911 R</notes>
+          <value_range>[1,12]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FFBParam3" signature="20 BA 21 2D A8">
+          <field name="value1" type="byte" />
+          <notes>FFB parameter byte 3</notes>
+          <value_range>[3]</value_range>
+        </block>
+        <block name="FFBGripInteger" signature="21 01 C1 8B 82">
+          <field name="value1" type="int16" />
+          <notes>FFB grip integer. 2420 / 116 (camaro), working: -64</notes>
+          <value_range>[-15500..4550] (avg -1936.6954)</value_range>
+        </block>
+        <block name="FFBForceScale" signature="22 00 AB 3E 9B">
+          <field name="value1" type="float" />
+          <notes>FFB force scale. float 2.5</notes>
+          <value_range>[2.5]</value_range>
+        </block>
+        <block name="FFBDamping" signature="22 03 52 2B 9D">
+          <field name="value1" type="float" />
+          <notes>FFB damping. float 0.025 / camaro 0.4</notes>
+          <value_range>[-0.0325..0.038] (avg 0.0116)</value_range>
+        </block>
+        <block name="FFBDetailMult" signature="22 3E 53 B5 CF">
+          <field name="value1" type="float" />
+          <notes>FFB detail multiplier. float 4e-06 to 8.5e-06</notes>
+          <value_range>[0..0.0001] (avg 0)</value_range>
+        </block>
+        <block name="FFBSmoothness" signature="22 5B AC 62 D2">
+          <field name="value1" type="float" />
+          <notes>FFB smoothness. float 0.4-0.8</notes>
+          <value_range>[0.08..0.7] (avg 0.3123)</value_range>
+        </block>
+        <block name="FFBResponseCurve" signature="22 AA 43 60 CF">
+          <field name="value1" type="float" />
+          <notes>FFB response curve. float 0.35-0.65</notes>
+          <value_range>[0.325..0.67] (avg 0.6531)</value_range>
+        </block>
+      </group>
+      <group name="ams2 new section comparison: inverted / correct">
+        <block name="KingpinMultiplier" signature="22 4E 2A 4E 0D">
+          <notes>float 2.5 (kingpin multiplier reduces ffb pendulumadded to super v8 in 1.2)???</notes>
+        </block>
+        <block name="Unknown_20_60_DD_ZeroSetting" signature="28 60 DD 9A 44">
+          <notes>Zero-setting marker (28 prefix) for Unknown_20_60_DD. No payload.</notes>
+        </block>
+      </group>
+      <group name="AMS2 controls">
+        <block name="ABSStrengthSetting" signature="20 B2 BE 8E 7E">
+          <notes>{byte}85 // (ECU) ABS Strength Setting
+******************
+***AUTHENTIC DRIVING ASSIST OPTIONS****
+***************************************
+{byte}85 // (ECU) ABS Strength Setting ##1.2 (911cup) 0.8 (prev. 75) ##1.2 camaro 8</notes>
+          <value_range>[8,9]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="BrakePressureSetting" signature="20 DA BD B9 81">
+          <notes>BrakePressureSetting={byte}60</notes>
+          <value_range>[24..50] (avg 38.7214)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="ABSEnabled" signature="20 FA CE 76 12">
+          <notes>[SPECULATIVE] {byte} ABS system enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Follows TractionControlLevel (370/499).</rationale>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="TractionControlEnabledFlag" signature="20 D5 DD 9C 9B">
+          <notes>[SPECULATIVE] {byte} TC enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Present in 499 vehicles.</rationale>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="StabilityControlEnabledFlag" signature="20 5B D1 F7 C8">
+          <notes>[SPECULATIVE] {byte} SC enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Precedes Section_E0_3F_9E_45_98 in 498/499.</rationale>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="HandbrakePressSetting" signature="20 52 30 1F D2">
+          <notes>HandbrakePressSetting={byte}60</notes>
+          <value_range>[10..75] (avg 44.75)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RearBrakeSetting" signature="20 FD BA 64 73">
+          <notes>RearBrakeSetting={byte}45</notes>
+          <value_range>[20..52] (avg 41.7374)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SteeringRatioSetting" signature="20 0F 6A B7 B6">
+          <notes>SteeringRatioSetting={byte}24
+AMS2 24 F7 34 A1 FE 13 00 integer; byte; byte</notes>
+          <value_range>[5..30] (avg 15.674)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="TractionControlSetting" signature="20 63 9D 2B D2">
+          <notes>Traction Control Setting={byte}9 // (ECU)
+Traction Control Setting= {byte}9 // (ECU) ##1.2 camaro 5
+ams2 20 6E DD B4 80 byte 45 1.2.1.0 50 1.2 (911cup) 40 (prev.45)
+ams2 22 20 D5 05 AC {float}20.0 // CDF_UNKN_011 1.2 (911cup) 3 (prev. 4)
+aMS2 24 8B 0A F9 4E A2 66 66 E6 3E (0.45) 66 66 66 3F (0.9) new code Traction Control after 1.2.1.4
+replaces ams2 20 6E DD B4 80 and ams2 22 20 D5 05 AC
+AMS2 TC=47bytes</notes>
+          <value_range>[5..10] (avg 6.4286)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="TractionControlThreshold" signature="20 6E DD B4 80">
+          <field name="value1" type="byte" />
+          <notes>TC threshold byte. 45-50, AMS2 specific</notes>
+          <value_range>[40..93] (avg 54.9431)</value_range>
+        </block>
+        <block name="SteeringLockSetting" signature="20 B7 C2 C5 7E">
+          <notes>steering lock setting</notes>
+        </block>
+        <block name="ABSFourWheelAssist_Authentic" signature="20 BC 12 66 E0">
+          <notes>{byte}1 // "Authentic" ABSFourWheel assist</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="TCAssist_Authentic" signature="20 BC 90 7F 88">
+          <notes>{byte}1 // Authentic TC Traction Control assist (disable/enable)
+{byte}1 // "Authentic" TC Traction Control assist (disable/enable)</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SCAssist_Authentic" signature="20 F2 9A F8 10">
+          <notes>{byte}1 // Authentic SC Stability Control assist (disable/enable)
+{byte}1 // "Authentic" SC Stability Control assist (disable/enable)</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AutoDownshiftGripThresh" signature="22 33 DE 0B C9">
+          <notes>AutoDownshiftGripThresh={float}0.6
+AutoDownshiftGripThresh={float}0.6 ##1.2 (911cup) 0.5 (prev. 0.4)</notes>
+          <value_range>[0.2..0.63] (avg 0.4929)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="AutoUpshiftGripThresh" signature="22 E3 5A 1D CA">
+          <notes>AutoUpshiftGripThresh={float}0.6
+AutoUpshiftGripThresh={float}0.6 ##1.2 (911cup) 0.5 (prev. 0.4)</notes>
+          <value_range>[0.2..0.63] (avg 0.4983)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftGripThreshold" signature="22 27 A0 D3 AC">
+          <notes>[SPECULATIVE] {float} In Controls section between shift params. Grip threshold for auto-shift logic.</notes>
+          <value_range>[0.5]</value_range>
+          <rationale>Present in 487 vehicles.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftEnabled" signature="22 E8 09 B9 01">
+          <notes>[SPECULATIVE] {float} Shift system enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Always precedes UpshiftAlgorithm in 499 vehicles.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="TractionControlMaxSlip" signature="22 20 D5 05 AC">
+          <notes>[SPECULATIVE] {float} TC maximum slip angle. V1.02: ##1.2 (911cup) 3 (prev. 4).</notes>
+          <value_range>3.0–20.0</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="TractionControlDecay" signature="22 05 CF 7B 77">
+          <notes>[SPECULATIVE] {float} Negative value suggests decay rate.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Present in 440/500 vehicles.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="TractionControlSensitivity" signature="22 52 FA 34 11">
+          <notes>[SPECULATIVE] {float} TC sensitivity/strength multiplier.</notes>
+          <value_range>[4..9.4] (avg 7.3661)</value_range>
+          <rationale>Precedes TractionControlGrip in 452/508 vehicles.</rationale>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ControlsParam_Float" signature="22 35 5E 7A 3F">
+          <field name="value1" type="float" />
+          <notes>Controls section float param</notes>
+        </block>
+        <block name="ABSStrengthRange" signature="24 24 9E 03 13 83 00">
+          <notes>{byte}0, {float}0.01, {byte}100 // (ECU) ABS Strength Range
+{byte}0, {float}0.01, {byte}100 // (ECU) ABS Strength Range ##1.2 (911cup) {byte}0, {float}0.1, {byte}100 (prev. {byte}0, {float}0.01, {byte}100) ##1.2 camaro 0, 0.1, 10</notes>
+          <value_range>[0], [0.1], [10]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="BrakePressureRange" signature="24 D0 00 38 59 A3 00">
+          <notes>BrakePressureRange={float}0.00, {float}0.02, {byte}100</notes>
+          <value_range>[0.5], [0.01], [50]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DownshiftAlgorithm" signature="24 A6 8D 9C E2 A3 02">
+          <notes>DownshiftAlgorithm={float}0.85, {float}0.8, {float}0.8</notes>
+          <value_range>[0.75..0.94] (avg 0.8928), [0.5..0.85] (avg 0.7521), [0.5..0.8] (avg 0.7939)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="RearBrakeRange" signature="24 A6 32 13 57 83 00">
+          <notes>RearBrakeRange={byte}0, {float}0.01, {byte}100</notes>
+          <value_range>[0], [0.01], [100]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="SteeringRatioRange" signature="24 6B 4E A0 77 A3 00">
+          <notes>SteeringRatioRange={float}3.5, {float}0.5, {byte}35</notes>
+          <value_range>[2.4..9.2] (avg 5.5524), [0.5], [30..60] (avg 57.7642)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="TractionControlGrip" signature="24 07 F7 6E 47 A2 CD">
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <notes>TractionControlGrip=({float}0.06, {float}0.16)</notes>
+        </block>
+        <block name="TractionControlLevel" signature="24 25 5A FB 23 A2 CD">
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <notes>TractionControlLevel=({float}0.06, {float}0.16)</notes>
+        </block>
+        <block name="SteeringLockRange_Alt" signature="24 30 43 CE 21 03 00">
+          <notes>SteeringLockRange (alternate sig with 03 00 suffix)
+SteeringLockRange</notes>
+          <value_range>[0,0], [183], [194]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="HandbrakeRange_Alt" signature="24 96 4B 29 B4 83 01">
+          <notes>HandbrakeRange (alternate sig with 83 01 suffix)
+HandbrakeRange</notes>
+          <value_range>[0], [0.01], [200]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="int16" />
+        </block>
+        <block name="TractionControlRange" signature="24 B3 D2 E5 A0 A3 00">
+          <notes>Traction Control Range={float}0.01, {float}0.01, {byte}99 // (ECU ##1.2 (911cup) 0.9 (prev. 0.1)</notes>
+          <value_range>[0.9], [0.1], [0]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="SteeringWheelDegrees" signature="24 F7 34 A1 FE 13 00">
+          <field name="value1" type="int16" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+          <notes>Steering wheel degrees of turn. AMS2 int16; byte; byte</notes>
+          <value_range>[180..900] (avg 554.1203), [0], [0]</value_range>
+        </block>
+        <block name="TractionControlDecay_ZeroSetting" signature="28 05 CF 7B 77">
+          <notes>[SPECULATIVE] 28-prefix zero marker for TractionControlDecay. No payload.</notes>
+        </block>
+        <block name="SteeringLockEnabled_ZeroSetting" signature="28 31 7B 74 DC">
+          <notes>[SPECULATIVE] 28-prefix zero marker for SteeringLockEnabled. No payload.</notes>
+        </block>
+        <block name="SteeringWheelDegrees_ZeroSetting" signature="28 52 8D 8C F7">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Follows SteeringWheelDegrees (449x)</rationale>
+        </block>
+        <block name="ZeroMarker_28_B1_21" signature="28 B1 21 88 BF">
+          <notes>??Unknown // no data in code, which means zero.</notes>
+        </block>
+      </group>
+      <group name="General">
+        <block name="Section_Controls" signature="E0 08 0A 14 C5">
+          <notes>CONTROLS begins
+CONTROLS</notes>
+        </block>
+        <block name="Section_E0_3F_9E_45_98" signature="E0 3F 9E 45 98">
+          <notes>??Unknown Section begins
+****[20 D5 B3 F7 87] 01***
+Unknown Section</notes>
+        </block>
+      </group>
+      <group name="steering lock">
+        <block name="SteeringLockEnabled" signature="20 31 7B 74 DC">
+          <notes>[SPECULATIVE] {byte} Steering lock enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Present in 401 vehicles.</rationale>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SteeringLockRange" signature="24 30 43 CE 21 23 00">
+          <notes>SteeringLockRange={float}34.0, {byte}0, {byte}0</notes>
+          <value_range>[18.5,27,32], [0], [0]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="new code Traction Control after 1.2.1.4">
+        <block name="TractionControlMinSpeed" signature="22 48 E1 7A 3F">
+          <notes>[SPECULATIVE] {float} TC minimum activation speed. In new TC section post-1.2.1.4.</notes>
+          <value_range>[-0]</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="handbrake / e-brake">
+        <block name="HandbrakePressSetting_Int" signature="21 52 30 1F D2">
+          <notes>Same as HandbrakePressSetting but as integer
+same as above, but in integer</notes>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="HandbrakeRange" signature="24 96 4B 29 B4 83 00">
+          <notes>HandbrakeRange={byte}0, {float}0.01, {byte}100
+HandbrakeRange={byte}0, {float}0.01, {byte}100 15-19= 4</notes>
+          <value_range>[0], [0.01,0.05,0.1], [0..100] (avg 64.1463)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="TC grip">
+        <block name="TractionControlGrip" signature="24 07 F7 6E 47 A2">
+          <notes>TractionControlGrip=({float}0.06, {float}0.16)</notes>
+          <value_range>[0.04], [0.05]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="TractionControlLevel" signature="24 25 5A FB 23 A2">
+          <notes>TractionControlLevel=({float}0.06, {float}0.16}
+*****New to PC2***
+Note
+TractionControlGrip= TractionControlLevel=
+The first one is the 'aggressiveness' of the traction control system (how much wheelspin is allowed before TC engages). Forgive me but I can't specifically remember whether it's a higher value that allows for more wheelspin or a lower one... I believe (and only believe) that higher values mean the traction control system engages LATER, with lower values allowing the traction control to kick in earlier.
+The second value is the strength of the traction control. There are two values - the first is the strength on the LOW setting, the second is the strength of the HIGH setting.
+Essentially it's about balancing the numbers. If you have a car with low power at pretty much anything but peak revs, lower the efficiency to allow for smoother clutch engagement (0.79 in my case), make sure only low traction control is allowed on launch, and then balance the TractionControlGrip and TractionControlLevel figures.
+If you want a smooth launch without too much traction control interference, set the TC GRIP level to a lower number (0.5, for example, to allow it to kick in earlier) as well as setting the TC LEVEL to a low number (in my case, 0.07) - this essentially meant that the TC kicked in early to keep the car pointing straight and true on launch, but the low LEVEL meant it only had a slight effect.</notes>
+          <value_range>[0.04], [0.05]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+      </group>
+    </section>
+    <section name="NEW TO PC2">
+      <group name="AUTHENTIC DRIVING ASSIST OPTIONS">
+        <block name="PC2_DiffLockSetting1" signature="20 34 76 EE E3">
+          <notes>[SPECULATIVE] {byte}25. Setting for PC2_DiffLockRange1. V1.4 L353.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_DiffLockSetting2" signature="20 61 5A 10 D6">
+          <notes>[SPECULATIVE] {byte}100. Setting for PC2_DiffLockRange2. V1.4 L357.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_DiffLockSetting3" signature="20 4D CA 34 17">
+          <notes>[SPECULATIVE] {byte}100. Setting for PC2_DiffLockRange3. V1.4 L361.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_DiffLockSetting4" signature="20 6C E5 6E 1B">
+          <notes>[SPECULATIVE] {byte}100. V1.4 L365.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_DiffLockSetting5" signature="20 99 3F 2A 3F">
+          <notes>[SPECULATIVE] {byte}100. V1.4 L369.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_SteeringAidSetting1" signature="20 25 F7 FA 9E">
+          <notes>[SPECULATIVE] {byte}1. V1.4 L373.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_SteeringAidSetting5" signature="20 77 E8 4F 5C">
+          <notes>[SPECULATIVE] {byte}. Setting for PC2_SteeringAidRange5.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_AidSetting8" signature="20 17 7A 98 F5">
+          <notes>[SPECULATIVE] {byte}100. V1.4 L395.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_AidSetting9" signature="20 C7 D5 99 C6">
+          <notes>[SPECULATIVE] {byte}100. V1.4 L399.</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PC2_DiffLockRange1" signature="24 64 70 F5 FD 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). PC2-era range param. V1.4 L351.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_DiffLockRange2" signature="24 C8 1B AC AF 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). PC2-era range param. V1.4 L355.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_DiffLockRange3" signature="24 D2 2F 18 AF 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). PC2-era range param. V1.4 L359.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_DiffLockRange4" signature="24 B3 85 4E E0 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L363.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_DiffLockRange5" signature="24 72 DE E1 17 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L367.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_SteeringAidRange1" signature="24 5A AE 27 42 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). V1.4 L371.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_SteeringAidRange2" signature="24 7A 49 7E 24 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). No setting follows. V1.4 L375.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_SteeringAidRange3" signature="24 25 8E 3F 20 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). No setting follows. V1.4 L378.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_SteeringAidRange4" signature="24 6A 7D 42 63 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). No setting follows. V1.4 L381.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_SteeringAidRange5" signature="24 98 CA 4E 61 03 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}1.0, {float}45). V1.4 L384.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="PC2_AidRange6" signature="24 09 DE B7 68 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L387.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange7" signature="24 4B D5 82 72 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L390.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange8" signature="24 22 AC 0C 3A 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L393.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange9" signature="24 9F C7 1E D1 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L397.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange10" signature="24 67 8C A5 99 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). No setting follows. V1.4 L401.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange11" signature="24 8E 47 3C 20 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). No setting follows. V1.4 L404.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange12" signature="24 23 F0 43 98 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). No setting follows. V1.4 L407.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_AidRange13" signature="24 E7 6C F5 65 83 02">
+          <notes>[SPECULATIVE] ({byte}0, {float}0.1, {float}20). V1.4 L410.</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="ZeroMarker_28_31_6F" signature="28 31 6F DC CC">
+          <notes>ams2 section above is removed</notes>
+        </block>
+        <block name="ZeroMarker_28_3C_50" signature="28 3C 50 F8 D7">
+      
+    </block>
+        <block name="ZeroMarker_28_99_85" signature="28 99 85 60 E9">
+      
+    </block>
+        <block name="ZeroMarker_28_A9_F7" signature="28 A9 F7 13 BD">
+          <notes>************************************</notes>
+        </block>
+        <block name="ZeroMarker_28_BE_A1" signature="28 BE A1 5C E1">
+      
+    </block>
+        <block name="ZeroMarker_28_CA_E1" signature="28 CA E1 FE 39">
+      
+    </block>
+        <block name="ZeroMarker_28_E5_12" signature="28 E5 12 C1 5D">
+      
+    </block>
+        <block name="ZeroMarker_28_ED_5F" signature="28 ED 5F B5 79">
+      
+    </block>
+        <block name="ZeroMarker_28_FF_26" signature="28 FF 26 A3 2B">
+      
+    </block>
+      </group>
+    </section>
+    <section name="DRIVELINE">
+      <group name="General">
+        <block name="Section_Driveline" signature="E0 9E F7 67 84">
+          <notes>DRIVELINE begins</notes>
+        </block>
+      </group>
+      <group name="shifting">
+        <block name="PaddleShiftEnabled" signature="20 74 73 B2 00">
+          <notes>[SPECULATIVE] {byte} Paddle shift enable flag.</notes>
+          <value_range>[1]</value_range>
+          <rationale>Follows SemiAutomatic in 351/352.</rationale>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AutoBlipEnabled" signature="20 B5 19 EF 5C">
+          <notes>[SPECULATIVE] {byte} Related to shifting/clutch. Auto-blip downshift enable.</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SemiAutomatic" signature="20 1D EA 4C 3D">
+          <notes>SemiAutomatic={byte}1 // 1=sequential/semiauto &amp; 0=h pattern</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="AutoClutchSemiAuto" signature="20 B9 E1 14 02">
+          <notes>Auto clutch for semi automatic. 0=clutch needs to be engaged
+{byte}1 //??related to shifting/clutch auto clutch for semi automatic. 0 = clutch needs to be engaged (or 28 B9 E1 14 02).</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DownshiftClutchTime" signature="22 DB 0B FC 09">
+          <notes>DownshiftClutchTime={float}0.3</notes>
+          <value_range>[0.03..0.35] (avg 0.0375)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="DownshiftDelay" signature="22 07 50 AF 26">
+          <notes>DownshiftDelay={float}0.3</notes>
+          <value_range>[0.02..0.2] (avg 0.1083)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="UpshiftClutchTime" signature="22 9D 78 9E C9">
+          <notes>UpshiftClutchTime={float}0.1
+ams 28 30 F2 DF 1E</notes>
+          <value_range>[0.005..0.25] (avg 0.0256)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="UpshiftDelay" signature="22 67 F7 AD 20">
+          <notes>UpshiftDelay={float}0.1</notes>
+          <value_range>[0.001..0.16] (avg 0.0989)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="SemiAutomatic_ZeroSetting" signature="28 01 B6 85 A9">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Precedes SemiAutomatic (348x)</rationale>
+        </block>
+      </group>
+      <group name="shifting_unknown">
+        <block name="ShiftParam_052" signature="22 2D 62 77 4E">
+          <notes>{float}0.001 // relates to shifting/clutch
+{float}0.001  //??relates to shifting/clutch,CDF_UNKN_052
+{float}0.001 //??relates to shifting/clutch,CDF_UNKN_052</notes>
+          <value_range>[0..0.02] (avg 0.0063)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftParam_051" signature="22 2E 33 BD 4C">
+          <notes>{float}0.25 // relates to shifting/clutch
+{float}0.25     //??relates to shifting/clutch,CDF_UNKN_051
+{float}0.25 //??relates to shifting/clutch,CDF_UNKN_051</notes>
+          <value_range>[0.15,0.2,0.25]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftParam_049" signature="22 69 56 28 63">
+          <notes>{float}50.0 // relates to shifting/clutch
+{float}50.0    //??relates to shifting/clutch,CDF_UNKN_049
+{float}50.0 //??relates to shifting/clutch,CDF_UNKN_049</notes>
+          <value_range>[50..8000] (avg 2174.8941)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftParam_053" signature="22 C4 F7 E7 93">
+          <notes>{float}0.001 // relates to shifting/clutch
+{float}0.001  //??relates to shifting/clutch,CDF_UNKN_053
+*******NEW SECTION FOR PC2**********
+{float}0.001 //??relates to shifting/clutch,CDF_UNKN_053
+ams2 = 18 bytes total only</notes>
+          <value_range>[0..0.005] (avg 0.0017)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="RPMGovernor" signature="22 D0 6B 69 F2">
+          <notes>RPM Governor for semi-auto gearchange. Value added to idle RPM
+{float}1000.00 //RPM Governor for semi-auto gearchange. 1000 is added to idle rpm (shift must occur at or below ~5000 rpm)
+{float}1000.00 //RPM Governor for semi-auto gearchange. 1000 is added to idle rpm (shift must occur at or below ~5000 rpm) add 10000 to have semi-auto dual clutch engage 1st gear from idle</notes>
+          <value_range>[100..20000] (avg 7563.8643)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="LiftAndShiftThrottle" signature="22 F9 8C C1 66">
+          <notes>Lift &amp; Shift or Full throttle shift. % of throttle allowed for upshift (1.0=100%)
+{float}0.5     // Lift &amp; Shift or Full throttle shift.  Percentage of throttle allowed for upshift (1.0 = 100% or full throttle)
+{float}0.5 // Lift &amp; Shift or Full throttle shift. Percentage of throttle allowed for upshift (1.0 = 100% or full throttle)</notes>
+          <value_range>[0.5,1]</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="clutch">
+        <block name="ClutchEngageRateByte" signature="20 1B CA 33 55">
+          <field name="value1" type="byte" />
+          <notes>ClutchEngageRate byte variant. AMS2</notes>
+          <value_range>[1..5] (avg 1.9449)</value_range>
+        </block>
+        <block name="BaulkTorque" signature="22 36 6E 87 07">
+          <notes>BaulkTorque={float}575.0
+ulkTorque={float}575.0</notes>
+          <value_range>[22.325..1184.4] (avg 769.9611)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ClutchEngageRate" signature="22 1B CA 33 55">
+          <notes>ClutchEngageRate={float}0.8
+ams 20 2E BF 88 AA 01</notes>
+          <value_range>[0.8,1,1.8]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ClutchFriction" signature="22 9B 56 A1 18">
+          <notes>ClutchFriction={float}10.00
+ClutchFriction={float}10.00 - ClutchFriction: clutch itself (very small though) + gearbox friction (when in gear - I'd take something like an average from friction values from 3 to last gear and use it),</notes>
+          <value_range>[0.1,1,2.5]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ClutchInertia" signature="22 D3 1C F6 C6">
+          <notes>ClutchInertia={float}0.0111
+ClutchInertia={float}0.0111 clutch itself + main shaft from engine to gearbox, if applicable + gearbox (when in gear - I'd take something like an average from inertia values from 3 to last gear and use it),</notes>
+          <value_range>[0.0005..0.5] (avg 0.0268)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ClutchTorque" signature="22 2E 33 DB 70">
+          <notes>ClutchTorque={float}500.0
+ClutchTorque={float}500.0 how much torque can be transfered through clutch without slip</notes>
+          <value_range>[29.6476..1050] (avg 594.7415)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ClutchEngageRate_ZeroSetting" signature="28 7E 93 96 8C">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Follows ClutchEngageRateByte (231x)</rationale>
+        </block>
+      </group>
+      <group name="throttle blip">
+        <block name="DownshiftBlipThrottle" signature="22 3B 62 D3 1C">
+          <notes>DownshiftBlipThrottle={float}0.7
+Ams 20 3B 62 D3 1C byte 1</notes>
+          <value_range>[0.2..0.9] (avg 0.7327)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ShiftClutchRelated" signature="26 94 35 F2 CB">
+          <notes>{byte}9 // related to shifting/clutch
+{byte}9 // ??related to shifting/clutch</notes>
+          <value_range>[5..84] (avg 16.922)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="final drive">
+        <block name="FinalDriveSetting" signature="20 C1 EB DC 28">
+          <notes>FinalDriveSetting={byte}29</notes>
+          <value_range>[1..21] (avg 4.3441)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="ReverseGearSetting" signature="28 D6 71 85 B0">
+          <notes>ReverseGearSetting // no value, which means zero</notes>
+          <value_range>[32]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="number of gears + gears">
+        <block name="ForwardGears" signature="20 FF 0C 22 07">
+          <notes>ForwardGears={byte}6</notes>
+          <value_range>[1..8] (avg 5.802)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearFiveSetting" signature="20 78 4E 48 36">
+          <notes>GearFiveSetting={byte}71</notes>
+          <value_range>[4..59] (avg 27.1909)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearFourSetting" signature="20 78 92 B7 5A">
+          <notes>GearFourSetting={byte}57</notes>
+          <value_range>[3..57] (avg 21.7672)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearSevenSetting" signature="20 49 EE 13 F6">
+          <notes>GearSevenSetting={byte}6
+ams2 24 EE 7A B8 C2 03 00 byte,byte,byte 0,1,2
+(rear diff of Ultima: in ams all non-existent diffs are removed))</notes>
+          <value_range>[6..56] (avg 34.9492)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearSixSetting" signature="20 5F 2B A9 EE">
+          <notes>GearSixSetting={byte}82
+****FRONT DIFFERENTIAL CODE*****</notes>
+          <value_range>[5..55] (avg 30.1623)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearThreeSetting" signature="20 C0 25 93 C3">
+          <notes>GearThreeSetting={byte}42</notes>
+          <value_range>[2..43] (avg 16.869)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearTwoSetting" signature="20 8D 69 C2 DA">
+          <notes>GearTwoSetting={byte}25</notes>
+          <value_range>[1..30] (avg 10.7903)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="GearOneSetting" signature="28 F4 CC 2F 1D">
+          <notes>GearOneSetting={byte}1</notes>
+          <value_range>[32]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+      </group>
+      <group name="shifting">
+        <block name="ControlsNewParam" signature="20 C8 F6 B3 E5">
+          <notes>New in AMS 1.2.4.1. byte 02
+byte 02 ams 1.2.4.1</notes>
+          <value_range>[2,4,8]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="UpshiftAlgorithm" signature="24 E0 D9 C8 5B 22">
+          <notes>UpshiftAlgorithm={float}0.99, {byte}0</notes>
+          <value_range>[0.85..0.99] (avg 0.9804), [0]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+        </block>
+      </group>
+    </section>
+    <section name="FRONT DIFFERENTIAL CODE">
+      <group name="clutch">
+        <block name="DiffFrontClutchLsdCoastRampSetting" signature="20 05 A4 AB 0A">
+          <notes>DiffFrontClutchLsdCoastRampSetting={byte}</notes>
+          <value_range>[4]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdPowerRampSetting" signature="20 09 AD 40 97">
+          <notes>DiffFrontClutchLsdPowerRampSetting={byte}</notes>
+          <value_range>[4]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdPreloadSetting" signature="20 2A F6 3D 02">
+          <notes>DiffFrontClutchLsdPreloadSetting={byte}</notes>
+          <value_range>[100]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontClutchNumClutchesSetting" signature="20 AB FF 0F D6">
+          <notes>DiffFrontClutchLsd#ofClutchesSetting={byte}
+-147-15=-162</notes>
+          <value_range>[2]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdCoastRampRange" signature="24 1E 69 4E 19 03 00">
+          <notes>DiffFrontClutchLsdCoastRampRange={byte},{byte},{byte}</notes>
+          <value_range>[0..70] (avg 38.5714), [0,5], [0,14]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdOption" signature="24 41 E0 CD AE 03 00">
+          <notes>DiffFrontClutchLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[0,1], [0,1], [0,1]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdPowerRampRange" signature="24 CD 58 72 0A 03 00">
+          <notes>DiffFrontClutchLsdPowerRampRange={byte},{byte},{byte}</notes>
+          <value_range>[0..70] (avg 36.7857), [0,5], [0,14]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdPreloadRange" signature="24 F3 3F D6 98 03 00">
+          <notes>DiffFrontClutchLsdPreloadRange={byte},{byte},{byte}</notes>
+          <value_range>[0..70] (avg 54.4444), [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsd#ofClutchesRange" signature="24 89 07 4E C0 03 00">
+          <notes>DiffFrontClutchLsd#ofClutchesRange={byte},{byte},{byte}</notes>
+          <value_range>[0..4] (avg 2.8571), [0,2], [0,4]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontClutchLsdSetting" signature="28 4F A8 A9 16">
+          <notes>DiffFrontClutchLsdSetting=</notes>
+        </block>
+      </group>
+      <group name="spool">
+        <block name="DiffFrontSpoolOption" signature="24 39 9D AB CC 03 00">
+          <notes>DiffFrontSpoolOption={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontSpoolSetting" signature="28 54 97 E2 18">
+          <notes>DiffFrontSpoolSetting=</notes>
+        </block>
+      </group>
+      <group name="geared">
+        <block name="DiffFrontBiasRatioCoastSetting" signature="20 19 55 52 B5">
+          <notes>DiffFrontBiasRatioCoastSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontBiasRatioPowerSetting" signature="20 8A F4 79 B8">
+          <notes>DiffFrontBiasRatioPowerSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontGearedLsdSetting" signature="20 90 F8 1A C8">
+          <notes>DiffFrontGearedLsdSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontBiasRatioCoastRange" signature="24 1D 41 94 BF 83 00">
+          <notes>DiffFrontBiasRatioCoastRange={byte},{float},{byte}</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontBiasRatioPowerRange" signature="24 8D A5 C0 7B 83 00">
+          <notes>DiffFrontBiasRatioPowerRange={byte},{float},{byte}</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontGearedLsdOption" signature="24 37 9D CD EF 03 00">
+          <notes>DiffFrontGearedLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="viscous">
+        <block name="DiffFrontViscousLsdSetting" signature="20 41 35 D2 61">
+          <notes>DiffFrontViscousLsdSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffFrontRatchetingRange" signature="24 68 29 C2 1B 03 00">
+          <notes>DiffFrontRatchetingRange={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontViscousLockRange" signature="24 EC C5 0A D7 03 00">
+          <notes>DiffFrontViscousLockRange={byte},{byte},{byte}</notes>
+          <value_range>[0,6], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontViscousLsdOption" signature="24 FB 34 85 B9 03 00">
+          <notes>DiffFrontViscousLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[0,1], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffFrontViscousLsdOptionSetting" signature="28 81 B8 D8 08">
+          <notes>DiffFrontViscousLsdOptionSetting=</notes>
+        </block>
+        <block name="DiffFrontRatcheting_ZeroSetting" signature="28 45 17 11 37">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Follows DiffFrontRatchetingRange</rationale>
+        </block>
+      </group>
+    </section>
+    <section name="CENTER DIFFERENTIAL CODE">
+      <group name="clutch">
+        <block name="DiffCenterClutchLsdCoastRampSetting" signature="20 78 3A DD DA">
+          <notes>DiffCenterClutchLsdCoastRampSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdPowerRampSetting" signature="20 08 15 99 DF">
+          <notes>DiffCenterClutchLsdPowerRampSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdPreloadSetting" signature="20 9F F9 B4 26">
+          <notes>DiffCenterClutchLsdPreloadSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdSetting" signature="20 01 A1 6B F9">
+          <notes>DiffCenterClutchLsdSetting={byte}</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterClutchNumClutchesSetting" signature="20 72 19 2E B0">
+          <notes>DiffCenterClutchLsd#ofClutchesSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdCoastRampRange" signature="24 97 AE 26 09 03 00">
+          <notes>DiffCenterClutchLsdCoastRampRange={byte},{byte},{byte}</notes>
+          <value_range>[0..55] (avg 40.8889), [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdOption" signature="24 69 82 0A 41 03 00">
+          <notes>DiffCenterClutchLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[0,1], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdPowerRampRange" signature="24 71 52 76 47 03 00">
+          <notes>DiffCenterClutchLsdPowerRampRange={byte},{byte},{byte}</notes>
+          <value_range>[0..50] (avg 36.8889), [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsdPreloadRange" signature="24 73 9E 1C 3E 03 00">
+          <notes>DiffCenterClutchLsdPreloadRange={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterClutchLsd#ofClutchesRange" signature="24 94 D1 29 37 03 00">
+          <notes>DiffCenterClutchLsd#ofClutchesRange={byte},{byte},{byte}</notes>
+          <value_range>[0,3,4], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="spool">
+        <block name="DiffCenterSpoolOption" signature="24 B2 DD 18 AC 03 00">
+          <notes>DiffCenterSpoolOption={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterSpoolSetting" signature="28 70 21 63 66">
+          <notes>DiffCenterSpoolSetting=</notes>
+        </block>
+      </group>
+      <group name="geared">
+        <block name="DiffCenterBiasRatioCoastRange" signature="24 3A 92 1E B0 83 00">
+          <notes>DiffCenterBiasRatioCoastRange={byte},{float},{byte}</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterBiasRatioPowerRange" signature="24 E1 71 4A 7B 83 00">
+          <notes>DiffCenterBiasRatioPowerRange={byte},{float},{byte}</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterGearedLsdOption" signature="24 5E D1 39 36 03 00">
+          <notes>DiffCenterGearedLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[1], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterBiasRatioCoastSetting" signature="28 FA EC CB BF">
+          <notes>DiffCenterBiasRatioCoastSetting={byte}</notes>
+          <value_range>[36]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterBiasRatioPowerSetting" signature="28 66 5F E2 43">
+          <notes>DiffCenterBiasRatioPowerSetting=</notes>
+        </block>
+        <block name="DiffCenterGearedLsdSetting" signature="28 BF 2A 7E 62">
+          <notes>DiffCenterGearedLsdSetting=</notes>
+        </block>
+      </group>
+      <group name="viscous">
+        <block name="DiffCenterViscousLsdSetting" signature="20 B2 B4 67 3D">
+          <notes>DiffCenterViscousLsdSetting={byte}</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffCenterViscousLockRange" signature="24 C4 A7 09 F9 03 00">
+          <notes>DiffCenterViscousLockRange={byte},{byte},{byte}</notes>
+          <value_range>[6,7], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterViscousLsdOption" signature="24 AF 28 23 3F 03 00">
+          <notes>DiffCenterViscousLsdOption={byte},{byte},{byte}</notes>
+          <value_range>[1], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterViscousLsdOptionSetting" signature="28 6A 83 DD EA">
+          <notes>DiffCenterViscousLsdOptionSetting=</notes>
+        </block>
+      </group>
+      <group name="ratcheting">
+        <block name="DiffCenterRatchetingRange" signature="24 AB 12 1A 20 03 00">
+          <notes>DiffCenterRatchetingRange={byte},{byte},{byte}</notes>
+          <value_range>[0], [0], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffCenterRatchetingSetting" signature="28 74 65 6C DA">
+          <notes>DiffCenterRatchetingSetting=</notes>
+        </block>
+      </group>
+      <group name="power balance">
+        <block name="RearPowerBalanceSettinh" signature="20 5A D1 7D 93">
+          <notes>RearPowerBalanceSettinh={byte}
+****REAR DIFFERENTIAL CODE*****</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RearPowerBalance" signature="24 05 9C B8 6E 83 00">
+          <notes>RearPowerBalance={byte},{byte},{byte}
+RearPowerBalance={byte},{float},{byte}</notes>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+    </section>
+    <section name="REAR DIFFERENTIAL CODE">
+      <group name="spool">
+        <block name="DiffRearSpoolOption" signature="24 EE 7A B8 C2 03 00">
+          <notes>DiffRearSpoolOption={byte},{byte},{byte} // Rear Diff Spool Option off/on</notes>
+          <value_range>[0,1], [0,1], [0,1,2]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearSpoolSetting" signature="28 5C 91 A5 85">
+          <notes>DiffRearSpoolSetting=                    // Rear Diff Spool setting.  No byte in code means zero (off)
+DiffRearSpoolSetting= // Rear Diff Spool setting. No byte in code means zero (off)</notes>
+        </block>
+      </group>
+      <group name="geared">
+        <block name="DiffRearBiasRatioCoastSetting" signature="20 76 86 1F CA">
+          <notes>DiffRearBiasRatioCoastSetting={byte}               // Rear Diff Bias Ratio Coast(decel) Setting
+DiffRearBiasRatioCoastSetting={byte} // Rear Diff Bias Ratio Coast(decel) Setting
+-66 -68Auriel -69</notes>
+          <value_range>[2..30] (avg 25.9167)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearBiasRatioPowerSetting" signature="20 0A C0 52 BA">
+          <notes>DiffRearBiasRatioPowerSetting={byte}               //
+DiffRearBiasRatioPowerSetting={byte} //</notes>
+          <value_range>[11..30] (avg 27.2917)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearGearedLsdSetting" signature="20 DC 47 B2 CE">
+          <notes>DiffRearGearedLsdSetting={byte}                    // Rear Diff Geared LSD setting.
+DiffRearGearedLsdSetting={byte} // Rear Diff Geared LSD setting.</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearBiasRatioCoastRange" signature="24 29 7D 8B D8 83 00">
+          <notes>DiffRearBiasRatioCoastRange={byte},{float},{byte}  // Rear Diff Bias Ratio Coast(decel) Range
+DiffRearBiasRatioCoastRange={byte},{float},{byte} // Rear Diff Bias Ratio Coast(decel) Range</notes>
+          <value_range>[0,1], [0.1], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearBiasRatioPowerRange" signature="24 25 9E 18 D6 83 00">
+          <notes>DiffRearBiasRatioPowerRange={byte},{float},{byte}  // Rear Diff Bias Ratio Pwr(accel) Range
+DiffRearBiasRatioPowerRange={byte},{float},{byte} // Rear Diff Bias Ratio Pwr(accel) Range</notes>
+          <value_range>[0,1], [0.1], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearGearedLsdOption" signature="24 9B E9 BD BB 03 00">
+          <notes>DiffRearGearedLsdOption={byte},{byte},{byte}       // Rear Diff Geared LSD Option off/on
+DiffRearGearedLsdOption={byte},{byte},{byte} // Rear Diff Geared LSD Option off/on</notes>
+          <value_range>[0,1], [0,1], [0,1]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="ratcheting">
+        <block name="DiffRearRatchetingOption" signature="24 A6 12 F9 62 03 00">
+          <notes>DiffRearRatchetingOption={byte},{byte},{byte} // Rear Diff Ratcheting Option (on/off)</notes>
+          <value_range>[0,1], [0,1], [0,1]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearRatchetingSetting" signature="28 F1 8A 0F 35">
+          <notes>DiffRearRatchetingSetting=                    // Rear Diff Ratcheting Setting.  No byte in code, which means zero(off)
+DiffRearRatchetingSetting= // Rear Diff Ratcheting Setting. No byte in code, which means zero(off)
+only clutch lsd = -112 || -116 || -118 || -114 || -115 || -116 || -113 || 194 -479=285
+AI Diffs added in patch 1.4
+Reiza have added differential setting for AI in patch 1.4. this works well for all AI cars and aids their cornering:</notes>
+        </block>
+      </group>
+      <group name="clutch lsd">
+        <block name="DiffRearClutchLsdSetting" signature="20 18 9A 45 B8">
+          <notes>DiffRearClutchLsdSetting={byte}                    // Rear Diff Clutch LSD Setting
+DiffRearClutchLsdSetting={byte} // Rear Diff Clutch LSD Setting</notes>
+          <value_range>[1]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsdOption" signature="24 04 80 3B 71 03 00">
+          <notes>DiffRearClutchLsdOption={byte},{byte},{byte}       // Rear Diff Clutch LSD Option (off/on)
+DiffRearClutchLsdOption={byte},{byte},{byte} // Rear Diff Clutch LSD Option (off/on)</notes>
+          <value_range>[0,1], [0,1], [0,1]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="preload">
+        <block name="DiffRearClutchLsdPreloadSetting" signature="20 67 71 FD BF">
+          <notes>DiffRearClutchLsdPreloadSetting={byte}                 // Rear Diff Clutch LSD Preload Setting
+DiffRearClutchLsdPreloadSetting={byte} // Rear Diff Clutch LSD Preload Setting</notes>
+          <value_range>[10..120] (avg 78.8006)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsdPreloadRange" signature="24 AE 9E A6 41 03 00">
+          <notes>DiffRearClutchLsdPreloadRange={byte},{byte},{byte} // Rear Diff Clutch LSD Preload Range
+***Fix base value by setting to zero.  Then change max range and setting values.
+ams2 24 AE 9E A6 41 83 02 DiffRearClutchLsdPreloadRange={byte},{float},{float}
+Attention
+Fix base value by setting to zero. Then change max range and setting values.</notes>
+          <value_range>[0..100] (avg 20.8197), [0,1,2], [0,99]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="power">
+        <block name="DiffRearClutchLsdPowerRampSetting" signature="20 81 2D 38 81">
+          <notes>DiffRearClutchLsdPowerRampSetting={byte}               // Rear Diff Clutch LSD Pwr(Accel) Ramp Setting
+DiffRearClutchLsdPowerRampSetting={byte} // Rear Diff Clutch LSD Pwr(Accel) Ramp Setting</notes>
+          <value_range>[4..45] (avg 35.7847)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsdPowerRampRange" signature="24 16 B6 6F 96 03 00">
+          <notes>DiffRearClutchLsdPowerRampRange={byte},{byte},{byte}   // Rear Diff Clutch LSD Pwr(accel) Ramp Range
+DiffRearClutchLsdPowerRampRange={byte},{byte},{byte} // Rear Diff Clutch LSD Pwr(accel) Ramp Range</notes>
+          <value_range>[0..90] (avg 36.1134), [0,1,5], [0,14,64]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="coast">
+        <block name="DiffRearClutchLsdCoastRampSetting" signature="20 71 BB 6F 28">
+          <notes>DiffRearClutchLsdCoastRampSetting={byte}               // Rear Diff Clutch LSD Coast(decel) Ramp Setting
+DiffRearClutchLsdCoastRampSetting={byte} // Rear Diff Clutch LSD Coast(decel) Ramp Setting</notes>
+          <value_range>[4..55] (avg 21.375)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsdCoastRampRange" signature="24 A6 F6 18 10 03 00">
+          <notes>DiffRearClutchLsdCoastRampRange={byte},{byte},{byte}   // Rear Diff Clutch LSD Coast(decel) Ramp Range
+DiffRearClutchLsdCoastRampRange={byte},{byte},{byte} // Rear Diff Clutch LSD Coast(decel) Ramp Range</notes>
+          <value_range>[0..90] (avg 34.5688), [0,1,5], [0,14,64]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="clutches">
+        <block name="DiffRearViscousLsdSetting" signature="20 E0 EE A4 80">
+          <notes>DiffRearViscousLsdSetting={byte}              // a setting of "4" yields 4 x50 = 200nm lock
+DiffRearViscousLsdSetting={byte} // a setting of "4" yields 4 x50 = 200nm lock</notes>
+          <value_range>[4]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsd#ofClutchesSetting" signature="20 D9 D4 45 63">
+          <notes>DiffRearClutchLsd#ofClutchesSetting={byte}             // Rear Diff Clutch LSD # of Clutches Setting
+DiffRearClutchLsd#ofClutchesSetting={byte} // Rear Diff Clutch LSD # of Clutches Setting
+-45A
+Viscous</notes>
+          <value_range>[1,2,3]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="DiffRearViscousLockRange" signature="24 1E 6F 8D B1 03 00">
+          <notes>DiffRearViscousLockRange={byte},{byte},{byte} // Note: 2nd value is x50. So "1" x50 = x50nm multiplier per ViscousLsdSetting</notes>
+          <value_range>[0..30] (avg 0.466), [0,1], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearViscousLsdOption" signature="24 F4 97 51 CF 03 00">
+          <notes>DiffRearViscousLsdOption={byte},{byte},{byte} // Rear Diff Viscous LSD Option (off/on)</notes>
+          <value_range>[0,1], [0,1], [0]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearClutchLsd#ofClutchesRange" signature="24 1C 63 D7 1C 03 00">
+          <notes>DiffRearClutchLsd#ofClutchesRange={byte},{byte},{byte} // Rear Diff Clutch LSD # of Clutches Range</notes>
+          <value_range>[0..6] (avg 1.8384), [0,2], [0,4]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="DiffRearViscousLsdOptionSetting" signature="28 5A 2F 78 7C">
+          <notes>DiffRearViscousLsdOptionSetting=              // Rear Diff Viscous LSD Setting
+DiffRearViscousLsdOptionSetting= // Rear Diff Viscous LSD Setting</notes>
+        </block>
+      </group>
+    </section>
+    <section name="NEW SECTION FOR PC2">
+      <group name="General">
+        <block name="PC2_IntParam2" signature="21 2D D9 FE 0F">
+          <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
+          <value_range>[400,1200]</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="PC2_IntParam500" signature="21 42 FD F1 BF">
+          <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
+          <value_range>[500]</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="PC2_IntParam250" signature="21 AE BE 7F FA">
+          <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
+          <value_range>[250]</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="PC2_IntParam1" signature="21 D1 35 A6 C8">
+          <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
+          <value_range>[400,600,1000]</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="PC2_FloatParam3" signature="22 2C 1D 1F 2F">
+          <notes>[SPECULATIVE] {float} PC2-era general param.</notes>
+          <value_range>[0.3..1.4] (avg 0.9619)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PC2NewSection_Float0_9_1" signature="22 37 F3 B5 B2">
+          <notes>{float}0.9 — PC2 new section param
+{float}0.9</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PC2NewSection_Float0_9_2" signature="22 6A BC 43 1B">
+          <notes>{float}0.9 — PC2 new section param
+{float}0.9</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PC2_FloatParam0" signature="22 AF AB 0F 8E">
+          <notes>[SPECULATIVE] {float} PC2-era general param.</notes>
+          <value_range>[0.3,0.7,1.3]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PC2_GeneralParam1" signature="24 09 A8 D0 1D 03 02">
+          <notes>[SPECULATIVE] PC2-era general params.</notes>
+          <value_range>[0], [0], [-0.35..0.2] (avg -0.0026)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="PC2_GeneralParam2" signature="24 3F BF 68 D5 03 02">
+          <notes>[SPECULATIVE] PC2-era general params.</notes>
+          <value_range>[0], [0], [-0.48..-0.05] (avg -0.2824)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="float" />
+        </block>
+        <block name="Section_E0_12_BC_36_7D" signature="E0 12 BC 36 7D">
+      
+    </block>
+      </group>
+    </section>
+    <section name="FRONT LEFT CORNER">
+      <group name="friction and spin">
+        <block name="FrictionTorque" signature="22 7F 0E 4C A5">
+          <notes>FrictionTorque={float}12.5</notes>
+          <value_range>[0.05..4.8] (avg 3.2272)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="SpinInertia" signature="22 57 51 0F 51">
+          <notes>SpinInertia={float}1.427
+AMS2 22 DF D4 F6 3D float</notes>
+          <value_range>[0.0156..29.7801] (avg 1.4775)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PushrodSpindleOffset" signature="22 C9 2A 02 BB">
+          <notes>[SPECULATIVE] {float} Precedes PushrodSpindle.</notes>
+          <value_range>[-0.03]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="PushrodSpindle_ZeroSetting" signature="28 C9 2A 02 BB">
+          <notes>[SPECULATIVE] 28-prefix zero marker.</notes>
+          <rationale>Precedes PushrodSpindle (178x)</rationale>
+        </block>
+      </group>
+      <group name="pushrod">
+        <block name="PushrodBody" signature="24 19 11 EA CE A3 02">
+          <notes>PushrodBody=({float}0.10, {float}0.320, {float}0.000)
+PushrodBody=({float}0.10, {float}0.320, {float}0.000) 24 24 E1 9C B2 A3 00 CamberRange=({float}-3.5, {float}0.1, {byte}60)</notes>
+          <value_range>[-0.228..0.228] (avg -0), [-0.0377..1.6859] (avg 0.4979), [-0.098..0.095] (avg -0.0207), [-0], [-42706246154461686037090065336435212288..0] (avg -2511488579290680298319211000456282112), [0,153,205]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+          <field name="value4" type="float" />
+          <field name="value5" type="float" />
+          <field name="value6" type="byte" />
+        </block>
+        <block name="PushrodSpindle" signature="24 BE B9 BB AB A3 02">
+          <notes>PushrodSpindle=({float}0.10, {float}-0.150, {float}0.000)
+PushrodSpindle=({float}-0.10, {float}-0.150, {float}0.000)</notes>
+          <value_range>[-0.2..0.2] (avg -0), [-0.522..0.18] (avg -0.1967), [-0.098..0.095] (avg -0.0226)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+        </block>
+      </group>
+      <group name="camber">
+        <block name="CamberSetting" signature="20 C1 72 F3 09">
+          <notes>CamberSetting={byte}25
+mberSetting={byte}25</notes>
+          <value_range>[1..55] (avg 12.3188)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="CamberRange" signature="24 24 E1 9C B2 A3 00">
+          <notes>CamberRange=({float}-3.5, {float}0.1, {byte}60)
+mberRange=({float}-3.5, {float}0.1, {byte}60)</notes>
+          <value_range>[-6..-1] (avg -3.525), [0.1,0.5], [4..80] (avg 38.9272)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="tire pressure">
+        <block name="PressureSetting" signature="20 BB 96 16 F6">
+          <notes>PressureSetting={byte}50</notes>
+          <value_range>[1..68] (avg 20.8495)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PressureRange" signature="24 A6 DA C6 BF A3 00">
+          <notes>PressureRange={float}180.0, {float}1.0, {byte}106</notes>
+          <value_range>[120..248] (avg 166.474), [1], [40..106] (avg 64.625)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="bump stop">
+        <block name="PackerSetting" signature="20 D8 7D 17 14">
+          <notes>PackerSetting={byte}1</notes>
+          <value_range>[1..30] (avg 6.2681)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="PackerRange" signature="24 BB 59 2C D5 83 00">
+          <notes>PackerRange=({byte}0, {float}0.001, {byte}30)</notes>
+          <value_range>[0], [0.001,0.01,0.018], [0..100] (avg 37.1054)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="Springs">
+        <block name="SpringSetting" signature="20 CE AA 7A 97">
+          <notes>SpringSetting={byte}1</notes>
+          <value_range>[1..40] (avg 9.1541)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SpringMult" signature="22 44 49 5D 88">
+          <notes>SpringMult={float}1.0
+SpringMult={float}1.0 24 A5 12 3D 0D A3 00 SpringRange=({float}50000.0, {float}4166.0, {byte}6)</notes>
+          <value_range>[0.4..1.3] (avg 0.8418), [0,0.0358], [-10410913560244901727085622938566656..158857933963697841294641463296] (avg -24675683654499638600509738188800), [3..255] (avg 147.0616)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+          <field name="value4" type="byte" />
+        </block>
+        <block name="SpringRange" signature="24 A5 12 3D 0D A3 00">
+          <notes>SpringRange=({float}50000.0, {float}4166.0, {byte}6)
+SpringRange=({float}60000.0, {float}5000.0, {byte}6)</notes>
+          <value_range>[12000..282000] (avg 158276.9953), [1000..12000] (avg 1719.7183), [1..40] (avg 36.1925)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="ride height">
+        <block name="RideHeightSetting" signature="20 6D 04 94 05">
+          <notes>RideHeightSetting={byte}1</notes>
+          <value_range>[1..60] (avg 6.7967)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="RideHeightRange" signature="24 D7 C6 0D 7A A3 00">
+          <notes>RideHeightRange=({float}0.11, {float}-0.0055, {byte}10)</notes>
+          <value_range>[0.018..0.3] (avg 0.0536), [0.001..0.01] (avg 0.0012), [0..99] (avg 23.3051)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="dampers">
+        <block name="DamperMult" signature="22 51 37 41 53">
+          <notes>DamperMult={float}1.0
+mperMult={float}1.0 24 0C 43 D9 D0 A3 00 SlowBumpRange=({float}2500.0, {float}300.0, {byte}6) 20 D1 9E 2C 0A SlowBumpSetting={byte}1</notes>
+          <value_range>[0.5885..1.25] (avg 0.8721), [-3431310576058368], [-10411154958552562376239228267790336..2665255669389455968317242436554326016] (avg 10269783776442008631430413157400576), [0..232] (avg 55.6565), [0..253] (avg 15.0374)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="float" />
+          <field name="value4" type="byte" />
+          <field name="value5" type="byte" />
+        </block>
+      </group>
+      <group name="slow">
+        <block name="SlowBumpSetting" signature="20 D1 9E 2C 0A">
+          <notes>SlowBumpSetting={byte}1</notes>
+          <value_range>[1..34] (avg 10.8846)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SlowBumpRange" signature="24 0C 43 D9 D0 A3 00">
+          <notes>SlowBumpRange=({float}2500.0, {float}300.0, {byte}6)
+SlowBumpRange=({float}3000.0, {float}300.0, {byte}6)</notes>
+          <value_range>[7400..16500] (avg 10149.0385), [200..940] (avg 326.5865), [10..40] (avg 27.6442)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="fast">
+        <block name="FastBumpSetting" signature="20 38 38 25 87">
+          <notes>FastBumpSetting={byte}1
+stBumpSetting={byte}1</notes>
+          <value_range>[1..29] (avg 13.301)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FastBumpRange" signature="24 30 89 EC 3D A3 00">
+          <notes>FastBumpRange=({float}1200.0, {float}200.0, {byte}6)
+stBumpRange=({float}1200.0, {float}200.0, {byte}6) 20 38 38 25 87 FastBumpSetting={byte}1</notes>
+          <value_range>[2820..7200] (avg 3760.439), [96..350] (avg 167.9707), [16..40] (avg 24.8927), [32]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+          <field name="value4" type="byte" />
+        </block>
+      </group>
+      <group name="slow rebound">
+        <block name="SlowReboundSetting" signature="20 22 73 D7 81">
+          <notes>SlowReboundSetting={byte}1</notes>
+          <value_range>[1..40] (avg 12.6543)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="SlowReboundRange" signature="24 BC C0 A2 91 A3 00">
+          <notes>SlowReboundRange=({float}5000.0, {float}300.0, {byte}6)
+SlowReboundRange=({float}5000.0, {float}300.0, {byte}6) 20 22 73 D7 81 SlowReboundSetting={byte}1</notes>
+          <value_range>[7400..16500] (avg 10391.3462), [200..940] (avg 326.5865), [10..40] (avg 27.6442), [32]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+          <field name="value4" type="byte" />
+        </block>
+      </group>
+      <group name="fast rebound">
+        <block name="BumpTransitionSetting" signature="20 36 84 0B 9B">
+          <notes>BumpTransitionSetting={byte}x</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="FastReboundSetting" signature="20 B8 B0 02 2E">
+          <notes>FastReboundSetting={byte}10
+stReboundSetting={byte}10
+AMS2 28 D1 9E 2C 0A AMS2 28 38 38 25 87 AMS2 28 22 73 D7 81 AMS2 28 B8 B0 02 2E</notes>
+          <value_range>[1..29] (avg 14.4879)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="ReboundTransitionSetting" signature="20 D6 CD E0 06">
+          <notes>ReboundTransitionSetting={byte}x</notes>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="BumpTransitionRange" signature="24 5E 57 34 B3 13 00">
+          <notes>BumpTransitionRange={integer}XXXX, {byte}x, {byte}x 20 36 84 0B 9B BumpTransitionSetting={byte}x 24 5C 47 9E 9E 13 00 ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 20 D6 CD E0 06 ReboundTransitionSetting={byte}x 24 09 7A D2 4B 23 00 BrakeDiscRange={float}0.035, {byte}0, {byte}0</notes>
+          <field name="value1" type="int32" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+          <field name="value4" type="byte" />
+          <field name="value5" type="int32" />
+          <field name="value6" type="byte" />
+          <field name="value7" type="byte" />
+          <field name="value8" type="byte" />
+          <field name="value9" type="float" />
+          <field name="value10" type="byte" />
+          <field name="value11" type="byte" />
+        </block>
+        <block name="ReboundTransitionRange" signature="24 5C 47 9E 9E 13 00">
+          <notes>ReboundTransitionRange={integer}XXXX, {byte}x, {byte}x
+ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x</notes>
+          <field name="value1" type="int16" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="FastReboundRange" signature="24 BC 6D 0E F7 A3 00">
+          <notes>FastReboundRange={float}4400, {float}250, {byte}16
+FastReboundRange{float}2500, {float}250, {byte}16
+stReboundRange{float}2500, {float}250, {byte}16 20 B8 B0 02 2E FastReboundSetting={byte}10 24 5E 57 34 B3 13 00 BumpTransitionRange={integer}XXXX, {byte}x, {byte}x 20 36 84 0B 9B BumpTransitionSetting={byte}x 24 5C 47 9E 9E 13 00 ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x 20 D6 CD E0 06 ReboundTransitionSetting={byte}x 24 09 7A D2 4B 23 00 BrakeDiscRange={float}0.032, {byte}0, {byte}0</notes>
+          <value_range>[3020..7200] (avg 3865.8049), [96..350] (avg 166.1171), [16..40] (avg 25.0634)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+      </group>
+      <group name="Brakes">
+        <block name="BrakePadSetting" signature="20 64 D7 A9 E6">
+          <notes>BrakePadSetting={byte}2</notes>
+          <value_range>[2]</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="BrakeDiscInertia" signature="22 B9 CF 18 D1">
+          <notes>BrakeDiscInertia={float}0.001</notes>
+          <value_range>[0.001]</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeDiscRange" signature="24 09 7A D2 4B 23 00">
+          <notes>BrakeDiscRange={float}0.032, {byte}0, {byte}0
+BrakeDiscRange={float}0.035, {byte}0, {byte}0
+ams2 911 gt3 cup2: 0.05, 0.005, 10. Mclaren 0.032, 0.005, 10. Camaro SS 0.03, 0, 0.
+ams2 28 95 7D FB 9D</notes>
+          <value_range>[0.03], [0], [0]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="BrakePadRange" signature="24 ED 3F C2 21 03 00">
+          <notes>BrakePadRange=({byte}0, {byte}1, {byte}5)
+BrakePadRange=({byte}0, {byte}1, {byte}5) 20 64 D7 A9 E6 BrakePadSetting={byte}2 22 B9 CF 18 D1 BrakeDiscInertia={float}0.001</notes>
+          <value_range>[0], [1], [0,5], [32,40], [-401026595670110693752832]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+          <field name="value4" type="byte" />
+          <field name="value5" type="float" />
+        </block>
+      </group>
+      <group name="temps">
+        <block name="BrakeCriticalTemp" signature="21 D0 03 18 55">
+          <notes>{int}950.0 — critical brake temperature. AMS2: 900
+{float}950.0 ams 900,</notes>
+          <value_range>[200..1200] (avg 982.56)</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="BrakeMaxTemp" signature="21 E7 95 A8 D0">
+          <notes>{int}900.0 — max brake temperature. AMS2: 500
+{float}900.0 Ams2 500,</notes>
+          <value_range>[300..600] (avg 410)</value_range>
+          <field name="value1" type="int16" />
+        </block>
+        <block name="BrakeOptimumTemp" signature="22 AB 02 4B 3C">
+          <notes>BrakeOptimumTemp={float}500.0
+BrakeOptimumTemp={float}500.0 AMS2 24 AB 02 4B 3C 52 BrakeOptimumTemp={integ}400.0, {integ}650.0</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeFadeStart" signature="22 02 3F 01 F1">
+          <notes>{float}0.34 // CDF_UNKN_059 — brake fade start threshold. AMS2: 0.75
+{float}0.34		//CDF_UNKN_059
+{float}0.34 //CDF_UNKN_059</notes>
+          <value_range>[0.12..0.8] (avg 0.5564)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeFadeEnd" signature="22 45 81 36 93">
+          <notes>{float}0.95 // CDF_UNKN_060 — brake fade end threshold. AMS2: 0.9
+{float}0.95		//CDF_UNKN_060
+{float}0.95 //CDF_UNKN_060</notes>
+          <value_range>[0.8,0.85,0.9]</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="wear">
+        <block name="BrakeWearRate" signature="22 1E E5 B6 4C">
+          <notes>BrakeWearRate={float}3e-11</notes>
+          <value_range>[0..0] (avg 0)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeFailure" signature="24 BD 59 C8 42 A2">
+          <notes>BrakeFailure={float}0.01, {float}0.003</notes>
+          <value_range>[0.01], [0.002]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+      </group>
+      <group name="torque">
+        <block name="BrakeTorque" signature="22 4B A4 81 7A">
+          <notes>BrakeTorque={float}2200</notes>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+      <group name="heating and cooling">
+        <block name="BrakeDuctCooling" signature="22 A2 67 26 E9">
+          <notes>BrakeDuctCooling={float}5e-07
+new in ams2</notes>
+          <value_range>[0..0.0002] (avg 0)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeHeating" signature="22 6E A6 0D FB">
+          <notes>BrakeHeating={float}0.000275</notes>
+          <value_range>[0.0012..0.0052] (avg 0.0026)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeHeatAMS2_1" signature="22 6C 82 E4 02">
+          <notes>New AMS2 brake param 1. Value: ~2.69-2.91
+= 2.91</notes>
+          <value_range>[1.34..4.4] (avg 2.8382)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeHeatAMS2_4" signature="22 CE A0 75 6B">
+          <notes>New AMS2 brake param 4. Value: ~1.3e-06 to 2e-06
+= 1.3e-06
+Attention
+Note
+when using road car chassis to make a race car, automatic tire selection will not work, unless you swap 6 bytes at the following address EDIT: only change the first byte from 2F to 35
+footer bytes.
+the total number of bytes varies; the number is defined in the third register at the top of the file: 0x0020-0x0023
+-324
+end data examples
+mclaren 84 54 5E 4B 86 3A 0F 83 79 86 4C 3F 28
+por cup2 84 51 5A 5D 8B 4F 35 E6 5F C3 5F 28 69 29 0D
+porsche R 84 4A 54 49 9B 4F 2F E6 5F C3 5F 28 69 29 0D</notes>
+          <value_range>[0..0] (avg 0)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeCriticalTemp_Float" signature="22 D0 03 18 55">
+          <notes>{float}950.0 — critical brake temperature (float variant)
+{float}950.0</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeMaxTemp_Float" signature="22 E7 95 A8 D0">
+          <notes>{float}900.0 — max brake temperature (float variant)
+{float}900.0</notes>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeHeatAMS2_2" signature="22 EE 67 FD 55">
+          <notes>New AMS2 brake param 2. Value: ~0.26-0.31
+= 0.31</notes>
+          <value_range>[0.22..0.71] (avg 0.2986)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BrakeCooling" signature="24 1C D5 5C 78 A2">
+          <notes>BrakeCooling=({float}0.007, {float}7e-06)
+BrakeCooling({float}0.007, {float}7e-06)</notes>
+          <value_range>[0.006..1.4] (avg 0.0226), [0.0001..0.002] (avg 0.0004)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="BrakeHeatAMS2_3" signature="24 5D 9E 9A 9F A2">
+          <notes>New AMS2 brake cooling param 3. Values: ~0.0014, 5.1e-05
+= 0.0015, 3.4e-05</notes>
+          <value_range>[0..1] (avg 0.0055), [0..0.0003] (avg 0.0001)</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="float" />
+        </block>
+      </group>
+      <group name="General">
+        <block name="BumpStopSpring" signature="21 7F C6 F8 41">
+          <notes>BumpStopSpring={integer}150000 // ***hex string dictating integer data**
+BumpStopSpring={integer}150000 // hex string dictating integer data* 22 7F C6 F8 41 BumpStopSpring={float}150000.0 //Same as above but with float data*</notes>
+          <value_range>[349..179956] (avg 36797.5921), [-1443869672324355823147748950016,-1443868765629991112175867920384,-1443868614514263660347221082112]</value_range>
+          <field name="value1" type="int32" />
+          <field name="value2" type="float" />
+        </block>
+        <block name="BumpStageTwo" signature="22 70 02 6D 2B">
+          <notes>BumpStageTwo={float}0.09</notes>
+          <value_range>[0.03..0.75] (avg 0.315)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BumpStopRisingSpring" signature="22 CB 91 F1 63">
+          <notes>BumpStopRisingSpring={float}4000000</notes>
+          <value_range>[100..500000000] (avg 178117575.6491)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BumpStopSpring" signature="22 7F C6 F8 41">
+          <notes>BumpStopSpring={float}150000.0 //*Same as above but with float data</notes>
+          <value_range>[1500..290000] (avg 147296.9022)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BumpTravel" signature="22 B3 D8 21 F7">
+          <notes>BumpTravel={float}-0.00</notes>
+          <value_range>[-0.13..0.026] (avg -0.0199)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ReboundStageTwo" signature="22 1F 7D 2D 8E">
+          <notes>ReboundStageTwo={float}-0.09</notes>
+          <value_range>[-1000..-0.04] (avg -2.3255)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="ReboundTravel" signature="22 17 7B 8A 89">
+          <notes>ReboundTravel={float}-0.2</notes>
+          <value_range>[-0.575..-0.026] (avg -0.1171)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BumpStopDamping" signature="22 71 74 6E EB">
+          <notes>{float}50.0 — bump stop damping coefficient
+{float}50.0</notes>
+          <value_range>[40..3000] (avg 1590.1167)</value_range>
+          <field name="value1" type="float" />
+        </block>
+        <block name="BumpStopRisingDamping" signature="22 DD D6 E1 75">
+          <notes>{float}20.0 — bump stop rising damping
+{float}20.0</notes>
+          <value_range>[20..2852000] (avg 395418.0522)</value_range>
+          <field name="value1" type="float" />
+        </block>
+      </group>
+    </section>
+    <section name="AI DIFFERENTIALS">
+      <group name="AI Differential">
+        <block name="Power Range" signature="24 1D F5 6C 5C 83 00">
+          <notes>Power Range: 0, 0.01, 100</notes>
+          <value_range>[0], [0.01], [100]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="Power Setting" signature="20 53 D4 19 A9">
+          <notes>Power Setting (e.g. 25)</notes>
+          <value_range>[3..100] (avg 38.3689)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="Power Setting (Default)" signature="28 53 D4 19 A9">
+          <notes>Power Setting is default (no payload)</notes>
+        </block>
+        <block name="Coast Range" signature="24 F2 FF 04 F5 83 00">
+          <notes>Coast Range: 0, 0.01, 100</notes>
+          <value_range>[0], [0.01], [100]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="Coast Setting" signature="20 79 F8 06 9F">
+          <notes>Coast Setting (e.g. 40)</notes>
+          <value_range>[4..100] (avg 40.4432)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="Coast Setting (Default)" signature="28 79 F8 06 9F">
+          <notes>Coast Setting is default (no payload)</notes>
+        </block>
+        <block name="Preload Range" signature="24 05 1D 5E 8B 03 00">
+          <notes>Preload Range: 0, 10, 100</notes>
+          <value_range>[0], [1,10,25], [9..100] (avg 98.3787)</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="Preload Setting" signature="20 8B 90 E1 61">
+          <notes>Preload Setting (e.g. 5)</notes>
+          <value_range>[2..10] (avg 5.4289)</value_range>
+          <field name="value1" type="byte" />
+        </block>
+        <block name="Preload Setting (Default)" signature="28 8B 90 E1 61">
+          <notes>Preload Setting is default (no payload)</notes>
+        </block>
+      </group>
+    </section>
+  </parameters>
+</cdf-hex-map>"""
