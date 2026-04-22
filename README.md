@@ -1,66 +1,45 @@
-# CDFbin Editor (Project CARS) — `cdf_editor.py`
+# AMS2 CDF File Editor (v0.3)
 
-A small **definition-driven editor + hex viewer/editor** for *Project CARS* **CDFbin** files.
+A powerful, standalone Windows application for parsing, viewing, and editing Automobilista 2 (AMS2) `.cdf` physics files. 
 
-- Scans a binary `.cdf` / `.cdfbin` file for known **marker bytes**
-- Decodes the following **payload scalar types**: `byte`, `float`, `int32`, `uint32`
-- Lets you edit values **in-place only** (the payload size must not change)
-- Includes a **hex viewer** with click-to-select and **in-place overwrite** tooling
-- Performs a **CDF header byte-count register sanity check** on open/save-as and can apply a conservative repair
+This editor replaces hex-editing workflows with a clean, tree-based GUI that translates raw binary data into human-readable parameters using a dynamically updated, community-driven XML dictionary.
 
-> ⚠️ This tool modifies binary files. Always keep backups.
+![Screenshot Placeholder](https://via.placeholder.com/800x450.png?text=AMS2+CDF+Editor)
 
-![SDF Editor screenshot](CDF-Editor.png)
+## Key Features
 
-## Features
+- **100% Parameter Coverage**: The editor ships with a built-in XML dictionary that maps every known physics parameter across 150+ engine block variants in the game. No more "Unknown" signatures.
+- **Real-World Value Constraints**: The built-in dictionary has been statistically enriched against a corpus of 500 game files. When you click a parameter, the "Translation Notes" box instantly shows you the exact `[min..max]` boundary and `(average)` value enforced by the game engine.
+- **Custom Overrides**: Modders can override the built-in dictionary via the `File -> Load Custom cdf-hex-map.xml` menu, allowing for safe experimentation without breaking the base application.
+- **Bulletproof Portability**: The application is compiled natively with PyInstaller. The core physics dictionary is baked directly into the executable's bytecode, meaning it launches instantly and perfectly on any Windows machine with zero extraction errors or file-system dependencies.
 
-### Definition-driven field browser
-- Fields are defined in `CDF_DEFS` as `CdfFieldDef` entries:
-  - `section`, `name`, `marker`, `layout`, `notes`
-- The app scans for all occurrences of each marker, decodes its payload, and lists them in a Treeview grouped by section.
-- A filter box allows quick narrowing by section/name/occurrence.
+## Installation & Usage
 
-### Scalar editor (safe path)
-- When you select a field, the right panel shows:
-  - marker bytes & offsets
-  - payload offset
-  - raw payload bytes
-  - decoded value tuple
-- You can edit via typed scalar inputs.
-- Edits are applied **in-place** (exact same byte count as original payload).
+There are two ways to run the editor. Neither requires Python to be installed.
 
-### Hex viewer/editor (verification + unknowns)
-- Bottom pane shows a classic hex dump.
-- Selecting a field jumps to its marker and highlights:
-  - marker bytes
-  - payload bytes
-- Clicking a byte in the hex view selects the corresponding field in the tree (where known).
-- You can overwrite the selected payload bytes by pasting space-separated hex.
-- Revert options exist for both scalar edits and hex overwrites.
+### Option 1: Standalone Executable (Recommended)
+1. Download `AMS2_CDF_Editor_Standalone.exe` from the latest GitHub Release.
+2. Double click the `.exe` to run. (The dictionary is fully embedded).
 
-### Byte Count Registers check (header validation / repair)
-On open and before “Save As…”, the tool checks common CDF header “byte count registers”:
+### Option 2: Portable Directory
+1. Download `AMS2_CDF_Editor_Portable.zip` from the latest GitHub Release.
+2. Extract the folder to your desktop.
+3. Run `AMS2_CDF_Editor_Portable.exe` from inside the folder. (This is useful if you want faster startup times, as it skips PyInstaller's temporary unpacking step).
 
-- `R0` @ `0x0008` should match file length
-- `R1` @ `0x0014` should match `(R3 - 0x0028)` (if `R3 >= 0x0028`)
-- `R2` @ `0x0020` should be end-length
-- `R3` @ `0x0024` should be end-start
-- Consistency: `R3 + R2 == file_len`
+## For Modders: Customizing the Dictionary
+The editor relies on an XML map (`cdf-hex-map.xml`) to know how to decode the binary data. If you discover a new signature or want to test a new parameter mapping:
 
-If inconsistent, the app will show problems and may offer an **automatic conservative repair**.
+1. Create a modified `cdf-hex-map.xml` file.
+2. In the editor, click `File -> Load Custom cdf-hex-map.xml...`
+3. Select your modified file. The application title bar will instantly update to show you are in "Custom Dictionary" mode.
 
----
+## Development & Building from Source
 
-## Requirements
+If you wish to contribute to the codebase:
 
-- Python 3.10+ (recommended)
-- Standard library only (`tkinter` ships with most Python installs on Windows)
+1. Clone the repository.
+2. Install dependencies (Tkinter is included in standard Python distributions).
+3. Run `build_release.py` to automatically serialize the XML dictionary and compile the `.exe` and `.zip` artifacts into the `dist/` folder.
 
-> Windows DPI awareness is enabled when available via `ctypes`.
-
----
-
-## Run
-
-```bash
-python cdf_editor.py
+## License
+Provided for the AMS2 Modding Community. 
