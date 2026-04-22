@@ -46,3 +46,15 @@ missing_items.txt
 *.log
 
 # Keep only the core program files, the main XML, translations, and readme.
+
+# Experimental & Spec Files
+specs/
+Translation*.txt
+cdf_defs_legacy.py
+check_general.py
+extract.py
+find_frw.py
+refactor_gui.py
+test_bug.py
+test_dict.py
+test_notes.py
