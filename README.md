@@ -4,7 +4,7 @@ A powerful, standalone Windows application for parsing, viewing, and editing Aut
 
 This editor replaces hex-editing workflows with a clean, tree-based GUI that translates raw binary data into human-readable parameters using a dynamically updated, community-driven XML dictionary.
 
-![Screenshot Placeholder](https://via.placeholder.com/800x450.png?text=AMS2+CDF+Editor)
+![Screenshot](https://github.com/RangeyRover/AMS2-CDF-File-Editor/blob/main/CDF-Editor.png?raw=true)
 
 ## Key Features
 
