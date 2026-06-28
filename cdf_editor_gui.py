@@ -32,7 +32,7 @@ def clamp(val, min_val, max_val):
 class CdfEditorApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("CDFbin Editor")
+        self.title("CDFbin Editor v0.3.2")
         self.geometry("1400x820")
 
         self.file_path: Optional[str] = None
@@ -114,7 +114,7 @@ class CdfEditorApp(tk.Tk):
         # Keep old filter_var mapped so the rest of the code works
         self.filter_var = self.search_var
 
-        self.status_var = tk.StringVar(value="Open a .cdfbin to begin.")
+        self.status_var = tk.StringVar(value="Open a .cdf or .cdfbin to begin.")
         ttk.Label(left, textvariable=self.status_var).pack(fill="x", pady=(0, 6))
 
         self.tree = ttk.Treeview(left, columns=("value", "type", "offset"), show="tree headings", selectmode="browse")
@@ -233,11 +233,11 @@ class CdfEditorApp(tk.Tk):
     def load_dictionary(self, xml_path=None):
         try:
             self.cdf_defs = cdf_parser.load_dictionary(xml_path)
-            self.status_var.set(f"Dictionary loaded with {len(self.cdf_defs)} definitions. Open a .cdfbin to begin.")
+            self.status_var.set(f"Dictionary loaded with {len(self.cdf_defs)} definitions. Open a .cdf or .cdfbin to begin.")
             if xml_path:
-                self.title(f"CDFbin Editor - Custom Dictionary: {xml_path}")
+                self.title(f"CDFbin Editor v0.3.2 - Custom Dictionary: {xml_path}")
             else:
-                self.title("CDFbin Editor")
+                self.title("CDFbin Editor v0.3.2")
         except Exception as e:
             self.status_var.set(f"Dictionary failed to load: {e}")
             messagebox.showerror("Dictionary Error", f"Failed to load XML dictionary:\n{e}")
@@ -256,8 +256,8 @@ class CdfEditorApp(tk.Tk):
     # -----------------------------
     def open_file(self):
         path = filedialog.askopenfilename(
-            title="Open CDFbin",
-            filetypes=[("CDFbin files", "*.cdf"), ("All files", "*.*")]
+            title="Open CDF / CDFbin",
+            filetypes=[("CDF files", "*.cdf *.cdfbin"), ("CDFbin files", "*.cdfbin"), ("CDF files", "*.cdf"), ("All files", "*.*")]
         )
         if not path:
             return
@@ -349,7 +349,7 @@ class CdfEditorApp(tk.Tk):
         path = filedialog.asksaveasfilename(
             title="Save As",
             defaultextension=".cdfbin",
-            filetypes=[("CDFbin files", "*.cdf"), ("All files", "*.*")]
+            filetypes=[("CDF files", "*.cdf *.cdfbin"), ("CDFbin files", "*.cdfbin"), ("CDF files", "*.cdf"), ("All files", "*.*")]
         )
         if not path:
             return

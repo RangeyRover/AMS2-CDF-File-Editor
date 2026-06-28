@@ -1,4 +1,66 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════════
+  CDF Binary Field Layout — Verified across 501 files, 303,814 fields
+  ═══════════════════════════════════════════════════════════════════════════════
+
+  Each <block> signature attribute contains the raw bytes that appear in the
+  binary .cdfbin file. The first byte is the marker, the next 4 bytes are the
+  field hash (little-endian), and any remaining bytes are the compound suffix.
+
+  [marker][hash_b0][hash_b1][hash_b2][hash_b3][suffix...][data...]
+
+  Marker  Layout                                    Meaning                 Verified
+  ══════  ════════════════════════════════════════  ══════════════════════  ════════
+  0x20    BB BB BB BB  DD                            1 byte value             54,908
+  0x21    BB BB BB BB  DD DD DD DD                   uint32 LE                14,754
+  0x22    BB BB BB BB  DD DD DD DD                   float32 LE               98,221
+  0x26    BB BB BB BB  DD                            1 byte (special*)         3,324
+  0x28    BB BB BB BB                                no data (null/absent)    30,392
+  0xE0    BB BB BB BB                                no data (section)         6,678
+  0x24    BB BB BB BB  SS [SS] DD DD DD...           compound (suffix)        95,537
+
+  * 0x26 is 1 byte NOT 4. Same size as 0x20. Semantic use: tire counts, gear count.
+
+  Compound suffix table (marker 0x24):
+    Suffix    Types                         Data bytes  Total   Verified
+    ════════  ════════════════════════════  ══════════  ═════   ════════
+    21        float                              4       10       6,245
+    22        float, byte                        5       11       2,473
+    A2        float, float                       8       14       7,635
+    03 00     byte, byte, byte                   3       10      21,754
+    03 01     byte, byte, int32                  6       13         277
+    03 02     byte, byte, float                  6       13         874
+    23 00     float, byte, byte                  6       13       3,953
+    23 02     float, byte, float                 9       16       4,088
+    53 01     int32, int32, int32               12       19         145
+    53 02     int32, int32, float               12       19         495
+    83 00     byte, float, byte                  6       13       9,060
+    83 01     byte, float, int32                 9       16         557
+    83 02     byte, float, float                 9       16       3,436
+    A3 00     float, float, byte                 9       16      14,494
+    A3 01     float, float, int32               12       19         193
+    A3 02     float, float, float               12       19       6,806
+
+    CAUTION: 53 00 and 13 00 are context-dependent (multiple sizes observed).
+    Table covers 86% of compound fields. Remaining 14% use rare/exotic suffixes.
+
+  File headers: 24 bytes (91%), 20 bytes (6%), 8 bytes (3%). Skip to first marker.
+  Hash ID encoding: decoded 0xAABBCCDD → binary bytes [DD CC BB AA] (little-endian).
+
+  Block structure in this XML:
+    <block name="..."  signature="MM HH HH HH HH [SS SS]">
+      <notes>Human-readable description and known values</notes>
+      <value_range>Observed value ranges from corpus</value_range>
+      <field name="value1" type="byte|int32|float" />  (per marker/suffix rules above)
+    </block>
+
+  Compound (tuple) values typically represent: (default_value, step_size, num_settings)
+  for setupable garage parameters. step_size × num_settings = total adjustable range.
+  Some compounds are pure data tuples (not setup ranges), e.g. Inertia=(Ix,Iy,Iz).
+
+  ═══════════════════════════════════════════════════════════════════════════════
+-->
 <cdf-hex-map version="0.2" byteorder="little" float="ieee754-32" int32="twos-complement-32">
   <types>
     <type name="byte" size="1" />
@@ -12,7 +74,7 @@
         <block name="Mass_Int16" signature="21 67 0B 57 AB">
           <notes>Mass={integer}XXXX</notes>
           <value_range>[160..4950] (avg 1040.7213)</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="Mass" signature="22 67 0B 57 AB">
           <notes>Mass={float}XXXX.xx</notes>
@@ -1536,7 +1598,7 @@ byte 2 Lexus || 1 911 R</notes>
           <value_range>[3]</value_range>
         </block>
         <block name="FFBGripInteger" signature="21 01 C1 8B 82">
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
           <notes>FFB grip integer. 2420 / 116 (camaro), working: -64</notes>
           <value_range>[-15500..4550] (avg -1936.6954)</value_range>
         </block>
@@ -1569,6 +1631,7 @@ byte 2 Lexus || 1 911 R</notes>
       <group name="ams2 new section comparison: inverted / correct">
         <block name="KingpinMultiplier" signature="22 4E 2A 4E 0D">
           <notes>float 2.5 (kingpin multiplier reduces ffb pendulumadded to super v8 in 1.2)???</notes>
+          <field name="value1" type="float" />
         </block>
         <block name="Unknown_20_60_DD_ZeroSetting" signature="28 60 DD 9A 44">
           <notes>Zero-setting marker (28 prefix) for Unknown_20_60_DD. No payload.</notes>
@@ -1589,22 +1652,28 @@ byte 2 Lexus || 1 911 R</notes>
           <value_range>[24..50] (avg 38.7214)</value_range>
           <field name="value1" type="byte" />
         </block>
-        <block name="ABSEnabled" signature="20 FA CE 76 12">
-          <notes>[SPECULATIVE] {byte} ABS system enable flag.</notes>
+        <block name="ControlsEndFlag_1" signature="20 FA CE 76 12">
+          <notes>[DISPROVEN] Previously labelled ABSEnabled. Setting to 0x00 does NOT disable ABS in-game.
+Always value=1. Sits at end of [CONTROLS] before section marker. Purpose unknown.
+V2.0 does not name this field. Follows TCAssist/SCAssist_Authentic null/flags.</notes>
           <value_range>[1]</value_range>
-          <rationale>Follows TractionControlLevel (370/499).</rationale>
+          <rationale>Follows TractionControlLevel (370/499). TESTED: setting to 0 has no effect on ABS.</rationale>
           <field name="value1" type="byte" />
         </block>
-        <block name="TractionControlEnabledFlag" signature="20 D5 DD 9C 9B">
-          <notes>[SPECULATIVE] {byte} TC enable flag.</notes>
+        <block name="SpeedLimiter" signature="20 D5 DD 9C 9B">
+          <notes>[DISPROVEN as TCEnabledFlag] Setting to 0x00 does NOT disable TC in-game.
+V2.0 names this SpeedLimiter (1=pit speed limiter present). Always value=1.
+Sits at end of [CONTROLS] between ControlsEndFlag_1 and DriftDiffSpool.</notes>
           <value_range>[1]</value_range>
-          <rationale>Present in 499 vehicles.</rationale>
+          <rationale>Present in 499 vehicles. TESTED: setting to 0 has no effect on TC.</rationale>
           <field name="value1" type="byte" />
         </block>
-        <block name="StabilityControlEnabledFlag" signature="20 5B D1 F7 C8">
-          <notes>[SPECULATIVE] {byte} SC enable flag.</notes>
+        <block name="DriftDiffSpool" signature="20 5B D1 F7 C8">
+          <notes>[DISPROVEN as SCEnabledFlag] Setting to 0x00 does NOT disable SC in-game.
+V2.0 names this DriftDiffSpool (drift/spool diff mode flag). Always value=1.
+Last byte field before [ENGINE] section marker 0x98459e3f.</notes>
           <value_range>[1]</value_range>
-          <rationale>Precedes Section_E0_3F_9E_45_98 in 498/499.</rationale>
+          <rationale>Precedes Section_E0_3F_9E_45_98 in 498/499. TESTED: setting to 0 has no effect on SC.</rationale>
           <field name="value1" type="byte" />
         </block>
         <block name="HandbrakePressSetting" signature="20 52 30 1F D2">
@@ -1641,6 +1710,7 @@ AMS2 TC=47bytes</notes>
         </block>
         <block name="SteeringLockSetting" signature="20 B7 C2 C5 7E">
           <notes>steering lock setting</notes>
+          <field name="value1" type="byte" />
         </block>
         <block name="ABSFourWheelAssist_Authentic" signature="20 BC 12 66 E0">
           <notes>{byte}1 // "Authentic" ABSFourWheel assist</notes>
@@ -1703,11 +1773,36 @@ AutoUpshiftGripThresh={float}0.6 ##1.2 (911cup) 0.5 (prev. 0.4)</notes>
           <field name="value1" type="float" />
           <notes>Controls section float param</notes>
         </block>
-        <block name="ABSStrengthRange" signature="24 24 9E 03 13 83 00">
-          <notes>{byte}0, {float}0.01, {byte}100 // (ECU) ABS Strength Range
-{byte}0, {float}0.01, {byte}100 // (ECU) ABS Strength Range ##1.2 (911cup) {byte}0, {float}0.1, {byte}100 (prev. {byte}0, {float}0.01, {byte}100) ##1.2 camaro 0, 0.1, 10</notes>
-          <value_range>[0], [0.1], [10]</value_range>
+        <block name="ABSStrengthRange" signature="24 24 9E 03 13 23 00">
+          <notes>ABS Strength Range — THIS is the field that controls ABS (not ABSEnabled).
+WARNING: This hash appears with 3 different suffixes across the corpus:
+  23 00 = float, byte, byte (403 files — most common)
+  83 00 = byte, float, byte (76 files — user-confirmed disable variant)
+  A3 00 = float, float, byte (20 files — rare)
+To DISABLE ABS (83 00 variant): set value1 (byte) and value3 (byte) both to 0x00.
+To DISABLE ABS (23 00 variant): set value2 (byte) and value3 (byte) both to 0x00.
+The suffix determines field types — check the actual binary for each car.
+Example: F-USA23 = (0, 0.1, 10) → 10 steps of 0.1 from 0.
+911cup updated from step=0.01 to step=0.1 in patch 1.2.</notes>
+          <value_range>[0.01..0.1], [0..10], [0..100]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="ABSStrengthRange_83" signature="24 24 9E 03 13 83 00">
+          <notes>ABS Range — 83 00 variant (byte, float, byte). 76 files in corpus.
+Disable instruction: set value1 + value3 both to 0x00.
+Same hash as ABSStrengthRange but different suffix/field types.</notes>
+          <value_range>[0], [0.01..0.1], [10..100]</value_range>
           <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="ABSStrengthRange_A3" signature="24 24 9E 03 13 A3 00">
+          <notes>ABS Range — A3 00 variant (float, float, byte). 20 files in corpus.
+Same hash as ABSStrengthRange but different suffix/field types.</notes>
+          <value_range>[0.01..0.9], [0.01..0.1], [0..99]</value_range>
+          <field name="value1" type="float" />
           <field name="value2" type="float" />
           <field name="value3" type="byte" />
         </block>
@@ -1753,7 +1848,7 @@ AutoUpshiftGripThresh={float}0.6 ##1.2 (911cup) 0.5 (prev. 0.4)</notes>
           <notes>SteeringLockRange (alternate sig with 03 00 suffix)
 SteeringLockRange</notes>
           <value_range>[0,0], [183], [194]</value_range>
-          <field name="value1" type="float" />
+          <field name="value1" type="byte" />
           <field name="value2" type="byte" />
           <field name="value3" type="byte" />
         </block>
@@ -1763,17 +1858,41 @@ HandbrakeRange</notes>
           <value_range>[0], [0.01], [200]</value_range>
           <field name="value1" type="byte" />
           <field name="value2" type="float" />
-          <field name="value3" type="int16" />
+          <field name="value3" type="int32" />
         </block>
-        <block name="TractionControlRange" signature="24 B3 D2 E5 A0 A3 00">
-          <notes>Traction Control Range={float}0.01, {float}0.01, {byte}99 // (ECU ##1.2 (911cup) 0.9 (prev. 0.1)</notes>
-          <value_range>[0.9], [0.1], [0]</value_range>
+        <block name="TractionControlRange" signature="24 B3 D2 E5 A0 23 00">
+          <notes>Traction Control Range — THIS is the field that controls TC.
+WARNING: This hash appears with 3 different suffixes across the corpus:
+  23 00 = float, byte, byte (362 files — most common)
+  83 00 = byte, float, byte (119 files — user-confirmed disable variant)
+  A3 00 = float, float, byte (18 files — rare)
+To DISABLE TC (83 00 variant): set value1 (byte) and value3 (byte) both to 0x00.
+To DISABLE TC (23 00 variant): set value2 (byte) and value3 (byte) both to 0x00.
+The suffix determines field types — check the actual binary for each car.</notes>
+          <value_range>[0.01..0.9], [0..99], [0..99]</value_range>
+          <field name="value1" type="float" />
+          <field name="value2" type="byte" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="TractionControlRange_83" signature="24 B3 D2 E5 A0 83 00">
+          <notes>TC Range — 83 00 variant (byte, float, byte). 119 files in corpus.
+Disable instruction: set value1 + value3 both to 0x00.
+Same hash as TractionControlRange but different suffix/field types.</notes>
+          <value_range>[0], [0.01..0.1], [10..100]</value_range>
+          <field name="value1" type="byte" />
+          <field name="value2" type="float" />
+          <field name="value3" type="byte" />
+        </block>
+        <block name="TractionControlRange_A3" signature="24 B3 D2 E5 A0 A3 00">
+          <notes>TC Range — A3 00 variant (float, float, byte). 18 files in corpus.
+Same hash as TractionControlRange but different suffix/field types.</notes>
+          <value_range>[0.01..0.9], [0.01..0.1], [0..99]</value_range>
           <field name="value1" type="float" />
           <field name="value2" type="float" />
           <field name="value3" type="byte" />
         </block>
         <block name="SteeringWheelDegrees" signature="24 F7 34 A1 FE 13 00">
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
           <field name="value2" type="byte" />
           <field name="value3" type="byte" />
           <notes>Steering wheel degrees of turn. AMS2 int16; byte; byte</notes>
@@ -1830,7 +1949,7 @@ Unknown Section</notes>
         <block name="HandbrakePressSetting_Int" signature="21 52 30 1F D2">
           <notes>Same as HandbrakePressSetting but as integer
 same as above, but in integer</notes>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="HandbrakeRange" signature="24 96 4B 29 B4 83 00">
           <notes>HandbrakeRange={byte}0, {float}0.01, {byte}100
@@ -1959,7 +2078,7 @@ If you want a smooth launch without too much traction control interference, set 
           <notes>[SPECULATIVE] ({byte}0, {float}1.0, {float}45). V1.4 L384.</notes>
           <field name="value1" type="byte" />
           <field name="value2" type="byte" />
-          <field name="value3" type="byte" />
+          <field name="value3" type="float" />
         </block>
         <block name="PC2_AidRange6" signature="24 09 DE B7 68 83 02">
           <notes>[SPECULATIVE] ({byte}0, {float}0.01, {float}200). V1.4 L387.</notes>
@@ -2201,9 +2320,7 @@ Ams 20 3B 62 D3 1C byte 1</notes>
           <field name="value1" type="byte" />
         </block>
         <block name="ReverseGearSetting" signature="28 D6 71 85 B0">
-          <notes>ReverseGearSetting // no value, which means zero</notes>
-          <value_range>[32]</value_range>
-          <field name="value1" type="byte" />
+          <notes>ReverseGearSetting // null marker (0x28) — no data in binary</notes>
         </block>
       </group>
       <group name="number of gears + gears">
@@ -2246,9 +2363,7 @@ ams2 24 EE 7A B8 C2 03 00 byte,byte,byte 0,1,2
           <field name="value1" type="byte" />
         </block>
         <block name="GearOneSetting" signature="28 F4 CC 2F 1D">
-          <notes>GearOneSetting={byte}1</notes>
-          <value_range>[32]</value_range>
-          <field name="value1" type="byte" />
+          <notes>GearOneSetting // null marker (0x28) — no data in binary</notes>
         </block>
       </group>
       <group name="shifting">
@@ -2500,9 +2615,7 @@ byte 02 ams 1.2.4.1</notes>
           <field name="value3" type="byte" />
         </block>
         <block name="DiffCenterBiasRatioCoastSetting" signature="28 FA EC CB BF">
-          <notes>DiffCenterBiasRatioCoastSetting={byte}</notes>
-          <value_range>[36]</value_range>
-          <field name="value1" type="byte" />
+          <notes>DiffCenterBiasRatioCoastSetting // null marker (0x28) — no data in binary</notes>
         </block>
         <block name="DiffCenterBiasRatioPowerSetting" signature="28 66 5F E2 43">
           <notes>DiffCenterBiasRatioPowerSetting=</notes>
@@ -2556,7 +2669,7 @@ byte 02 ams 1.2.4.1</notes>
           <notes>RearPowerBalance={byte},{byte},{byte}
 RearPowerBalance={byte},{float},{byte}</notes>
           <field name="value1" type="byte" />
-          <field name="value2" type="byte" />
+          <field name="value2" type="float" />
           <field name="value3" type="byte" />
         </block>
       </group>
@@ -2750,22 +2863,22 @@ DiffRearViscousLsdOptionSetting= // Rear Diff Viscous LSD Setting</notes>
         <block name="PC2_IntParam2" signature="21 2D D9 FE 0F">
           <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
           <value_range>[400,1200]</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="PC2_IntParam500" signature="21 42 FD F1 BF">
           <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
           <value_range>[500]</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="PC2_IntParam250" signature="21 AE BE 7F FA">
           <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
           <value_range>[250]</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="PC2_IntParam1" signature="21 D1 35 A6 C8">
           <notes>[SPECULATIVE] {int} PC2-era general param.</notes>
           <value_range>[400,600,1000]</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="PC2_FloatParam3" signature="22 2C 1D 1F 2F">
           <notes>[SPECULATIVE] {float} PC2-era general param.</notes>
@@ -2837,9 +2950,6 @@ PushrodBody=({float}0.10, {float}0.320, {float}0.000) 24 24 E1 9C B2 A3 00 Cambe
           <field name="value1" type="float" />
           <field name="value2" type="float" />
           <field name="value3" type="float" />
-          <field name="value4" type="float" />
-          <field name="value5" type="float" />
-          <field name="value6" type="byte" />
         </block>
         <block name="PushrodSpindle" signature="24 BE B9 BB AB A3 02">
           <notes>PushrodSpindle=({float}0.10, {float}-0.150, {float}0.000)
@@ -2905,9 +3015,6 @@ mberRange=({float}-3.5, {float}0.1, {byte}60)</notes>
 SpringMult={float}1.0 24 A5 12 3D 0D A3 00 SpringRange=({float}50000.0, {float}4166.0, {byte}6)</notes>
           <value_range>[0.4..1.3] (avg 0.8418), [0,0.0358], [-10410913560244901727085622938566656..158857933963697841294641463296] (avg -24675683654499638600509738188800), [3..255] (avg 147.0616)</value_range>
           <field name="value1" type="float" />
-          <field name="value2" type="float" />
-          <field name="value3" type="float" />
-          <field name="value4" type="byte" />
         </block>
         <block name="SpringRange" signature="24 A5 12 3D 0D A3 00">
           <notes>SpringRange=({float}50000.0, {float}4166.0, {byte}6)
@@ -2938,10 +3045,6 @@ SpringRange=({float}60000.0, {float}5000.0, {byte}6)</notes>
 mperMult={float}1.0 24 0C 43 D9 D0 A3 00 SlowBumpRange=({float}2500.0, {float}300.0, {byte}6) 20 D1 9E 2C 0A SlowBumpSetting={byte}1</notes>
           <value_range>[0.5885..1.25] (avg 0.8721), [-3431310576058368], [-10411154958552562376239228267790336..2665255669389455968317242436554326016] (avg 10269783776442008631430413157400576), [0..232] (avg 55.6565), [0..253] (avg 15.0374)</value_range>
           <field name="value1" type="float" />
-          <field name="value2" type="float" />
-          <field name="value3" type="float" />
-          <field name="value4" type="byte" />
-          <field name="value5" type="byte" />
         </block>
       </group>
       <group name="slow">
@@ -2973,7 +3076,6 @@ stBumpRange=({float}1200.0, {float}200.0, {byte}6) 20 38 38 25 87 FastBumpSettin
           <field name="value1" type="float" />
           <field name="value2" type="float" />
           <field name="value3" type="byte" />
-          <field name="value4" type="byte" />
         </block>
       </group>
       <group name="slow rebound">
@@ -2989,7 +3091,6 @@ SlowReboundRange=({float}5000.0, {float}300.0, {byte}6) 20 22 73 D7 81 SlowRebou
           <field name="value1" type="float" />
           <field name="value2" type="float" />
           <field name="value3" type="byte" />
-          <field name="value4" type="byte" />
         </block>
       </group>
       <group name="fast rebound">
@@ -3025,7 +3126,7 @@ AMS2 28 D1 9E 2C 0A AMS2 28 38 38 25 87 AMS2 28 22 73 D7 81 AMS2 28 B8 B0 02 2E<
         <block name="ReboundTransitionRange" signature="24 5C 47 9E 9E 13 00">
           <notes>ReboundTransitionRange={integer}XXXX, {byte}x, {byte}x
 ReboundTransitionRange{integer}XXXX, {byte}x, {byte}x</notes>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
           <field name="value2" type="byte" />
           <field name="value3" type="byte" />
         </block>
@@ -3067,39 +3168,53 @@ BrakePadRange=({byte}0, {byte}1, {byte}5) 20 64 D7 A9 E6 BrakePadSetting={byte}2
           <field name="value1" type="byte" />
           <field name="value2" type="byte" />
           <field name="value3" type="byte" />
-          <field name="value4" type="byte" />
-          <field name="value5" type="float" />
         </block>
       </group>
       <group name="temps">
         <block name="BrakeCriticalTemp" signature="21 D0 03 18 55">
-          <notes>{int}950.0 — critical brake temperature. AMS2: 900
-{float}950.0 ams 900,</notes>
+          <notes>Critical brake temperature (uint32 variant).
+V2.1 calls this "BrakeTorque (min)" — WRONG. Values 200-1200 = temperatures, not torque.
+Binary chain: follows BrakeMaxTemp (100%) → precedes BrakeWearRate (84%) / BrakeFailure (16%).
+4-corner field: 2000 hits = 500 files × 4 corners.
+WARNING: this hash also appears with marker 0x22 (float) in some files — see BrakeCriticalTemp_Float.</notes>
           <value_range>[200..1200] (avg 982.56)</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="BrakeMaxTemp" signature="21 E7 95 A8 D0">
-          <notes>{int}900.0 — max brake temperature. AMS2: 500
-{float}900.0 Ams2 500,</notes>
+          <notes>Maximum brake operating temperature (uint32 variant).
+Also known as "BrakeFadeRange" in V2.1 — both names mean the same thing:
+the temp ceiling beyond which brake fade becomes severe.
+Binary chain: follows BrakeFadeEnd (99%) → precedes BrakeCriticalTemp (100%).
+4-corner field: 1980 hits = 495 files × 4 corners (20 files use 0x20 marker).
+WARNING: this hash also appears with marker 0x22 (float) in some files — see BrakeMaxTemp_Float.</notes>
           <value_range>[300..600] (avg 410)</value_range>
-          <field name="value1" type="int16" />
+          <field name="value1" type="int32" />
         </block>
         <block name="BrakeOptimumTemp" signature="22 AB 02 4B 3C">
           <notes>BrakeOptimumTemp={float}500.0
 BrakeOptimumTemp={float}500.0 AMS2 24 AB 02 4B 3C 52 BrakeOptimumTemp={integ}400.0, {integ}650.0</notes>
           <field name="value1" type="float" />
         </block>
+        <block name="BrakeTempRange" signature="24 92 AA 06 24 52">
+          <notes>[SPECULATIVE] Brake temperature range compound (min_temp, max_temp).
+V2.1 says (min_temp, max_temp). Suffix 52 is exotic — not in standard table.
+Binary chain: follows BrakeDiscInertia/BrakeWearRate → precedes BrakeFadeStart (100%).
+4-corner field: appears 2000 times = 500 files × 4 corners.
+Suffix variants: 52 90(888), 52 C2(480), 52 50(318), 52 F4(244), 52 2C(272), etc.</notes>
+          <field name="value1" type="int32" />
+          <field name="value2" type="int32" />
+        </block>
         <block name="BrakeFadeStart" signature="22 02 3F 01 F1">
-          <notes>{float}0.34 // CDF_UNKN_059 — brake fade start threshold. AMS2: 0.75
-{float}0.34		//CDF_UNKN_059
-{float}0.34 //CDF_UNKN_059</notes>
+          <notes>Brake fade start threshold — fraction of optimum temp where fade begins.
+Binary chain: follows BrakeTempRange (100%) → precedes BrakeFadeEnd.
+Example: 0.34 (PC2), 0.55 (typical AMS2), 0.75 (high-perf).</notes>
           <value_range>[0.12..0.8] (avg 0.5564)</value_range>
           <field name="value1" type="float" />
         </block>
         <block name="BrakeFadeEnd" signature="22 45 81 36 93">
-          <notes>{float}0.95 // CDF_UNKN_060 — brake fade end threshold. AMS2: 0.9
-{float}0.95		//CDF_UNKN_060
-{float}0.95 //CDF_UNKN_060</notes>
+          <notes>Brake fade end threshold — fraction of optimum temp where fade is total.
+Binary chain: follows BrakeFadeStart → precedes BrakeMaxTemp (99%).
+Always higher than BrakeFadeStart.</notes>
           <value_range>[0.8,0.85,0.9]</value_range>
           <field name="value1" type="float" />
         </block>
@@ -3111,7 +3226,12 @@ BrakeOptimumTemp={float}500.0 AMS2 24 AB 02 4B 3C 52 BrakeOptimumTemp={integ}400
           <field name="value1" type="float" />
         </block>
         <block name="BrakeFailure" signature="24 BD 59 C8 42 A2">
-          <notes>BrakeFailure={float}0.01, {float}0.003</notes>
+          <notes>BrakeFailure compound (failure_rate, severity).
+NOTE: corpus mostly uses exotic suffix "22 0A" (1960/2000 = 98%) which also reads as float,float.
+Standard suffix A2 used in 40/2000 files. Both produce the same field types.
+Note: suffix "22" is exotic — not a standard float suffix here.
+Binary chain: follows BrakeWearRate (84%) or BrakeCriticalTemp (16%) → precedes BrakeTorque.
+4-corner field: 2000 hits = 500 files × 4 corners.</notes>
           <value_range>[0.01], [0.002]</value_range>
           <field name="value1" type="float" />
           <field name="value2" type="float" />
@@ -3119,14 +3239,30 @@ BrakeOptimumTemp={float}500.0 AMS2 24 AB 02 4B 3C 52 BrakeOptimumTemp={integ}400
       </group>
       <group name="torque">
         <block name="BrakeTorque" signature="22 4B A4 81 7A">
-          <notes>BrakeTorque={float}2200</notes>
+          <notes>BrakeTorque — max brake torque (float variant).
+WARNING: This hash appears with BOTH 0x22 (float) and 0x21 (uint32) markers.
+  22 = float (some files)
+  21 = uint32 (most files — e.g. 3000, 4250 for Ligier JS2R)
+Binary chain: follows BrakeFailure → precedes BrakeHeating.
+4-corner field: 1980 hits = 495 files × 4 corners.</notes>
+          <value_range>[1800..6000] (avg 3200)</value_range>
           <field name="value1" type="float" />
+        </block>
+        <block name="BrakeTorque_Int" signature="21 4B A4 81 7A">
+          <notes>BrakeTorque — max brake torque (integer variant, marker 0x21).
+Same hash as BrakeTorque but different marker (uint32 instead of float).
+User-confirmed: Ligier JS2R = 3000. Corpus sample: 4250.
+Binary chain: same position as float variant.</notes>
+          <value_range>[1800..6000] (avg 3200)</value_range>
+          <field name="value1" type="int32" />
         </block>
       </group>
       <group name="heating and cooling">
         <block name="BrakeDuctCooling" signature="22 A2 67 26 E9">
-          <notes>BrakeDuctCooling={float}5e-07
-new in ams2</notes>
+          <notes>BrakeDuctCooling — duct-based brake cooling coefficient. New in AMS2.
+V2.1 translation wrongly calls this "BumpTravel" — CONFIRMED brake field.
+Binary chain: follows BrakeCooling (100%) → precedes BrakeHeatParam1 (92%).
+4-corner field: 1708 hits = 427 files × 4 corners. Absent (0x28) in 73 files.</notes>
           <value_range>[0..0.0002] (avg 0)</value_range>
           <field name="value1" type="float" />
         </block>
@@ -3135,26 +3271,25 @@ new in ams2</notes>
           <value_range>[0.0012..0.0052] (avg 0.0026)</value_range>
           <field name="value1" type="float" />
         </block>
-        <block name="BrakeHeatAMS2_1" signature="22 6C 82 E4 02">
-          <notes>New AMS2 brake param 1. Value: ~2.69-2.91
-= 2.91</notes>
+        <block name="BrakeHeatParam1" signature="22 6C 82 E4 02">
+          <notes>[SPECULATIVE] Brake thermal parameter 1 — possibly heat capacity or thermal mass.
+Values ~2.69-2.91 across most cars. Higher for heavy cars (up to 4.4).
+Binary chain: follows BrakeDuctCooling (93%) → precedes BrakeHeatParam2 (100%).
+4-corner field: 2000 hits = 500 files × 4 corners.
+V2.1 has this as unnamed h_02e4826c.</notes>
           <value_range>[1.34..4.4] (avg 2.8382)</value_range>
           <field name="value1" type="float" />
         </block>
-        <block name="BrakeHeatAMS2_4" signature="22 CE A0 75 6B">
-          <notes>New AMS2 brake param 4. Value: ~1.3e-06 to 2e-06
-= 1.3e-06
-Attention
-Note
-when using road car chassis to make a race car, automatic tire selection will not work, unless you swap 6 bytes at the following address EDIT: only change the first byte from 2F to 35
-footer bytes.
-the total number of bytes varies; the number is defined in the third register at the top of the file: 0x0020-0x0023
--324
-end data examples
-mclaren 84 54 5E 4B 86 3A 0F 83 79 86 4C 3F 28
-por cup2 84 51 5A 5D 8B 4F 35 E6 5F C3 5F 28 69 29 0D
-porsche R 84 4A 54 49 9B 4F 2F E6 5F C3 5F 28 69 29 0D</notes>
-          <value_range>[0..0] (avg 0)</value_range>
+        <block name="BrakeHeatParam4" signature="22 CE A0 75 6B">
+          <notes>[SPECULATIVE] Brake thermal parameter 4 — last brake field before next section.
+Very small values (~1.3e-06 to 2e-06). Possibly residual heat dissipation rate.
+V2.1 translation wrongly calls this "BumpTravel" — CONFIRMED brake field.
+Binary chain: follows BrakeCooling2 (100%) → followed by 0xE0 section marker (76%).
+4-corner field: 1840 hits = 460 files × 4 corners. Absent (0x28) in 40 files.
+---
+Note (unrelated): when using road car chassis to make a race car, automatic tire
+selection will not work unless you change the first footer byte from 2F to 35.</notes>
+          <value_range>[0..0.000002] (avg ~1.3e-06)</value_range>
           <field name="value1" type="float" />
         </block>
         <block name="BrakeCriticalTemp_Float" signature="22 D0 03 18 55">
@@ -3167,9 +3302,12 @@ porsche R 84 4A 54 49 9B 4F 2F E6 5F C3 5F 28 69 29 0D</notes>
 {float}900.0</notes>
           <field name="value1" type="float" />
         </block>
-        <block name="BrakeHeatAMS2_2" signature="22 EE 67 FD 55">
-          <notes>New AMS2 brake param 2. Value: ~0.26-0.31
-= 0.31</notes>
+        <block name="BrakeHeatParam2" signature="22 EE 67 FD 55">
+          <notes>[SPECULATIVE] Brake thermal parameter 2 — possibly thermal conductivity or radiation factor.
+Values ~0.26-0.31 for most cars, up to 0.71 for high-performance.
+V2.1 translation wrongly calls this "ReboundTravel" — CONFIRMED brake field.
+Binary chain: follows BrakeHeatParam1 (100%) → precedes BrakeCooling2 (100%).
+4-corner field: 2000 hits = 500 files × 4 corners.</notes>
           <value_range>[0.22..0.71] (avg 0.2986)</value_range>
           <field name="value1" type="float" />
         </block>
@@ -3180,9 +3318,12 @@ BrakeCooling({float}0.007, {float}7e-06)</notes>
           <field name="value1" type="float" />
           <field name="value2" type="float" />
         </block>
-        <block name="BrakeHeatAMS2_3" signature="24 5D 9E 9A 9F A2">
-          <notes>New AMS2 brake cooling param 3. Values: ~0.0014, 5.1e-05
-= 0.0015, 3.4e-05</notes>
+        <block name="BrakeCooling2" signature="24 5D 9E 9A 9F A2">
+          <notes>[SPECULATIVE] Secondary brake cooling compound — speed-dependent cooling.
+V2.1 identifies this as BrakeCooling (2 of 2) with (base_rate, speed_factor).
+Suffix A2 = float, float. Has 9 suffix variants (A2 34 most common at 1158).
+Binary chain: follows BrakeHeatParam2 (100%) → precedes BrakeHeatParam4 (100%).
+4-corner field: 2000 hits = 500 files × 4 corners.</notes>
           <value_range>[0..1] (avg 0.0055), [0..0.0003] (avg 0.0001)</value_range>
           <field name="value1" type="float" />
           <field name="value2" type="float" />
@@ -3194,7 +3335,6 @@ BrakeCooling({float}0.007, {float}7e-06)</notes>
 BumpStopSpring={integer}150000 // hex string dictating integer data* 22 7F C6 F8 41 BumpStopSpring={float}150000.0 //Same as above but with float data*</notes>
           <value_range>[349..179956] (avg 36797.5921), [-1443869672324355823147748950016,-1443868765629991112175867920384,-1443868614514263660347221082112]</value_range>
           <field name="value1" type="int32" />
-          <field name="value2" type="float" />
         </block>
         <block name="BumpStageTwo" signature="22 70 02 6D 2B">
           <notes>BumpStageTwo={float}0.09</notes>

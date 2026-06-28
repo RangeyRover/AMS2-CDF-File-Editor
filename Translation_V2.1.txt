@@ -1,0 +1,1825 @@
+AMS2 / Project Cars 2 (Madness Engine)
+Chassis CDF Binary translation
+Version 2.1 — June 2026 — Compiled by jusk
+
+SOURCES:
+  - Shiimis V1.4 (2016) — original pCARS1/AMS2 field identification, partial coverage.
+  - ohyeah decodes — game-authoritative field names from Reiza string tables.
+    All 404 base-game chassis .cdf files decoded from March 2026 game version.
+    Field names, IDs, types, and value ranges sourced from this corpus.
+  - IndyCar 2023/2024 mod (IC23) investigation (jusk).
+
+ FORMAT NOTES:
+  Type codes in decoded .cdf files:
+    t=0 = byte (uint8)
+    t=1 = decimal (uint32 LE, stored as integer)
+    t=2 = float (float32 LE)
+    t=4 = compound / tuple (multiple values: floats, bytes, or integers)
+    t=6 = special (1-byte value, same size as byte; used for tire compound counts, gear count etc.)
+    t=8 = null/flag (field absent from binary; value placeholder only)
+
+  CDF Binary Field Layout — Verified across 501 files, 303,814 fields
+  =====================================================================
+
+  [marker][hash_b0][hash_b1][hash_b2][hash_b3][suffix...][data...]
+
+  Marker  Layout                                    Meaning                 Verified
+  ------  ----------------------------------------  ----------------------  --------
+  0x20    BB BB BB BB  DD                            1 byte value             54,908
+  0x21    BB BB BB BB  DD DD DD DD                   uint32 LE                14,754
+  0x22    BB BB BB BB  DD DD DD DD                   float32 LE               98,221
+  0x26    BB BB BB BB  DD                            1 byte (special*)         3,324
+  0x28    BB BB BB BB                                no data (null/absent)    30,392
+  0xE0    BB BB BB BB                                no data (section)         6,678
+  0x24    BB BB BB BB  SS [SS] DD DD DD...           compound (suffix-defined) 95,537
+
+  * 0x26 is 1 byte NOT 4. Same size as 0x20. Semantic use: tire counts, gear count.
+
+  Compound suffix table (0x24):
+    Suffix    Types                         Data bytes  Total   Verified
+    --------  ----------------------------  ----------  -----   --------
+    21        float                              4       10       6,245
+    22        float, byte                        5       11       2,473
+    A2        float, float                       8       14       7,635
+    03 00     byte, byte, byte                   3       10      21,754
+    03 01     byte, byte, int32                  6       13         277
+    03 02     byte, byte, float                  6       13         874
+    23 00     float, byte, byte                  6       13       3,953
+    23 02     float, byte, float                 9       16       4,088
+    53 01     int32, int32, int32               12       19         145
+    53 02     int32, int32, float               12       19         495
+    83 00     byte, float, byte                  6       13       9,060
+    83 01     byte, float, int32                 9       16         557
+    83 02     byte, float, float                 9       16       3,436
+    A3 00     float, float, byte                 9       16      14,494
+    A3 01     float, float, int32               12       19         193
+    A3 02     float, float, float               12       19       6,806
+
+    CAUTION: 53 00 and 13 00 are context-dependent (multiple sizes observed).
+    Table covers 86% of compound fields. Remaining 14% use rare/exotic suffixes.
+
+  File headers: 24 bytes (91%), 20 bytes (6%), 8 bytes (3%). Skip to first marker.
+
+  Hash ID encoding: decoded [DD CC BB AA] (0xaabbccdd) → binary bytes [DD CC BB AA] (0xaabbccdd) (little-endian) ordering.
+
+  Compound (tuple) format: (default_value, step_size, num_settings)
+    Used for all setupable garage parameters. step_size × num_settings = total range.
+    E.g. SpringRange=(220000, 1000, 40) → 40 steps of 1000 N/m from 220000.
+  Some compounds are pure data tuples (not setup ranges), e.g. Inertia=(Ix,Iy,Iz).
+
+STRUCTURE:
+  File sections: [GENERAL] [FRONTWING] [REARWING] [BODYAERO] [DIFFUSER]
+                 [SUSPENSION] [CONTROLS] [ENGINE] [DRIVELINE] [DAMAGE]
+                 [FRONTLEFT] [FRONTRIGHT] [REARLEFT] [REARRIGHT]
+  Some vehicles have additional sections: [REARWING2] [[BE 70 BE 88] (0x88be70be)]=FW2 etc.
+  Per-corner sections share the same field IDs (same hash in all four corners).
+
+UNKNOWN FIELD NAMING CONVENTION:
+  Fields dfbin_to_df.py could not name are listed as h_XXXXXXXX where XXXXXXXX
+  is the 8-digit LE hex representation of the field's 32-bit hash ID.
+  Unknown fields are grouped by inferred purpose where patterns are clear.
+  Fields marked [ALL FILES] appear in every one of the 404 decoded base-game CDFs.
+
+==============================================================================
+SECTION 1: [GENERAL] — Vehicle Identity, Mass, CG, AI, Tire Setup
+==============================================================================
+
+--- Named fields ---
+
+AdjustableUpgradeLevel_0  // id=[FA D6 67 78] (0x7867d6fa)  t=null/flag
+  // Vehicle upgrade system level. 0=no upgrades. Present in ~221 files.
+
+Rules  // id=[B9 1B 6F 6E] (0x6e6f1bb9)  t=null/flag
+  // Ruleset selector. Always 0/absent in current game. [ALL FILES]
+
+GarageDisplayFlags  // id=[9A 30 40 34] (0x3440309a)  t=byte
+  // Controls which garage setup tabs are visible. Bitfield.
+  // 7=all tabs shown, 174/175=limited tabs (AI-only or locked cars). [ALL FILES]
+
+FeelerFlags  // id=[96 5B FF BF] (0xbfff5b96)  t=byte
+  // Collision feeler configuration flags. 8=standard, 0=minimal. (335 files)
+
+Mass  // id=[67 0B 57 AB] (0xab570b67)  t=decimal
+  // Vehicle mass in kg, excluding fuel and driver. [ALL FILES]
+  // F-USA23: 856 kg, typical GT3: 1130-1165 kg, kart: 170 kg
+
+Inertia  // id=[BB B3 9F 0B] (0x0b9fb3bb)  t=compound (Ixx, Iyy, Izz)
+  // Moments of inertia in kg·m². (Ixx=roll, Iyy=pitch, Izz=yaw). [ALL FILES]
+
+FuelTankPos  // id=[A0 53 0C 50] (0x500c53a0)  t=compound (x, y, z)
+  // Fuel tank position in vehicle local coordinates (metres). [ALL FILES]
+
+FuelTankMotion  // id=[6F 70 F3 C7] (0xc7f3706f)  t=compound (frequency, damping)
+  // Fuel slosh model: natural frequency (Hz) and damping ratio. [ALL FILES]
+
+Notes  // id=[3A 17 96 C2] (0xc296173a)  t=special
+  // Internal notes field. Always 0. (391 files)
+
+Symmetric  // id=[38 05 5C 3C] (0x3c5c0538)  t=byte
+  // 1=car is laterally symmetric (most cars). 0=asymmetric (oval cars with offset setups — NASCAR, IndyCar ovals etc.). [ALL FILES]
+
+CGHeight  // id=[18 24 EA A8] (0xa8ea2418)  t=float
+  // Centre of gravity height above ground (metres). [ALL FILES]
+
+CGRightRange  // id=[DF 8D 93 CF] (0xcf938ddf)  t=compound (default, step, count)
+  // Left/right CG bias setup range. [ALL FILES]
+
+CGRightSetting  // id=[00 9D 8A CF] (0xcf8a9d00)  t=null/flag
+  // CG right setup setting index. [ALL FILES]
+
+CGRearRange  // id=[BE BA 67 7B] (0x7b67babe)  t=compound (default, step, count)
+  // Front/rear CG balance setup range. [ALL FILES]
+
+CGRearSetting  // id=[D4 4C 53 C4] (0xc4534cd4)  t=null/flag
+  // CG rear setting index. [ALL FILES]
+
+GraphicalOffset  // id=[86 9A 77 97] (0x97779a86)  t=compound (x, y, z)
+  // Visual model offset from physics origin (metres). [ALL FILES]
+
+CollisionOffset  // id=[D2 CF F4 3D] (0x3df4cfd2)  t=compound (x, y, z)
+  // Collision mesh offset from physics origin. [ALL FILES]
+
+Undertray00–Undertray10  // ids: [E9 DE D9 99] (0x99d9dee9), [BA 61 42 62] (0x624261ba), [AC 8D E9 39] (0x39e98dac), [C7 C2 3D 06] (0x063dc2c7),
+                         //       [F3 14 15 24] (0x241514f3), [12 40 9D 39] (0x399d4012), [FB 50 F7 6F] (0x6ff750fb), [42 34 18 59] (0x59183442),
+                         //       [A2 43 C6 15] (0x15c643a2), [E4 F9 61 17] (0x1761f9e4), [68 60 EB 06] (0x06eb6068)  t=compound (x, y, z)
+  // Undertray geometry positions (metres). Each defines a 3D point on the flat-bottom
+  // profile, used by the ground-effect and diffuser aero model. Whether these are
+  // aero sample points, ride-height measurement positions, or physical contact reference
+  // points is not confirmed — the field name gives only the position, not its function.
+  // Undertray00-03: four points of central floor (present in all formats).
+  // Undertray04-07: four additional outer points.
+  // Undertray08-09: rear pair (diffuser region).
+  // Undertray10: additional point (often 0,0,0).
+  // Older cdfbin format had Undertray00-08 only (9 points).
+  // Current format: 11 points (Undertray04/09/10 added post-2025). [ALL FILES]
+
+UndertrayParams  // id=[86 AE 66 2B] (0x2b66ae86)  t=compound (spring_N/m, damper_Ns/m, friction)
+  // Undertray contact spring, damper, and friction coefficients.
+  // F-USA23: (200000, 2500, 1.5). (401 files)
+
+WedgeRange  // id=[5B 5E C8 CD] (0xcdc85e5b)  t=compound (default, step, count)
+  // Wedge (cross-weight) setup range. Only present in NASCAR/oval cars. (62 files)
+
+WedgeWheel  // id=[85 75 5F 8A] (0x8a5f7585)  t=byte
+  // Which wheel the wedge adjustment acts on. (60 files)
+
+FrontTireCompoundSetting  // id=[CE EF 55 CF] (0xcf55efce)  t=byte
+  // Default front tire compound index. (124 files — cars with separate F/R compounds)
+
+RearTireCompoundSetting  // id=[0B EC 7F 64] (0x647fec0b)  t=null/flag
+  // Default rear tire compound. Null = same as front. [ALL FILES]
+
+FuelRange  // id=[19 38 99 74] (0x74993819)  t=compound (default, step, count)
+  // Fuel load setup range (laps or kg). [ALL FILES]
+
+FuelSetting  // id=[99 F0 BB F8] (0xf8bbf099)  t=byte
+  // Default fuel load setting index. [ALL FILES]
+
+NumPitstopsRange  // id=[F7 05 73 EA] (0xea7305f7)  t=compound  (399 files)
+PitstopNRange / PitstopNSetting  // [9B FA 80 6D] (0x6d80fa9b), [55 DE D0 64] (0x64d0de55), [E8 12 23 11] (0x112312e8), [BB F6 59 4F] (0x4f59f6bb) / [03 EE A8 65] (0x65a8ee03), [85 22 52 46] (0x46522285), [26 BA 51 7D] (0x7d51ba26)
+  // Pitstop fuel strategy setup ranges/settings.
+NumPitstopsSetting  // id=[6D DE 02 E8] (0xe802de6d)  t=byte
+
+AIMinPassesPerTick  // id=[BB 1F 05 F3] (0xf3051fbb)  t=byte
+  // AI path calculation resolution. Always 2. [ALL FILES]
+
+AIRotationThreshold  // id=[26 A9 8C 99] (0x998ca926)  t=float
+  // AI rotation threshold for corner entry decision. [ALL FILES]
+
+AIEvenSuspension  // id=[79 F4 A6 98] (0x98a6f479)  t=float
+  // AI suspension balance multiplier. 1.0=use car values. [ALL FILES]
+
+AISpringRate  // id=[BC C7 CE E7] (0xe7cec7bc)  t=float
+  // AI spring rate scaling multiplier. [ALL FILES]
+
+AIDamperFast  // id=[C4 89 77 69] (0x697789c4)  t=float
+  // AI fast damper multiplier. [ALL FILES]
+
+AIDownforceBias  // id=[15 6B 48 37] (0x37486b15)  t=null/flag  [ALL FILES]
+AIDownforceBias  // id=[F6 B9 76 CF] (0xcf76b9f6)  t=null/flag  (401 files)
+  // AI downforce bias (two separate fields). Usually 0.
+
+AITorqueStab  // id=[2E 5D 54 E4] (0xe4545d2e)  t=compound (stab_x, stab_y, stab_z)
+  // AI stability torque vector multipliers. [ALL FILES]
+
+--- Unknown fields — Tire model parameters [ALL FILES unless noted] ---
+  // The following ~150 unknown fields in [GENERAL] appear in every base-game car file.
+  // dfbin_to_df.py has no names for them from the March 2026 string tables.
+  // Values vary by car category (open-wheel, GT, touring, kart), suggesting they are
+  // per-car tire compound/model tuning parameters — but this is inferred, not confirmed.
+  // Extracting post-June 2026 game files and re-running dfbin_to_df.py is required
+  // to obtain authoritative names. All subgroup labels below are inferred.
+
+  // SUBGROUP A — Possible category/compound selectors (t=special)
+  // Values = 6 (most cars), 8 (some GT/touring); F-Reiza has 19 (purpose unclear).
+  // "Compound count" interpretation is uncertain — F-Reiza's value of 19 doesn't fit
+  // that reading. These may select a tire model variant or configuration set.
+  h_3789a7e4 = 1        // id=[E4 A7 89 37] (0x3789a7e4)  t=special — possible tire model version/variant flag
+  h_104d837b = 6        // id=[7B 83 4D 10] (0x104d837b)  t=special — possibly front tire category/compound selector
+  h_c037f8a4 = 6        // id=[A4 F8 37 C0] (0xc037f8a4)  t=special — possibly rear tire category/compound selector
+  h_5da8faf7 = 6        // id=[F7 FA A8 5D] (0x5da8faf7)  t=special — possibly third tire category selector
+
+  // SUBGROUP B — Probable tire grip scaling factors (dimensionless, ~0.70-1.05 range)
+  // Vary significantly by car category. Likely scale the tire grip model at
+  // different temperature/wear states. Label is inferred from value range and category pattern.
+  h_c02af3d2            // id=[D2 F3 2A C0] (0xc02af3d2)  t=float   F-USA23: 1.0,  GT3: 0.84
+  h_a1793e8e            // id=[8E 3E 79 A1] (0xa1793e8e)  t=float   F-USA23: 0.99, GT3: 0.76
+  h_af6acc3b            // id=[3B CC 6A AF] (0xaf6acc3b)  t=float   Most cars: 1.0
+  h_03e97642            // id=[42 76 E9 03] (0x03e97642)  t=float   Most cars: 1.0
+  h_431f64d2            // id=[D2 64 1F 43] (0x431f64d2)  t=float   Most cars: 1.0
+  h_b2198467            // id=[67 84 19 B2] (0xb2198467)  t=float   F-USA23: 1.0,  GT3: 0.70
+  h_c745cffa            // id=[FA CF 45 C7] (0xc745cffa)  t=float   F-USA23: 0.85, GT3: 0.90
+  h_597dc76d            // id=[6D C7 7D 59] (0x597dc76d)  t=float   F-USA23: 1.0,  GT3: 1.0
+  h_83a96e0b            // id=[0B 6E A9 83] (0x83a96e0b)  t=float   F-USA23: 0.95, GT3: 0.85
+  h_ab4a238c            // id=[8C 23 4A AB] (0xab4a238c)  t=float   F-USA23: 0.35, GT3: 0.25
+  h_f3001a4c            // id=[4C 1A 00 F3] (0xf3001a4c)  t=float   ~0.75-0.80 range
+  h_b831a1bc            // id=[BC A1 31 B8] (0xb831a1bc)  t=float   ~0.78 range
+  h_7fcfbfbb            // id=[BB BF CF 7F] (0x7fcfbfbb)  t=float   ~0.78-0.80 range
+  h_45f73214            // id=[14 32 F7 45] (0x45f73214)  t=float   ~0.80-0.86 range
+  h_aed8b0c7            // id=[C7 B0 D8 AE] (0xaed8b0c7)  t=null/flag  ~0-1.8 range
+  h_dc9c527e            // id=[7E 52 9C DC] (0xdc9c527e)  t=float   ~0.88-0.96 (398 files)
+  h_fd738d3a            // id=[3A 8D 73 FD] (0xfd738d3a)  t=float   ~0.96-0.98 (403 files)
+  h_31fe5c45            // id=[C4 E5 1F F3] (0xf31fe5c4)5 t=float   ~0.98-0.99 (403 files)
+  h_e0227cfc            // id=[FC 7C 22 E0] (0xe0227cfc)  t=float   ~0.96-1.0  (403 files)
+  h_4a416435            // id=[35 64 41 4A] (0x4a416435)  t=float   ~0.99-1.0  (403 files)
+  h_63162a34            // id=[34 2A 16 63] (0x63162a34)  t=float   ~1.04 (397 files)
+  h_a542b7b5            // id=[B5 B7 42 A5] (0xa542b7b5)  t=float   ~1.05 (397 files)
+  h_70d947ed            // id=[ED 47 D9 70] (0x70d947ed)  t=float   ~0.96-0.98 (328 files)
+  h_df962a82            // id=[82 2A 96 DF] (0xdf962a82)  t=float   ~1.06-1.08 (328 files)
+
+  // SUBGROUP C — Probable tire temperature parameters (inferred from value patterns)
+  h_7ad95ef1 = (40, 100, 128) // id=[F1 5E D9 7A] (0x7ad95ef1)  t=compound  [ALL FILES — CONSTANT]
+    // Constant (40, 100, 128) across all 403 non-kart cars; kart uses (40, 100, 120).
+    // Widely inferred to be tire temperature thresholds (°C): cold / optimal / overheat.
+  h_909da1ee = 0.785          // id=[EE A1 9D 90] (0x909da1ee)  t=float     [ALL FILES — CONSTANT]
+    // Value is ≈ π/4 (0.7854). Possibly a tire geometry factor (e.g. contact patch area).
+  h_8fc0e3a1                  // id=[A1 E3 C0 8F] (0x8fc0e3a1)  t=float   50 most cars, 100 F-Reiza, 0 kart
+    // Possibly temperature-related threshold or model variant selector.
+  h_89d2fc09 = 0.25           // id=[09 FC D2 89] (0x89d2fc09)  t=float   [ALL FILES — CONSTANT]
+    // Constant; always 0.25. Specific purpose unknown.
+  h_58797108                  // id=[08 71 79 58] (0x58797108)  t=null/flag  [ALL FILES — always absent]
+  h_5827482f                  // id=[2F 48 27 58] (0x5827482f)  t=byte   25-35 most cars, 30 F-USA23/F1
+    // Unknown tire model parameter (byte). Possibly temperature-related (count or threshold).
+  h_87418b6a                  // id=[6A 8B 41 87] (0x87418b6a)  t=byte   60-90; not present in old IC23 format (330 files)
+  h_8f9a3137                  // id=[37 31 9A 8F] (0x8f9a3137)  t=float   7-12 range (403 files)
+  h_23464e53                  // id=[53 4E 46 23] (0x23464e53)  t=float   6-10 range (403 files)
+  h_bcec00ab                  // id=[AB 00 EC BC] (0xbcec00ab)  t=float   ~0.96-1.0 range (403 files)
+  h_e6b48ab9                  // id=[B9 8A B4 E6] (0xe6b48ab9)  t=float   100 most cars, 14-15 others (403 files)
+  h_eac0fcef                  // id=[EF FC C0 EA] (0xeac0fcef)  t=float   ~0.01-0.02 (403 files)
+
+  // SUBGROUP D — Possibly slip curve / contact patch parameters (small values; inferred from magnitude)
+  h_c730a06f                  // id=[6F A0 30 C7] (0xc730a06f)  t=float   0.06-0.10 open-wheel, 0.02 kart
+  h_4df7a6e6                  // id=[E6 A6 F7 4D] (0x4df7a6e6)  t=float   0.20 open-wheel, 0.40 GT3
+  h_458b0060                  // id=[60 00 8B 45] (0x458b0060)  t=float   ~0.15-0.20
+  h_7eacc27a                  // id=[7A C2 AC 7E] (0x7eacc27a)  t=float   ~0.12-0.18
+  h_c46a4669                  // id=[69 46 6A C4] (0xc46a4669)  t=float   ~0.06-0.20
+  h_765cd9f3                  // id=[F3 D9 5C 76] (0x765cd9f3)  t=float   0.60 most cars, 0 F-Reiza/LMP
+  h_ebe46e26                  // id=[26 6E E4 EB] (0xebe46e26)  t=float   0.60 most cars, 0 F-Reiza/LMP
+  h_ad12acbd                  // id=[BD AC 12 AD] (0xad12acbd)  t=float   ~0.40-0.50
+  h_632d6879                  // id=[79 68 2D 63] (0x632d6879)  t=float   ~0.25-0.50
+  h_f8893f5e = 1.05           // id=[5E 3F 89 F8] (0xf8893f5e)  t=float   [ALL FILES — nearly constant]
+  h_40aa2199                  // id=[99 21 AA 40] (0x40aa2199)  t=float   ~0.15-0.25
+  h_08d075ed                  // id=[ED 75 D0 08] (0x08d075ed)  t=float   1.0-1.75
+  h_390df7de                  // id=[DE F7 0D 39] (0x390df7de)  t=float   ~0.99
+  h_45d7f2c1                  // id=[C1 F2 D7 45] (0x45d7f2c1)  t=float   ~0.975-0.995
+  h_739850b3                  // id=[B3 50 98 73] (0x739850b3)  t=float   ~0.80-1.0
+  h_2c52c48d                  // id=[8D C4 52 2C] (0x2c52c48d)  t=float   ~0.10-0.15
+  h_78f78fe4                  // id=[E4 8F F7 78] (0x78f78fe4)  t=float   ~0.10-0.40
+  h_65289d23                  // id=[23 9D 28 65] (0x65289d23)  t=float   ~0.40-0.80
+  h_0344c330                  // id=[30 C3 44 03] (0x0344c330)  t=float   1.40-1.70
+  h_0adfc8ce                  // id=[CE C8 DF 0A] (0x0adfc8ce)  t=float   1.50-1.80
+  h_c0692582                  // id=[82 25 69 C0] (0xc0692582)  t=float   ~0.35
+  h_b5cd13b2                  // id=[B2 13 CD B5] (0xb5cd13b2)  t=float   ~0.50-0.80
+  h_bd4d0d2b                  // id=[2B 0D 4D BD] (0xbd4d0d2b)  t=float   ~0.875-0.925
+  h_ac95e43c                  // id=[3C E4 95 AC] (0xac95e43c)  t=float   ~0.02-0.025 (not in old IC23 format)
+  h_c48b1f61                  // id=[61 1F 8B C4] (0xc48b1f61)  t=float   ~0.10-0.20
+  h_fd9a0cb3                  // id=[B3 0C 9A FD] (0xfd9a0cb3)  t=float   ~0.17-0.26
+  h_e36507f4                  // id=[F4 07 65 E3] (0xe36507f4)  t=float   ~0.19-0.30
+  h_0d631dc6                  // id=[C6 1D 63 0D] (0x0d631dc6)  t=float   ~0.25-0.42
+  h_7f76d450                  // id=[50 D4 76 7F] (0x7f76d450)  t=float   ~0.04-0.10
+  h_0aa6cdf8                  // id=[F8 CD A6 0A] (0x0aa6cdf8)  t=float   ~0.075-0.085
+  h_2c5bf8a0                  // id=[A0 F8 5B 2C] (0x2c5bf8a0)  t=float   ~0.12-0.15
+  h_6bf83f2b                  // id=[2B 3F F8 6B] (0x6bf83f2b)  t=float   ~0.10-0.50
+  h_ed9a7688                  // id=[88 76 9A ED] (0xed9a7688)  t=null/flag  small range ~0.0-0.1
+  h_90040011                  // id=[11 00 04 90] (0x90040011)  t=float   7-12 (403 files)
+  h_237cf4ed                  // id=[ED F4 7C 23] (0x237cf4ed)  t=float   ~0.40-0.94 (398 files)
+  h_a9e92cd4                  // id=[D4 2C E9 A9] (0xa9e92cd4)  t=byte    0 or 1 (403 files)
+
+  // SUBGROUP E — Discrete settings / byte flags
+  h_4ce575bb                  // id=[BB 75 E5 4C] (0x4ce575bb)  t=byte   14-24 typical, 5 kart [ALL FILES]
+  h_896d129b                  // id=[9B 12 6D 89] (0x896d129b)  t=byte   20-35 typical, 5 kart [ALL FILES]
+  h_2faa0296 = 1              // id=[96 02 AA 2F] (0x2faa0296)  t=byte   [ALL FILES — nearly constant]
+  h_4320d80e                  // id=[0E D8 20 43] (0x4320d80e)  t=byte   1-4 (400 files)
+  h_b778efa4                  // id=[A4 EF 78 B7] (0xb778efa4)  t=byte   1-5 (400 files)
+  h_a0a3fa20                  // id=[20 FA A3 A0] (0xa0a3fa20)  t=byte   2-4 (351 files — not in old IC23 format)
+  h_32dc58ae                  // id=[AE 58 DC 32] (0x32dc58ae)  t=byte   0 or 1 (396 files — not in old IC23 format)
+  h_f243ffe2                  // id=[E2 FF 43 F2] (0xf243ffe2)  t=byte   4-10 (330 files — not in old IC23 format)
+  h_87418b6a                  // (see Subgroup C)
+
+  // SUBGROUP F — Larger floats (purpose unclear; possibly aerodynamic or stability-related)
+  h_c48b7aed                  // id=[ED 7A 8B C4] (0xc48b7aed)  t=float   1.5-2.0 (323 files)
+  h_f6f8b94a                  // id=[4A B9 F8 F6] (0xf6f8b94a)  t=float   2.0-2.2 (323 files)
+  h_921153f1                  // id=[F1 53 11 92] (0x921153f1)  t=float   1.5-2.0 (323 files)
+  h_39dc616f                  // id=[6F 61 DC 39] (0x39dc616f)  t=float   1.15-1.16 (349 files — not in old IC23)
+  h_07723459                  // id=[59 34 72 07] (0x07723459)  t=float   1.5 (349 files — not in old IC23)
+  h_d22c6169                  // id=[69 61 2C D2] (0xd22c6169)  t=float   2.0-2.5 (not in old IC23)
+  h_fdb0c2f8                  // id=[F8 C2 B0 FD] (0xfdb0c2f8)  t=float   1.35-1.5 (395 files)
+  h_4a1f56b8                  // id=[B8 56 1F 4A] (0x4a1f56b8)  t=float   0.15-0.25 (not in old IC23)
+  h_e09d7f8a                  // id=[8A 7F 9D E0] (0xe09d7f8a)  t=float   0.3-1.5 (401 files)
+  h_af1188ca                  // id=[CA 88 11 AF] (0xaf1188ca)  t=float   ~0.01-0.10 (401 files)
+  h_64ef9d2e                  // id=[2E 9D EF 64] (0x64ef9d2e)  t=float   ±0.5 (401 files)
+  h_53f72e92                  // id=[92 2E F7 53] (0x53f72e92)  t=null/flag  0 or 100 (402 files)
+
+  // SUBGROUP G — Possibly tire wear/degradation parameters (small rate values)
+  // Only present in ~329 files (GT/LMP/open-wheel race cars; absent in kart/vintage/truck)
+  h_d5b35002                  // id=[02 50 B3 D5] (0xd5b35002)  t=float   ~0.013-0.014
+  h_473ab144                  // id=[44 B1 3A 47] (0x473ab144)  t=float   ~0.023-0.024
+  h_280b2fbd                  // id=[BD 2F 0B 28] (0x280b2fbd)  t=float   ~0.023-0.024
+  h_9ab257f3                  // id=[F3 57 B2 9A] (0x9ab257f3)  t=float   ~0.15-0.17
+  h_92c76fd4                  // id=[D4 6F C7 92] (0x92c76fd4)  t=float   ~0.04-0.08
+  h_3cf4aaae                  // id=[AE AA F4 3C] (0x3cf4aaae)  t=float   ~0.50-0.80 (328 files)
+  h_def2d62d                  // id=[2D D6 F2 DE] (0xdef2d62d)  t=float   ~0.65-0.70 (352 files)
+  h_bc5e3bf8                  // id=[F8 3B 5E BC] (0xbc5e3bf8)  t=float   ~0.02-0.04 (352 files)
+  h_b552c68b                  // id=[8B C6 52 B5] (0xb552c68b)  t=float   ~0.28-0.45 (396 files)
+  h_cce25d92                  // id=[92 5D E2 CC] (0xcce25d92)  t=compound  (36000,16000,8000) typical — not in old IC23
+    // Three-value tuple; values are in 8000-36000 range. May be tire thermal mass
+    // parameters or temperature diffusion thresholds (J/kg or similar).
+
+  // SUBGROUP H — Possibly wet tire / graining parameters (subset of files only)
+  h_23341bf5                  // id=[F5 1B 34 23] (0x23341bf5)  t=float   ~0.30-0.70 (265 files)
+  h_16a24828                  // id=[28 48 A2 16] (0x16a24828)  t=byte    matches FuelSetting value (236 files)
+  h_b78975ed                  // id=[ED 75 89 B7] (0xb78975ed)  t=float   ~0.90-0.94 (221 files)
+  h_153a40c2                  // id=[C2 40 3A 15] (0x153a40c2)  t=compound  (0, 1, count) — range format (127 files)
+  h_d11f6d12                  // id=[12 6D 1F D1] (0xd11f6d12)  t=null/flag  (125 files)
+  h_05cadf0c                  // id=[0C DF CA 05] (0x05cadf0c)  t=float   ~0.0-0.2 (219 files)
+  h_0bd17a68 = 1.25           // id=[68 7A D1 0B] (0x0bd17a68)  t=float   (102 files)
+
+  // [Additional less-common unknowns omitted — see raw catalog]
+
+--- Fields from cdf-hex-map.xml (8 entries) ---
+
+ClutchWearRate  // id=[1E 5C 8F 56] (0x568f5c1e)  t=float  [-0.0025,-0.0004]
+  // [SPECULATIVE] V1.4 L73: unknown float near clutch params. Possible clutch wear rate.
+
+GeneralPowerMult  // id=[C3 66 7D 2E] (0x2e7d66c3)  t=float  [0.7..1.32] (avg 1.0362)
+
+HpMultiplier  // id=[A3 BF 1E 60] (0x601ebfa3)  t=float  [0.7..1.34] (avg 1.0366)
+  // increases HP / HP multiplier. Set it to 1.0: 00 00 80 3F
+
+RWSettingBraking_Variant  // id=[BE 57 73 DA] (0xda7357be)  t=compound
+  // [SPECULATIVE] Follows RWSettingBraking.
+
+RWSettingSpeed_Variant  // id=[3F 66 C0 31] (0x31c0663f)  t=compound
+  // [SPECULATIVE] Precedes RWSettingSpeed.
+
+RWSettingSteering_Variant  // id=[17 75 D3 04] (0x04d37517)  t=compound
+  // [SPECULATIVE] Follows RWSettingSteering.
+
+Section_E0_7D_16_E2_9F  // id=[7D 16 E2 9F] (0x9fe2167d)  t=section-marker
+  // = FRONT LEFT CORNER begins
+
+WeightJackerSetting  // id=[B4 AF A9 DF] (0xdfa9afb4)  t=decimal
+  // WeightJackerSetting=
+
+
+==============================================================================
+SECTION 2: [FRONTWING] — Front Wing Aerodynamics
+==============================================================================
+
+FWRange  // id=[AD 3C 20 13] (0x13203cad)  t=compound (default, step, count)
+  // Front wing angle setup range (degrees or raw units).
+
+FWSetting  // id=[06 A3 1F 94] (0x941fa306)  t=null/flag
+  // Default front wing setting index.
+
+FWMaxHeight  // id=[09 A8 52 D9] (0xd952a809)  t=compound (value)
+  // Maximum front wing ride height for aero calculation.
+
+FWDragParams  // id=[2C FB 70 DA] (0xda70fb2c)  t=compound (base, linear, quadratic)
+  // Front wing drag coefficients: base drag + linear(angle) + quadratic(angle²).
+
+FWLiftParams  // id=[23 EC 21 2A] (0x2a21ec23)  t=compound (base, linear, quadratic)
+  // Front wing lift (negative = downforce) coefficients.
+
+FWLiftHeight  // id=[06 F4 58 AC] (0xac58f406)  t=compound (value)
+  // Front wing lift height sensitivity.
+
+FWLiftSideways  // id=[96 D3 8A 17] (0x178ad396)  t=compound (value)
+  // Sideways movement effect on front wing lift.
+
+FWLeft/FWRight/FWUp/FWDown/FWAft/FWFore/FWRot  // various ids  t=compound (x,y,z)
+  // Front wing force/moment application vectors.
+
+FWCenter  // id=[EB DD A8 12] (0x12a8ddeb)  t=compound (x, y, z)
+  // Front wing aerodynamic centre position.
+
+h_213dadbe  // id=[BE AD 3D 21] (0x213dadbe)  t=compound  ~(2-7, 1.001)  (377 files)
+  // Unknown FW parameter. Two-value tuple. First value varies ~2-7 by car.
+  // Possibly angle-to-drag conversion factor pair.
+
+h_5ab23ea1  // id=[A1 3E B2 5A] (0x5ab23ea1)  t=float  ~0.0-1.2  (373 files)
+  // Unknown FW parameter. Zero in some cars. Possibly a yaw sensitivity factor.
+
+--- Fields from cdf-hex-map.xml (9 entries) ---
+
+FWAft  // id=[E4 3E 99 D8] (0xd8993ee4)  t=compound
+  // FWAft=(0.0, 0.02, -0.2)
+
+FWDown  // id=[82 6E D8 E3] (0xe3d86e82)  t=compound
+  // FWDown=(0.0, 0.15, 0.001)
+
+FWFore  // id=[F5 42 E8 78] (0x78e842f5)  t=compound
+  // FWFore=(0.0, 0.0, 0.0)
+
+FWLeft  // id=[54 6C CD BF] (0xbfcd6c54)  t=compound
+  // FWLeft=(-0.20, 0.0, 0.0)
+
+FWParam_24_9C_84  // id=[9C 84 12 FF] (0xff12849c)  t=compound
+  // Front wing related param
+
+FWRight  // id=[C5 19 77 0C] (0x0c7719c5)  t=compound
+  // FWRight=(0.20, 0.0, 0.0)
+
+FWRot  // id=[3D FD AB 72] (0x72abfd3d)  t=compound  [0.05,0.1,0.2], [0.025,0.2], [0.075,0.1]
+  // FWRot=(0.5, 0.25, 0.35)
+
+FWUp  // id=[CD 98 5A 4C] (0x4c5a98cd)  t=compound
+  // FWUp=(0.0, -0.30, -0.001)
+
+Section_FrontWing  // id=[E4 12 24 BA] (0xba2412e4)  t=section-marker
+  // FRONT WING begins
+
+
+==============================================================================
+SECTION 3: [REARWING] — Rear Wing Aerodynamics
+==============================================================================
+// Same field structure as FRONTWING. RW prefix replaces FW.
+
+RWRange / RWSetting / RWMaxHeight
+RWDragParams / RWLiftParams / RWLiftSideways
+RWLeft / RWRight / RWUp / RWDown / RWAft / RWFore / RWRot / RWCenter
+
+RWPeakYaw  // id=[15 2E 20 37] (0x37202e15)  t=compound (x, y)  — only 1 file; rare/experimental
+
+h_861d4845  // id=[45 48 1D 86] (0x861d4845)  t=compound  ~(1-2.5, 1.001-1.01)  (368 files)
+  // Unknown RW parameter. Same structure as h_213dadbe. Rear-specific.
+
+h_9033b26d  // id=[6D B2 33 90] (0x9033b26d)  t=float  ~0.0-0.5  (363 files)
+  // Unknown RW parameter. Zero in some cars (F-Reiza, Metalmoro).
+
+h_5506af88  // id=[88 AF 06 55] (0x5506af88)  t=compound  ~(0.02, 0.002, 1.8e-5)  (6 files)
+  // Very rare. Structure similar to DragParams. Second RW drag term?
+
+--- Fields from cdf-hex-map.xml (19 entries) ---
+
+RWAft  // id=[69 EC ED 3E] (0x3eedec69)  t=compound
+  // RWAft=(0.0, 0.03, -0.4)
+
+RWCenter  // id=[17 44 ED 31] (0x31ed4417)  t=compound
+  // RWCenter=(0.00, 0.200, 0.6)
+
+RWDown  // id=[65 F8 14 22] (0x2214f865)  t=compound
+  // RWDown=(0.0, 0.20, 0.002)
+
+RWDragParams  // id=[67 DC B6 B3] (0xb3b6dc67)  t=compound  [0.01..0.2] (avg 0.1169), [0.002..0.0176] (avg 0.0079), [0..0.0018] (avg 0.0006)
+  // RWDragParams=(0.005, 0.003, 0.00
+
+RWFore  // id=[D5 07 F8 FE] (0xfef807d5)  t=compound
+  // RWFore=(0.0, 0.0, 0.0)
+
+RWLeft  // id=[34 3E C4 2F] (0x2fc43e34)  t=compound
+  // RWLeft=-0.15, 0, 0
+
+RWLiftParams  // id=[83 D3 85 B9] (0xb985d383)  t=compound  [-0.378..0.04] (avg -0.1748), [-0.062..-0.0014] (avg -0.0272), [0..0.0041] (avg 
+  // RWLiftParams=(-0.000, -0.030, 0.00
+
+RWLiftSideways  // id=[7A 8F 77 C8] (0xc8778f7a)  t=compound  [0.25..1.2] (avg 1.0523)
+  // RWLiftSideways=0.0
+
+RWRange  // id=[15 76 54 86] (0x86547615)  t=compound  [0], [1], [3..48] (avg 10.885)
+  // RWRange=(0, 1.0, 7)
+
+RWRight  // id=[42 3B C2 6A] (0x6ac23b42)  t=compound
+  // RWRight=0.15, 0, 0
+
+RWRot  // id=[08 4B 50 B3] (0xb3504b08)  t=compound  [0.08,0.1,0.2], [0.05,0.1,0.3], [0.1,0.11]
+  // RWRot=(0.7, 0.4, 0.5)
+
+RWSetting  // id=[8A 98 EB 35] (0x35eb988a)  t=byte  [1..48] (avg 6.9091)
+  // RWSetting=1
+
+RWSettingBraking  // id=[A3 F6 05 9E] (0x9e05f6a3)  t=compound
+
+RWSettingButton1  // id=[93 CA AE FA] (0xfaaeca93)  t=compound
+
+RWSettingSpeed  // id=[85 28 FC 0B] (0x0bfc2885)  t=compound
+
+RWSettingSteering  // id=[7D 95 1C A7] (0xa71c957d)  t=compound
+
+RWSettingThrottle  // id=[C7 39 90 0B] (0x0b9039c7)  t=compound
+
+RWUp  // id=[EF B4 24 0A] (0x0a24b4ef)  t=compound
+  // RWUp=, ,
+
+Section_RearWing  // id=[E1 83 3A A6] (0xa63a83e1)  t=section-marker
+  // REAR WING begins
+
+
+==============================================================================
+SECTION 4: [BODYAERO] — Body Aerodynamics
+==============================================================================
+
+BodyDragHeightAvg (×2)  // ids: [33 63 ED FD] (0xfded6333), [67 CA A0 92] (0x92a0ca67)  t=compound (value)
+  // Two separate body drag height average values (front and rear?).
+
+BodyDragHeightDiff  // id=[1F 13 C1 85] (0x85c1131f)  t=compound (value)
+  // Body drag height differential.
+
+BodyMaxHeight  // id=[56 E0 A3 AB] (0xaba3e056)  t=compound (value)
+  // Maximum body height for aero calculation.
+
+BodyLeft/BodyRight/BodyUp/BodyDown/BodyAft/BodyFore/BodyRot/BodyCenter  // compound (x,y,z)
+  // Body aerodynamic force/moment application geometry.
+
+RadiatorRange / RadiatorSetting  // id=[8E 02 D1 67] (0x67d1028e), [F7 CF 3C A8] (0xa83ccff7)
+  // Radiator duct opening setup range and default setting.
+
+RadiatorDrag / RadiatorLift  // id=[CD 9B D5 4E] (0x4ed59bcd), [0A 98 AA BD] (0xbdaa980a)  t=compound (value)
+  // Drag and lift coefficients per unit radiator opening.
+
+BrakeDuctRange / BrakeDuctSetting  // id=[67 64 39 31] (0x31396467), [CF 01 35 71] (0x713501cf)
+  // Brake duct opening setup range and default setting.
+
+BrakeDuctDrag / BrakeDuctLift  // id=[50 2D C5 AE] (0xaec52d50), [B7 28 36 3E] (0x3e3628b7)  t=compound (value)
+  // Drag and lift per unit brake duct opening.
+
+h_82634435  // id=[35 44 63 82] (0x82634435)  t=float  1.5-2.0  (124 files)
+  // Correlates with cars that have adjustable aero (DRS, beam wing, etc.). Purpose unconfirmed.
+
+h_38c0e064  // id=[64 E0 C0 38] (0x38c0e064)  t=compound  (-6 to +2, 38-45)  (105 files)
+  // Two-value tuple. First value can be negative. Range-like pair. Purpose unknown.
+
+h_a358d73f / h_bd135a7a  // t=byte  always 1  (99 files each)
+  // Unknown flags. Correlate with modern cars with ground effect. Purpose unconfirmed.
+
+h_f98c0004  // id=[04 00 8C F9] (0xf98c0004)  t=byte  30-35  (20 files)
+  // Not in old IC23 format. F-USA23 value: 30.
+
+--- Fields from cdf-hex-map.xml (9 entries) ---
+
+BodyAft  // id=[08 B1 B6 50] (0x50b6b108)  t=compound
+  // BodyAft=(0.0, 0.5, -0.2)
+
+BodyCenter  // id=[38 D1 8E E7] (0xe78ed138)  t=compound
+  // BodyCenter=(0.0, 0.50, -1.40)
+
+BodyDown  // id=[E3 A1 65 97] (0x9765a1e3)  t=compound
+  // BodyDown=(0.0, 0.5, 0.0)
+
+BodyFore  // id=[DC 2F 52 E4] (0xe4522fdc)  t=compound
+  // BodyFore=(0.0, -0.060, 0.435)
+
+BodyLeft  // id=[C5 A5 4E CE] (0xce4ea5c5)  t=compound
+  // BodyLeft=-0.80, 0.0, 0.0
+
+BodyRight  // id=[6A 08 2A D4] (0xd42a086a)  t=compound
+  // BodyRight=(0.80, 0.0, 0.0)
+
+BodyRot  // id=[F8 26 31 A8] (0xa83126f8)  t=compound
+  // BodyRot=(3.45, 3.0, 1.30)
+
+BodyUp  // id=[DC 57 D2 48] (0x48d257dc)  t=compound
+  // BodyUp=(0.0, -1.00, 0.0)
+
+Section_BodyAero  // id=[2B DA 95 42] (0x4295da2b)  t=section-marker
+  // BODY AERO begins
+
+
+==============================================================================
+SECTION 5: [DIFFUSER] — Diffuser Aerodynamics
+==============================================================================
+
+DiffuserBase  // id=[BE 0F 28 99] (0x99280fbe)  t=compound (base_lift, linear, area)
+  // Diffuser base parameters: lift offset, height sensitivity, effective area.
+  // (302 files — not present in cars without significant diffuser effect)
+
+DiffuserFrontHeight  // id=[47 D0 B1 DE] (0xdeb1d047)  t=compound (value)
+  // Front diffuser ride height sensitivity.
+
+DiffuserRake  // id=[20 B9 8D FF] (0xff8db920)  t=compound (default, step, count)
+  // Diffuser rake setup range.
+
+DiffuserLimits  // id=[FF 59 46 C8] (0xc84659ff)  t=compound (min, max_front, max_rear)
+  // Diffuser operational height limits.
+
+DiffuserStall  // id=[E0 A1 25 DE] (0xde25a1e0)  t=compound (stall_threshold, stall_factor)
+  // Diffuser stall onset and intensity.
+
+DiffuserSideways  // id=[E1 76 32 24] (0x243276e1)  t=compound (value)
+  // Diffuser yaw sensitivity.
+
+DiffuserCenter  // id=[B8 97 56 8E] (0x8e5697b8)  t=compound (x, y, z)
+  // Diffuser aerodynamic centre position.
+
+h_340a9b0d  // id=[0D 9B 0A 34] (0x340a9b0d)  t=compound  (1-5, 1.005-1.01)  (302 files)
+  // Unknown diffuser parameter. Same structure as h_213dadbe/h_861d4845.
+
+h_59f48d56  // id=[56 8D F4 59] (0x59f48d56)  t=null/flag  0 or ~0.1  (246 files)
+  // Unknown diffuser flag/option.
+
+--- Fields from cdf-hex-map.xml (1 entries) ---
+
+Section_Diffuser  // id=[C9 41 A8 1C] (0x1ca841c9)  t=section-marker
+  // DIFFUSER begins
+
+
+==============================================================================
+SECTION 6: [SUSPENSION] — Global Suspension Configuration
+==============================================================================
+
+CorrectedInnerSuspHeight  // id=[E1 FF 94 B3] (0xb394ffe1)  t=float
+  // Corrected inner suspension height offset (metres). Negative value.
+
+ApplySlowToFastDampers  // id=[6B 45 97 72] (0x7297456b)  t=byte
+  // 1=slow damper adjustments also affect fast dampers.
+
+AdjustSuspRates  // id=[7D E0 90 64] (0x6490e07d)  t=null/flag
+  // Enable adjustable suspension rates. Usually 0.
+
+AlignWheels  // id=[B2 B4 93 40] (0x4093b4b2)  t=byte
+  // Align wheels to ground normal. 1=enabled.
+
+SpringBasedAntiSway  // id=[26 E9 82 B6] (0xb682e926)  t=byte
+  // 1=anti-roll bar uses spring force model (400 files).
+
+AllowNoAntiSway  // id=[70 FA E1 77] (0x77e1fa70)  t=byte
+  // 1=allow zero anti-roll bar setting in garage.
+
+FrontAntiSwayRange / FrontAntiSwaySetting  // id=[E5 B9 A9 D6] (0xd6a9b9e5), [7F C7 58 D5] (0xd558c77f)
+  // Front anti-roll bar stiffness setup range and default.
+
+RearAntiSwayRange / RearAntiSwaySetting  // id=[66 00 1E 25] (0x251e0066), [04 78 E9 91] (0x91e97804)
+  // Rear anti-roll bar stiffness setup range and default.
+
+FrontAntiSwayBase / RearAntiSwayBase  // id=[89 92 C5 F3] (0xf3c59289), [F3 9C 93 F0] (0xf0939cf3)  t=null/flag
+  // Anti-sway base values. Present in ~38 files only.
+
+FrontToeInRange / FrontToeInSetting  // id=[69 D4 9B 3B] (0x3b9bd469), [C3 36 57 CC] (0xcc5736c3)
+  // Front toe-in global range and default.
+
+RearToeInRange / RearToeInSetting  // id=[55 C9 EA 65] (0x65eac955), [FD F7 43 4F] (0x4f43f7fd)
+  // Rear toe-in global range and default.
+
+LeftCasterSetting / RightCasterSetting  // id=[FF D7 A7 D9] (0xd9a7d7ff), [A6 B8 E3 8F] (0x8fe3b8a6)  t=byte
+  // Global caster setting indices.
+
+--- Unknown suspension fields (partially identified) ---
+
+h_3efe731a  // id=[1A 73 FE 3E] (0x3efe731a)  t=compound (default, step, count)  [ALL FILES]
+  // Probably left caster global range. Inferred from compound structure matching known caster range format.
+
+h_73337633  // id=[33 76 33 73] (0x73337633)  t=compound (default, step, count)  [ALL FILES]
+  // Probably right caster global range.
+
+// Front suspension global bump stop parameters (~119-122 files — cars with
+// explicit bump stop data in [SUSPENSION] rather than only per-corner):
+// Field identifications below are inferred from position in file, value magnitude,
+// and comparison with named equivalents in per-corner sections. Not string-table confirmed.
+h_f82c6b81                  // id=[81 6B 2C F8] (0xf82c6b81)  t=float   front ReboundTravel global
+h_9a218127                  // id=[27 81 21 9A] (0x9a218127)  t=float   front bump travel global
+h_8d36566c                  // id=[6C 56 36 8D] (0x8d36566c)  t=decimal  BumpStopSpring front (~60000)
+h_792c9b65                  // id=[65 9B 2C 79] (0x792c9b65)  t=decimal  BumpStopRisingSpring front (~35-70 million)
+h_082c3956                  // id=[56 39 2C 08] (0x082c3956)  t=decimal  BumpStopDamper front (~1200-2400)
+h_04c4b3bc                  // id=[BC B3 C4 04] (0x04c4b3bc)  t=decimal  FrictionTorque front (~700000)
+h_d9bca764                  // id=[64 A7 BC D9] (0xd9bca764)  t=compound  PackerRange front
+h_3c6feba0                  // id=[A0 EB 6F 3C] (0x3c6feba0)  t=byte     PackerSetting front
+h_963a01d4                  // id=[D4 01 3A 96] (0x963a01d4)  t=compound  SpringRange front global
+h_ddee5ce1                  // id=[E1 5C EE DD] (0xddee5ce1)  t=byte     SpringSetting front
+h_b2e47ba3                  // id=[A3 7B E4 B2] (0xb2e47ba3)  t=float   front suspension geometry offset
+
+// Rear suspension global bump stop parameters (~117-120 files):
+h_55e818b8                  // id=[B8 18 E8 55] (0x55e818b8)  t=float   rear ReboundTravel global
+h_6a9d0088                  // id=[88 00 9D 6A] (0x6a9d0088)  t=decimal  BumpStopSpring rear
+h_7aaf2c8b                  // id=[8B 2C AF 7A] (0x7aaf2c8b)  t=decimal  BumpStopRisingSpring rear (~7.5 million) — NOT in old IC23
+h_f202ed8c                  // id=[8C ED 02 F2] (0xf202ed8c)  t=decimal  BumpStopDamper rear — NOT in old IC23
+h_b701f3b5                  // id=[B5 F3 01 B7] (0xb701f3b5)  t=decimal  FrictionTorque rear — NOT in old IC23
+h_419bac80                  // id=[80 AC 9B 41] (0x419bac80)  t=compound  PackerRange rear
+h_4e3c2133                  // id=[33 21 3C 4E] (0x4e3c2133)  t=byte     PackerSetting rear
+h_12ff6737                  // id=[37 67 FF 12] (0x12ff6737)  t=compound  SpringRange rear global
+h_b1022353                  // id=[53 23 02 B1] (0xb1022353)  t=byte     SpringSetting rear
+
+// Per-corner global damper ranges (in [SUSPENSION] rather than per-corner sections)
+// (~115-117 files — open-wheel and GT3 race cars):
+h_de013623 / h_be173134     // front bump/rebound offsets
+h_f2214fc1                  // id=[C1 4F 21 F2] (0xf2214fc1)  t=compound  SlowBumpRange front global
+h_0d1a114a                  // id=[4A 11 1A 0D] (0x0d1a114a)  t=byte     SlowBumpSetting front
+h_c69f89d5                  // id=[D5 89 9F C6] (0xc69f89d5)  t=compound  FastBumpRange front global
+h_a03a3c22                  // id=[22 3C 3A A0] (0xa03a3c22)  t=byte     FastBumpSetting front
+h_83b2ac60                  // id=[60 AC B2 83] (0x83b2ac60)  t=compound  SlowReboundRange front global
+h_255d8f2e                  // id=[2E 8F 5D 25] (0x255d8f2e)  t=byte     SlowReboundSetting front
+h_e346caf5                  // id=[F5 CA 46 E3] (0xe346caf5)  t=compound  FastReboundRange front global
+h_cb9001a1                  // id=[A1 01 90 CB] (0xcb9001a1)  t=byte     FastReboundSetting front
+h_6191d94b / h_6351bb3a     // rear bump/rebound offsets
+h_3dbbbd74                  // SlowBumpRange rear global
+h_48536d7f                  // SlowBumpSetting rear
+h_d17ef125                  // FastBumpRange rear global
+h_57d3f398                  // FastBumpSetting rear
+h_3d7486d4                  // SlowReboundRange rear global
+h_4c41eb57                  // SlowReboundSetting rear
+h_3725670e                  // FastReboundRange rear global
+h_0f1c6f55                  // FastReboundSetting rear
+
+h_ebc5a834 / h_751768e6     // t=compound  (0, step, count)  — caster or camber additional ranges (93 files)
+h_caf2cb69 / h_28552baa     // t=null/flag  corresponding settings (93 files)
+
+--- Fields from cdf-hex-map.xml (7 entries) ---
+
+FrontAntiSwayRate  // id=[2E 06 8D A5] (0xa58d062e)  t=compound
+  // FrontAntiSwayRate=(1.36e11, 4.0)
+
+LeftTrackbarRange  // id=[34 A8 C5 EB] (0xebc5a834)  t=compound  [0.188], [0.005], [30]
+  // LeftTrackbarRange=(x.x, x.x, X)
+
+LeftTrackbarSetting  // id=[69 CB F2 CA] (0xcaf2cb69)  t=byte  [2,4]
+  // LeftTrackbarSetting=X
+
+RearAntiSwayRate  // id=[50 E0 77 73] (0x7377e050)  t=compound
+  // RearAntiSwayRate=(1.36e11, 4.0)
+
+RightTrackbarRange  // id=[E6 68 17 75] (0x751768e6)  t=compound  [0.188], [0.005], [30]
+  // RightTrackbarRange=(x.x, x.x, X)
+
+RightTrackbarSetting  // id=[AA 2B 55 28] (0x28552baa)  t=byte  [4..8] (avg 6.2)
+  // RightTrackbarSetting=X
+
+Section_Suspension  // id=[C8 15 E2 23] (0x23e215c8)  t=section-marker
+  // SUSPENSION begins
+
+
+==============================================================================
+SECTION 7: [CONTROLS] — Driver Aids and Steering
+==============================================================================
+
+SteeringFFBMult  // id=[E8 09 B9 01] (0x01b909e8)  t=float  — FFB force multiplier. Usually 1.0.
+
+RearAntiSwaySetting  // id=[00 AB 3E 9B] (0x9b3eab00)  t=float  — Named by dfbin_to_df.py; placement in [CONTROLS] as a float suggests possible steering-related parameter rather than ARB setting. Interpretation uncertain.
+
+FrontToeInRange (CONTROLS)  // id=[30 43 CE 21] (0x21ce4330)  — Secondary front toe range in CONTROLS context.
+
+SteerLockSetting  // id=[B7 C2 C5 7E] (0x7ec5c2b7)  t=byte  — Steering lock angle index.
+
+UpshiftAlgorithm / DownshiftAlgorithm  // compound — Auto shift parameters.
+
+RearBrakeRange (×2) / RearBrakeSetting (×2)  // Front/rear brake balance.
+
+BrakePressureRange  // id=[D0 00 38 59] (0x593800d0)  — Brake pressure (power) setup range.
+
+HandbrakePressRange  // id=[96 4B 29 B4] (0xb4294b96)  — Handbrake pressure range.
+
+TractionControlGrip / TractionControlLevel  // TC model parameters.
+
+ABSSlip1 / ABSSlip2 / ABSstandard / ABS4Wheel / ABSMinMax  // ABS model parameters.
+
+TCstandard / SCstandard  // TC and SC default mode.
+
+SpeedLimiter  // id=[D5 DD 9C 9B] (0x9b9cddd5)  t=byte  — 1=pit speed limiter present.
+
+DriftDiffSpool  // id=[5B D1 F7 C8] (0xc8f7d15b)  t=byte  — Drift/spool diff mode flag.
+
+AutoUpshiftGripThresh  // id=[52 30 1F D2] (0xd21f3052)  — Auto-upshift grip threshold.
+
+RightCasterRange / RightCasterSetting  // Caster adjustment range in CONTROLS.
+
+RearToeInRange / RearToeInSetting  // Rear toe range in CONTROLS.
+
+BrakeByWire  // id=[BD C1 65 D8] (0xd865c1bd)  t=byte  — Brake-by-wire system. (17 files — EV/hybrid only)
+
+ThirdBrake  // id=[14 A8 82 1E] (0x1e82a814)  t=byte  — Brake steer system. (2 files: mclaren_mp4_12.cdf, mclaren_mp4_12_ld.cdf)
+  // Exclusive to the McLaren MP4/12 (1997 F1). Enables the brake steer pedal that
+  // independently braked the inside rear wheel mid-corner. Both files are the same car
+  // (base and low-downforce variants).
+
+--- Unknown CONTROLS fields ---
+h_828bc101                  // id=[01 C1 8B 82] (0x828bc101)  t=decimal  negative values ~-1000 to -3000
+  // Steering parameter — negative integer. Possibly max steering torque or ratio.
+h_cfb5533e                  // id=[3E 53 B5 CF] (0xcfb5533e)  t=float   ~7e-6; tiny float — possibly steering rate
+h_449add60                  // id=[60 DD 9A 44] (0x449add60)  t=float   ~0.5-2.0
+h_d262ac5b                  // id=[5B AC 62 D2] (0xd262ac5b)  t=float   ~0.15-0.35
+h_cf6043aa                  // id=[AA 43 60 CF] (0xcf6043aa)  t=float   ~0.64-0.66
+h_fea134f7                  // id=[F7 34 A1 FE] (0xfea134f7)  t=compound  (450-720, 0, 1) — possibly steer lock range
+h_b1dfe3c6                  // id=[C6 E3 DF B1] (0xb1dfe3c6)  t=compound  ~(0.9, 0.05, 2)
+h_6dc44a3e                  // id=[3E 4A C4 6D] (0x6dc44a3e)  t=byte    0 or 2
+h_1134fa52                  // id=[52 FA 34 11] (0x1134fa52)  t=float   5-8 — possibly ABS/TC threshold
+h_81b9bdda                  // id=[DA BD B9 81] (0x81b9bdda)  t=byte    30-40 — brake pressure default?
+h_ca1d5ae3 / h_c90bde33     // id=0xcaXX / 0xc9XX  t=float  ~0.4-0.6 — paired parameters
+h_9d2b5203                  // id=[03 52 2B 9D] (0x9d2b5203)  t=null/flag  ~±0.03 range
+h_a82d21ba                  // id=[BA 21 2D A8] (0xa82d21ba)  t=byte    always 3
+h_e5b3f6c8                  // id=[C8 F6 B3 E5] (0xe5b3f6c8)  t=byte    0-4; upshift/downshift related?
+h_dc747b31 / h_23f9abea / h_6984baf8  // t=byte/null  flags, 0 or 1
+h_14a50c66 = 1              // id=[66 0C A5 14] (0x14a50c66)  t=byte    always 1
+h_acd3a027 = 0.5            // id=[27 A0 D3 AC] (0xacd3a027)  t=float   always 0.5 (392 files)
+h_f78c8d52                  // t=null/flag  always absent
+h_777bcf05                  // t=null/flag  usually absent (358 files)
+// Additional: h_80b4dd6e, h_10118eb1, h_59184e10, h_5a8382e4 (107 files — GT/circuit only)
+// Race car specific setup controls (differential thermal or TC mapping)
+
+--- Fields from cdf-hex-map.xml (30 entries) ---
+
+ABSEnabled  // id=[FA CE 76 12] (0x1276cefa)  t=byte  [1]
+  // [SPECULATIVE] ABS system enable flag.
+
+ABSFourWheelAssist_Authentic  // id=[BC 12 66 E0] (0xe06612bc)  t=byte  [1]
+  // 1 // "Authentic" ABSFourWheel assist
+
+ABSStrengthRange  // id=[24 9E 03 13] (0x13039e24)  t=compound  [0], [0.1], [10]
+  // 0, 0.01, 100 // (ECU) ABS Strength Range
+
+ABSStrengthSetting  // id=[B2 BE 8E 7E] (0x7e8ebeb2)  t=byte  [8,9]
+  // 85 // (ECU) ABS Strength Setting
+
+AutoDownshiftGripThresh  // id=[33 DE 0B C9] (0xc90bde33)  t=float  [0.2..0.63] (avg 0.4929)
+  // AutoDownshiftGripThresh=0.6
+
+AutoUpshiftGripThresh  // id=[E3 5A 1D CA] (0xca1d5ae3)  t=float  [0.2..0.63] (avg 0.4983)
+  // AutoUpshiftGripThresh=0.6
+
+ControlsParam_Float  // id=[35 5E 7A 3F] (0x3f7a5e35)  t=float
+  // Controls section float param
+
+DownshiftAlgorithm  // id=[A6 8D 9C E2] (0xe29c8da6)  t=compound  [0.75..0.94] (avg 0.8928), [0.5..0.85] (avg 0.7521), [0.5..0.8] (avg 0.7939)
+  // DownshiftAlgorithm=0.85, 0.8, 0.8
+
+FFBGripMulti  // id=[FB 38 19 1C] (0x1c1938fb)  t=float
+  // FFBGripMulti0.11
+
+KingpinMultiplier  // id=[4E 2A 4E 0D] (0x0d4e2a4e)  t=float
+  // float 2.5 (kingpin multiplier reduces ffb pendulumadded to super v8 in 1.2)???
+
+RearBrakeRange  // id=[A6 32 13 57] (0x571332a6)  t=compound  [0], [0.01], [100]
+  // RearBrakeRange=0, 0.01, 100
+
+RearBrakeSetting  // id=[FD BA 64 73] (0x7364bafd)  t=byte  [20..52] (avg 41.7374)
+  // RearBrakeSetting=45
+
+SCAssist_Authentic  // id=[F2 9A F8 10] (0x10f89af2)  t=byte
+  // 1 // Authentic SC Stability Control assist (disable/enable)
+
+Section_Controls  // id=[08 0A 14 C5] (0xc5140a08)  t=section-marker
+  // CONTROLS begins
+
+Section_E0_3F_9E_45_98  // id=[3F 9E 45 98] (0x98459e3f)  t=section-marker
+  // ??Unknown Section begins
+
+SteeringFFBMult  // id=[24 F5 34 B3] (0xb334f524)  t=float
+  // SteeringFFBMult=0.9
+
+SteeringLockEnabled_ZeroSetting  // id=[31 7B 74 DC] (0xdc747b31)  t=null/flag
+  // [SPECULATIVE] 28-prefix zero marker for SteeringLockEnabled. No payload.
+
+SteeringRatioRange  // id=[6B 4E A0 77] (0x77a04e6b)  t=compound  [2.4..9.2] (avg 5.5524), [0.5], [30..60] (avg 57.7642)
+  // SteeringRatioRange=3.5, 0.5, 35
+
+SteeringRatioSetting  // id=[0F 6A B7 B6] (0xb6b76a0f)  t=byte  [5..30] (avg 15.674)
+  // SteeringRatioSetting=24
+
+SteeringWheelDegrees_ZeroSetting  // id=[52 8D 8C F7] (0xf78c8d52)  t=null/flag
+  // [SPECULATIVE] 28-prefix zero marker.
+
+TCAssist_Authentic  // id=[BC 90 7F 88] (0x887f90bc)  t=byte  [1]
+  // 1 // Authentic TC Traction Control assist (disable/enable)
+
+TractionControlDecay  // id=[05 CF 7B 77] (0x777bcf05)  t=float  [1]
+  // [SPECULATIVE] Negative value suggests decay rate.
+
+TractionControlGrip  // id=[07 F7 6E 47] (0x476ef707)  t=compound
+  // TractionControlGrip=(0.06, 0.16)
+
+TractionControlLevel  // id=[25 5A FB 23] (0x23fb5a25)  t=compound
+  // TractionControlLevel=(0.06, 0.16)
+
+TractionControlMaxSlip  // id=[20 D5 05 AC] (0xac05d520)  t=float  3.0–20.0
+  // [SPECULATIVE] TC maximum slip angle. V1.02: ##1.2 (911cup) 3 (prev. 4).
+
+TractionControlMinSpeed  // id=[48 E1 7A 3F] (0x3f7ae148)  t=float  [-0]
+  // [SPECULATIVE] TC minimum activation speed. In new TC section post-1.2.1.4.
+
+TractionControlRange  // id=[B3 D2 E5 A0] (0xa0e5d2b3)  t=compound  [0.9], [0.1], [0]
+  // Traction Control Range=0.01, 0.01, 99 // (ECU ##1.2 (911cup) 0.9 (prev. 0.1)
+
+TractionControlSetting  // id=[63 9D 2B D2] (0xd22b9d63)  t=byte  [5..10] (avg 6.4286)
+  // Traction Control Setting=9 // (ECU)
+
+TractionControlThreshold  // id=[6E DD B4 80] (0x80b4dd6e)  t=byte  [40..93] (avg 54.9431)
+  // TC threshold byte. 45-50, AMS2 specific
+
+ZeroMarker_28_B1_21  // id=[B1 21 88 BF] (0xbf8821b1)  t=null/flag
+  // ??Unknown // no data in code, which means zero.
+
+
+==============================================================================
+SECTION 8: [ENGINE] — Engine Interface
+==============================================================================
+
+ClutchEngageRate (×2)  // ids: [D5 B3 F7 87] (0x87f7b3d5) (byte), [27 84 4D 75] (0x754d8427) (float)
+  // Two forms of clutch engagement rate — possibly for auto vs manual clutch.
+
+h_ebb3fa12  // id=[12 FA B3 EB] (0xebb3fa12)  t=byte  always 1  [ALL FILES]
+  // Unknown engine flag. Universal. Also present in edfbin. Purpose unknown.
+
+h_601ebfa3 / h_2e7d66c3  // t=float  ~0.98-1.15  (397-399 files)
+  // Engine scaling factors. Possibly power or efficiency multipliers.
+
+h_3dd4b44f  // id=[4F B4 D4 3D] (0x3dd4b44f)  t=compound  (-4, 0.33)  (13 files — CART/old formula only)
+  // Rare engine parameter. Two-value compound.
+
+==============================================================================
+SECTION 9: [DRIVELINE] — Clutch, Gears, Differential
+==============================================================================
+
+ClutchInertia / ClutchTorque / ClutchFriction / BaulkTorque  // clutch parameters
+ClutchEngageRate / ClutchWear  // engagement and wear model
+SemiAutomatic / AutoLift / AutoBlip / AntiStall  // gearbox mode flags
+UpshiftDelay (×2) / DownshiftDelay / UpshiftClutchTime / DownshiftClutchTime  // shift timing
+DownshiftBlipThrottle  // blip throttle amount on downshift
+ShiftDamage  // damage per missed/harsh shift
+WheelDrive  // id=[94 35 F2 CB] (0xcbf23594)  t=special  10=RWD, 12=FWD, 56=AWD
+ForwardGears / FinalDriveSetting / ReverseSetting  // gear count and final drive
+Gear1Setting (×2) / Gear5Setting  // individual gear ratio settings (various IDs)
+DiffPowerRange / DiffPowerSetting / DiffCoastRange / DiffCoastSetting  // open diff params
+DiffPreloadRange / DiffPreloadSetting (×3)  // diff preload
+DiffPumpRange (×2) / DiffPumpSetting (×2) / DiffPumpTorque (×3)  // viscous/pump diff
+
+// Unknown driveline fields (101 total; mostly gear ratio tables and diff sub-settings)
+// Key identified ones:
+h_dac2698d / h_c39325c0 / h_5ab79278  // gear ratio setting indices (Gear2/3/4?)
+h_eea92b5f                            // gear ratio setting (300 files)
+h_41a69eae / h_966fb616               // diff power/coast range sub-entries
+h_1cd7631c                            // t=compound  gear step range
+h_f2696bd0 / h_63285669 / h_66c18cf9 // diff torque/preload sub-parameters
+h_c2b87aee / h_bbbde99b               // diff direction/mode ranges
+h_d6189e25 / h_d88b7d29               // diff coast sub-ranges
+h_1e2f2ae7                            // id=[E7 2A 2F 1E] (0x1e2f2ae7)  t=null/flag  (14 files — F-USA23 has this)
+  // Present in select modern cars. Unknown driveline flag.
+// [9 files — CART open-wheel series]: many additional driveline entries for
+// period-correct multi-stage transmission systems
+
+--- Fields from cdf-hex-map.xml (34 entries) ---
+
+AutoBlipEnabled  // id=[B5 19 EF 5C] (0x5cef19b5)  t=byte  [1]
+  // [SPECULATIVE] Related to shifting/clutch. Auto-blip downshift enable.
+
+AutoClutchSemiAuto  // id=[B9 E1 14 02] (0x0214e1b9)  t=byte  [1]
+  // Auto clutch for semi automatic. 0=clutch needs to be engaged
+
+BaulkTorque  // id=[36 6E 87 07] (0x07876e36)  t=float  [22.325..1184.4] (avg 769.9611)
+  // BaulkTorque=575.0
+
+ClutchEngageRate_ZeroSetting  // id=[7E 93 96 8C] (0x8c96937e)  t=null/flag
+  // [SPECULATIVE] 28-prefix zero marker.
+
+ClutchEngageRateByte  // id=[1B CA 33 55] (0x5533ca1b)  t=byte  [1..5] (avg 1.9449)
+  // ClutchEngageRate byte variant. AMS2
+
+ClutchFriction  // id=[9B 56 A1 18] (0x18a1569b)  t=float  [0.1,1,2.5]
+  // ClutchFriction=10.00
+
+ClutchInertia  // id=[D3 1C F6 C6] (0xc6f61cd3)  t=float  [0.0005..0.5] (avg 0.0268)
+  // ClutchInertia=0.0111
+
+ClutchTorque  // id=[2E 33 DB 70] (0x70db332e)  t=float  [29.6476..1050] (avg 594.7415)
+  // ClutchTorque=500.0
+
+DownshiftBlipThrottle  // id=[3B 62 D3 1C] (0x1cd3623b)  t=float  [0.2..0.9] (avg 0.7327)
+  // DownshiftBlipThrottle=0.7
+
+DownshiftClutchTime  // id=[DB 0B FC 09] (0x09fc0bdb)  t=float  [0.03..0.35] (avg 0.0375)
+  // DownshiftClutchTime=0.3
+
+DownshiftDelay  // id=[07 50 AF 26] (0x26af5007)  t=float  [0.02..0.2] (avg 0.1083)
+  // DownshiftDelay=0.3
+
+FinalDriveSetting  // id=[C1 EB DC 28] (0x28dcebc1)  t=byte  [1..21] (avg 4.3441)
+  // FinalDriveSetting=29
+
+ForwardGears  // id=[FF 0C 22 07] (0x07220cff)  t=byte  [1..8] (avg 5.802)
+  // ForwardGears=6
+
+GearFiveSetting  // id=[78 4E 48 36] (0x36484e78)  t=byte  [4..59] (avg 27.1909)
+  // GearFiveSetting=71
+
+GearFourSetting  // id=[78 92 B7 5A] (0x5ab79278)  t=byte  [3..57] (avg 21.7672)
+  // GearFourSetting=57
+
+GearOneSetting  // id=[F4 CC 2F 1D] (0x1d2fccf4)  t=null/flag  [32]
+  // GearOneSetting=1
+
+GearSevenSetting  // id=[49 EE 13 F6] (0xf613ee49)  t=byte  [6..56] (avg 34.9492)
+  // GearSevenSetting=6
+
+GearSixSetting  // id=[5F 2B A9 EE] (0xeea92b5f)  t=byte  [5..55] (avg 30.1623)
+  // GearSixSetting=82
+
+GearThreeSetting  // id=[C0 25 93 C3] (0xc39325c0)  t=byte  [2..43] (avg 16.869)
+  // GearThreeSetting=42
+
+GearTwoSetting  // id=[8D 69 C2 DA] (0xdac2698d)  t=byte  [1..30] (avg 10.7903)
+  // GearTwoSetting=25
+
+LiftAndShiftThrottle  // id=[F9 8C C1 66] (0x66c18cf9)  t=float  [0.5,1]
+  // Lift & Shift or Full throttle shift. % of throttle allowed for upshift (1.0=100%)
+
+PaddleShiftEnabled  // id=[74 73 B2 00] (0x00b27374)  t=byte  [1]
+  // [SPECULATIVE] Paddle shift enable flag.
+
+ReverseGearSetting  // id=[D6 71 85 B0] (0xb08571d6)  t=null/flag  [32]
+  // ReverseGearSetting // no value, which means zero
+
+RPMGovernor  // id=[D0 6B 69 F2] (0xf2696bd0)  t=float  [100..20000] (avg 7563.8643)
+  // RPM Governor for semi-auto gearchange. Value added to idle RPM
+
+Section_Driveline  // id=[9E F7 67 84] (0x8467f79e)  t=section-marker
+  // DRIVELINE begins
+
+SemiAutomatic  // id=[1D EA 4C 3D] (0x3d4cea1d)  t=byte  [1]
+  // SemiAutomatic=1 // 1=sequential/semiauto & 0=h pattern
+
+SemiAutomatic_ZeroSetting  // id=[01 B6 85 A9] (0xa985b601)  t=null/flag
+  // [SPECULATIVE] 28-prefix zero marker.
+
+ShiftParam_049  // id=[69 56 28 63] (0x63285669)  t=float  [50..8000] (avg 2174.8941)
+  // 50.0 // relates to shifting/clutch
+
+ShiftParam_051  // id=[2E 33 BD 4C] (0x4cbd332e)  t=float  [0.15,0.2,0.25]
+  // 0.25 // relates to shifting/clutch
+
+ShiftParam_052  // id=[2D 62 77 4E] (0x4e77622d)  t=float  [0..0.02] (avg 0.0063)
+  // 0.001 // relates to shifting/clutch
+
+ShiftParam_053  // id=[C4 F7 E7 93] (0x93e7f7c4)  t=float  [0..0.005] (avg 0.0017)
+  // 0.001 // relates to shifting/clutch
+
+UpshiftAlgorithm  // id=[E0 D9 C8 5B] (0x5bc8d9e0)  t=compound  [0.85..0.99] (avg 0.9804), [0]
+  // UpshiftAlgorithm=0.99, 0
+
+UpshiftClutchTime  // id=[9D 78 9E C9] (0xc99e789d)  t=float  [0.005..0.25] (avg 0.0256)
+  // UpshiftClutchTime=0.1
+
+UpshiftDelay  // id=[67 F7 AD 20] (0x20adf767)  t=float  [0.001..0.16] (avg 0.0989)
+  // UpshiftDelay=0.1
+
+
+==============================================================================
+SECTION 10: [DAMAGE] — Damage Model
+==============================================================================
+// All damage fields are unnamed in current string tables (21 unknowns).
+
+h_1dd0a809  // id=[09 A8 D0 1D] (0x1dd0a809)  t=compound (x, y, z)  (395 files)
+  // Damage pivot or contact point 1.
+
+h_d568bf3f  // id=[3F BF 68 D5] (0xd568bf3f)  t=compound (x, y, z)  (331 files)
+  // Damage pivot or contact point 2.
+
+h_50d53a05  // id=[05 3A D5 50] (0x50d53a05)  t=decimal  300-1200  (285 files)
+  // Damage threshold 1 (impact force units).
+
+h_9f27c08b  // id=[8B C0 27 9F] (0x9f27c08b)  t=decimal  1000-2000  (285 files)
+  // Damage threshold 2.
+
+h_7b25c0e1  // id=[E1 C0 25 7B] (0x7b25c0e1)  t=decimal  1000-2000  (285 files)
+  // Damage threshold 3.
+
+h_d81f61d1  // id=[D1 61 1F D8] (0xd81f61d1)  t=decimal  240-600  (285 files)
+  // Damage threshold 4.
+
+h_c8a635d1 / h_0ffed92d  // t=decimal  400-1200  (157 files)
+  // Additional damage thresholds (open-wheel cars).
+
+h_46b845d7 = 2.5  // t=float  (148 files)
+h_8e256b88 = 200  // t=decimal  (148 files)
+h_725b883a = 250  // t=decimal  (148 files)
+h_4b88cbad        // t=compound (x, y, z)  (148 files) — damage contact geometry
+h_9b3c9787 = 200  // t=decimal  (148 files)
+h_cee8f47b = 400  // t=decimal  (148 files)
+h_34e86865        // t=compound (x, y, z)  (148 files) — damage geometry
+
+==============================================================================
+SECTION 11: [FRONTLEFT / FRONTRIGHT / REARLEFT / REARRIGHT] — Per-Corner Physics
+==============================================================================
+// All four corner sections share the same field IDs.
+// FL is defined first; FR/RL/RR follow with car-specific values.
+
+--- Suspension geometry ---
+
+BumpTravel ([B3 D8 21 F7] (0xf721d8b3))  // t=float  — bump travel limit from static position (m, negative)
+ReboundTravel ([17 7B 8A 89] (0x898a7b17))  // t=float  — rebound travel limit (m, negative)
+BrakeDuctCooling ([A2 67 26 E9] (0xe92667a2))  // t=float  — duct-based brake cooling coefficient
+  // CORRECTED: was "BumpTravel" — binary chain confirms this follows BrakeCooling (100%).
+  // 1708 hits = 427 files × 4 corners. Very small values (~0 to 0.0002).
+BrakeHeatParam4 ([CE A0 75 6B] (0x6b75a0ce))  // t=float  — last brake thermal param before section end
+  // CORRECTED: was "BumpTravel" — binary chain confirms this follows BrakeCooling2 (100%).
+  // Very small values (~1.3e-06). 1840 hits = 460 files × 4 corners.
+BrakeHeatParam2 ([EE 67 FD 55] (0x55fd67ee))  // t=float  — brake thermal parameter 2
+  // CORRECTED: was "ReboundTravel" — binary chain: BrakeHeatParam1 → this → BrakeCooling2 (100%).
+  // Values ~0.26-0.31 (up to 0.71 for high-perf). 2000 hits = 500 files × 4 corners.
+BumpStage2  // id=[70 02 6D 2B] (0x2b6d0270)  t=float  — second stage bump spring onset (m)
+ReboundStage2  // id=[1F 7D 2D 8E] (0x8e2d7d1f)  t=float  — second stage rebound spring onset (m, negative)
+BumpStopSpring  // id=[7F C6 F8 41] (0x41f8c67f)  t=float  — bump stop spring rate (N/m)
+BumpStopRisingSpring  // id=[CB 91 F1 63] (0x63f191cb)  t=float  — rising rate bump stop spring (N/m)
+BumpStopDamper  // id=[71 74 6E EB] (0xeb6e7471)  t=float  — bump stop damper (Ns/m)
+FrictionTorque (×2)  // ids: [DD D6 E1 75] (0x75e1d6dd) (float, large), [7F 0E 4C A5] (0xa54c0e7f) (byte, small)
+  // Suspension friction torque: first is in physical units, second is a factor.
+SpinInertia  // id=[57 51 0F 51] (0x510f5157)  t=float  — wheel/hub rotational inertia (kg·m²)
+CGOffsetX (×2)  // ids: [25 99 CD 41] (0x41cd9925), [C9 2A 02 BB] (0xbb022ac9)
+  // Lateral CG offset for this corner. [25 99 CD 41] (0x41cd9925) = inertia-scaled value.
+PushrodSpindle / PushrodBody  // ids: [BE B9 BB AB] (0xabbbb9be), [19 11 EA CE] (0xceea1119)  t=compound (x, y, z)
+  // Pushrod attachment point positions at spindle and body.
+
+--- Setup ranges ---
+
+CamberRange / CamberSetting  // id=[24 E1 9C B2] (0xb29ce124), [C1 72 F3 09] (0x09f372c1)
+  // Camber angle setup range (degrees) and default.
+
+PressureRange / PressureSetting  // id=[A6 DA C6 BF] (0xbfc6daa6), [BB 96 16 F6] (0xf61696bb)
+  // Tire pressure setup range (kPa) and default.
+
+PackerRange / PackerSetting  // id=[BB 59 2C D5] (0xd52c59bb), [D8 7D 17 14] (0x14177dd8)
+  // Suspension packer (bumpstop offset) range and default.
+
+RideHeightRange / RideHeightSetting  // id=[D7 C6 0D 7A] (0x7a0dc6d7), [6D 04 94 05] (0x0594046d)
+  // Ride height range (m) and default.
+
+SpringMult / DamperMult  // ids: [44 49 5D 88] (0x885d4944), [51 37 41 53] (0x53413751)  t=float
+  // Spring and damper rate multipliers for this corner.
+
+SpringRange / SpringSetting  // id=[A5 12 3D 0D] (0x0d3d12a5), [CE AA 7A 97] (0x977aaace)
+  // Spring rate range (N/m) and default setting.
+
+SlowBumpRange (×2) / SlowBumpSetting  // ids: [0C 43 D9 D0] (0xd0d9430c), [BC C0 A2 91] (0x91a2c0bc), [D1 9E 2C 0A] (0x0a2c9ed1)
+  // Slow bump damper range and default.
+FastBumpRange (×2) / FastBumpSetting  // ids: [30 89 EC 3D] (0x3dec8930), [BC 6D 0E F7] (0xf70e6dbc), [38 38 25 87] (0x87253838)
+  // Fast bump damper range and default.
+SlowReboundSetting (×2)  // ids: [22 73 D7 81] (0x81d77322), [36 84 0B 9B] (0x9b0b8436)
+  // Slow rebound setting.
+FastReboundSetting (×2)  // ids: [B8 B0 02 2E] (0x2e02b0b8), [D6 CD E0 06] (0x06e0cdd6)
+  // Fast rebound setting.
+SlowBumpRange / SlowReboundRange / FastReboundRange  // additional range IDs (1 file each — rare)
+
+--- Brake system ---
+
+BrakeDiscRange / BrakeDiscSetting  // id=[09 7A D2 4B] (0x4bd27a09), [95 7D FB 9D] (0x9dfb7d95)
+  // Brake disc thickness range (m) and default.
+
+BrakeDiscInertia  // id=[B9 CF 18 D1] (0xd118cfb9)  t=float
+  // Brake disc moment of inertia (kg·m²). (334 files)
+
+BrakePadRange / BrakePadSetting  // id=[ED 3F C2 21] (0x21c23fed), [64 D7 A9 E6] (0xe6a9d764)
+  // Brake pad compound range and default. (207 files — not all cars)
+
+BrakeTempRange  // id=[92 AA 06 24] (0x2406aa92)  t=compound (min_temp, max_temp)  [ALL FILES]
+  // Brake working temperature range (°C). Suffix 52 is exotic.
+  // Binary chain: follows BrakeDiscInertia → precedes BrakeFadeStart (100%).
+  // F-USA23: (450, 1000). GT3: ~(400, 650). 2000 hits = 500 files × 4 corners.
+
+BrakeFadeStart  // id=[02 3F 01 F1] (0xf1013f02)  t=float  ~0.3-0.75  [ALL FILES]
+  // Fraction of optimum temp where brake fade begins.
+  // Binary chain: follows BrakeTempRange (100%) → precedes BrakeFadeEnd.
+  // Example: 0.34 (PC2), 0.55 (typical AMS2), 0.75 (high-perf).
+
+BrakeFadeEnd  // id=[45 81 36 93] (0x93368145)  t=float  ~0.80-0.90  (399 files)
+  // Fraction of optimum temp where brake fade is total.
+  // Binary chain: follows BrakeFadeStart → precedes BrakeMaxTemp (99%).
+
+BrakeMaxTemp  // id=[E7 95 A8 D0] (0xd0a895e7)  t=decimal (also appears as float with 0x22 marker)
+  // Maximum brake operating temperature / brake fade range ceiling (°C).
+  // CORRECTED: was "BrakeFadeRange" — both names mean the same thing.
+  // Binary chain: follows BrakeFadeEnd (99%) → precedes BrakeCriticalTemp (100%).
+  // Values: 300-600. 1980 hits = 495 files × 4 corners.
+
+BrakeCriticalTemp  // id=[D0 03 18 55] (0x551803d0)  t=decimal (also appears as float with 0x22 marker)
+  // Critical brake temperature — above this, brakes fail.
+  // CORRECTED: was "BrakeTorque (min)" — values 200-1200 are temperatures, not torque.
+  // Binary chain: follows BrakeMaxTemp (100%) → precedes BrakeWearRate (84%).
+  // 2000 hits = 500 files × 4 corners.
+
+BrakeTorque  // id=[4B A4 81 7A] (0x7a81a44b)  t=decimal (also appears as float with 0x22 marker)
+  // Maximum brake torque (N·m). Ligier JS2R = 3000. Typical: 2200-4250.
+  // WARNING: appears with BOTH 0x21 (uint32) and 0x22 (float) markers.
+
+BrakeWearRate  // id=[1E E5 B6 4C] (0x4cb6e51e)  t=float
+  // Brake wear rate coefficient.
+
+BrakeFailure  // id=[BD 59 C8 42] (0x42c859bd)  t=compound (failure_rate, severity)
+  // Brake failure probability and consequence. Suffix: 22 (98%), A2 (2%).
+
+BrakeHeating  // id=[6E A6 0D FB] (0xfb0da66e)  t=float
+  // Brake heating rate coefficient.
+
+BrakeCooling  // id=[1C D5 5C 78] (0x785cd51c)  t=compound (base, speed_factor)
+  // Primary brake cooling: static and speed-dependent cooling rates.
+  // Has 13 suffix variants. Binary chain: precedes BrakeDuctCooling (100%).
+
+BrakeDuctCooling  // id=[A2 67 26 E9] (0xe92667a2)  t=float  — duct-based cooling coefficient
+  // (See suspension geometry section for CORRECTED entry)
+
+BrakeHeatParam1  // id=[6C 82 E4 02] (0x02e4826c)  t=float  ~2.69-2.91  [ALL FILES]
+  // [SPECULATIVE] Brake thermal parameter 1 — possibly heat capacity or thermal mass.
+  // Binary chain: follows BrakeDuctCooling (93%) → precedes BrakeHeatParam2 (100%).
+  // Higher for heavy cars (up to 4.4). Value differs front vs rear.
+
+BrakeHeatParam2  // id=[EE 67 FD 55] (0x55fd67ee)  t=float  ~0.26-0.31
+  // (See suspension geometry section for CORRECTED entry)
+
+BrakeCooling2  // id=[5D 9E 9A 9F] (0x9f9a9e5d)  t=compound (base_rate, speed_factor)
+  // Secondary brake cooling compound. Has 9 suffix variants.
+  // Binary chain: follows BrakeHeatParam2 (100%) → precedes BrakeHeatParam4 (100%).
+
+BrakeHeatParam4  // id=[CE A0 75 6B] (0x6b75a0ce)  t=float  ~1.3e-06
+  // (See suspension geometry section for CORRECTED entry)
+
+BrakeDuctCooling  // id=[22 E9 67 A2] (0xa267e922)  t=float  — confirmed by Shiimis V1.4
+  // Brake duct cooling efficiency. Follows BrakeCooling in block.
+  // Note: Shiimis ID = [22 A2 67 26 E9] → [22 E9 67 A2] (0xa267e922) (not in current CDF output).
+  // Appears at end of brake block, before suspension geometry.
+
+--- Rare per-corner unknowns ---
+
+h_e9045723  // id=[23 57 04 E9] (0xe9045723)  t=byte  always 2  (43 files — modern open-wheel only)
+  // Brake model variant selector?
+
+h_d738d1a9  // id=[A9 D1 38 D7] (0xd738d1a9)  t=compound  (0, 5000, 6)  (4 files)
+  // Very rare. Range format (start, step, count) → 6 settings × 5000 units.
+
+h_3d6da7be  // id=[BE A7 6D 3D] (0x3d6da7be)  t=null/flag  (4 files)
+  // Very rare. Flag associated with h_d738d1a9.
+
+--- Fields from cdf-hex-map.xml (3 entries) ---
+
+BrakeOptimumTemp  // id=[AB 02 4B 3C] (0x3c4b02ab)  t=float
+  // BrakeOptimumTemp=500.0
+
+BumpTransitionRange  // id=[5E 57 34 B3] (0xb334575e)  t=compound
+  // BumpTransitionRange=XXXX, x, x 20 36 84 0B 9B BumpTransitionSetting=x 24 5C 47 9E 9E 13 00 ReboundTransitionRangeX
+
+ReboundTransitionRange  // id=[5C 47 9E 9E] (0x9e9e475c)  t=compound
+  // ReboundTransitionRange=XXXX, x, x
+
+
+==============================================================================
+CORRECTIONS TO SHIIMIS V1.4 (where applicable to CDF)
+==============================================================================
+
+  - Many field names in Shiimis V1.4 are correct and confirmed by dfbin_to_df.py.
+  - Shiimis used pCARS1-era naming; some fields were renamed or restructured.
+  - BrakeDuctCooling in Shiimis: id [22 A2 67 26 E9] = [22 E9 67 A2] (0xa267e922) — confirmed
+    present but appears as h_a267e922 in March 2026 CDFs (unlabelled).
+  - The complete Shiimis V1.4 translation remains valid for known named fields.
+
+
+
+
+==============================================================================
+SECTION 15: [DRIVELINE DIFFERENTIALS — Front, Rear, Center Diff Codes]
+==============================================================================
+// 80 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- AI Differential ---
+
+Coast Range  // id=[F2 FF 04 F5] (0xf504fff2)  t=compound  [0], [0.01], [100]
+  // Coast Range: 0, 0.01, 100
+
+Coast Setting  // id=[79 F8 06 9F] (0x9f06f879)  t=byte  [4..100] (avg 40.4432)
+  // Coast Setting (e.g. 40)
+
+Power Range  // id=[1D F5 6C 5C] (0x5c6cf51d)  t=compound  [0], [0.01], [100]
+  // Power Range: 0, 0.01, 100
+
+Power Setting  // id=[53 D4 19 A9] (0xa919d453)  t=byte  [3..100] (avg 38.3689)
+  // Power Setting (e.g. 25)
+
+Preload Range  // id=[05 1D 5E 8B] (0x8b5e1d05)  t=compound  [0], [1,10,25], [9..100] (avg 98.3787)
+  // Preload Range: 0, 10, 100
+
+Preload Setting  // id=[8B 90 E1 61] (0x61e1908b)  t=byte  [2..10] (avg 5.4289)
+  // Preload Setting (e.g. 5)
+
+// --- clutch ---
+
+DiffCenterClutchLsd#ofClutchesRange  // id=[94 D1 29 37] (0x3729d194)  t=compound  [0,3,4], [0], [0]
+  // DiffCenterClutchLsd#ofClutchesRange=,,
+
+DiffCenterClutchLsdCoastRampRange  // id=[97 AE 26 09] (0x0926ae97)  t=compound  [0..55] (avg 40.8889), [0], [0]
+  // DiffCenterClutchLsdCoastRampRange=,,
+
+DiffCenterClutchLsdCoastRampSetting  // id=[78 3A DD DA] (0xdadd3a78)  t=byte
+  // DiffCenterClutchLsdCoastRampSetting=
+
+DiffCenterClutchLsdOption  // id=[69 82 0A 41] (0x410a8269)  t=compound  [0,1], [0], [0]
+  // DiffCenterClutchLsdOption=,,
+
+DiffCenterClutchLsdPowerRampRange  // id=[71 52 76 47] (0x47765271)  t=compound  [0..50] (avg 36.8889), [0], [0]
+  // DiffCenterClutchLsdPowerRampRange=,,
+
+DiffCenterClutchLsdPowerRampSetting  // id=[08 15 99 DF] (0xdf991508)  t=byte
+  // DiffCenterClutchLsdPowerRampSetting=
+
+DiffCenterClutchLsdPreloadRange  // id=[73 9E 1C 3E] (0x3e1c9e73)  t=compound  [0], [0], [0]
+  // DiffCenterClutchLsdPreloadRange=,,
+
+DiffCenterClutchLsdPreloadSetting  // id=[9F F9 B4 26] (0x26b4f99f)  t=byte
+  // DiffCenterClutchLsdPreloadSetting=
+
+DiffCenterClutchLsdSetting  // id=[01 A1 6B F9] (0xf96ba101)  t=byte  [1]
+  // DiffCenterClutchLsdSetting=
+
+DiffCenterClutchNumClutchesSetting  // id=[72 19 2E B0] (0xb02e1972)  t=byte
+  // DiffCenterClutchLsd#ofClutchesSetting=
+
+DiffFrontClutchLsd#ofClutchesRange  // id=[89 07 4E C0] (0xc04e0789)  t=compound  [0..4] (avg 2.8571), [0,2], [0,4]
+  // DiffFrontClutchLsd#ofClutchesRange=,,
+
+DiffFrontClutchLsdCoastRampRange  // id=[1E 69 4E 19] (0x194e691e)  t=compound  [0..70] (avg 38.5714), [0,5], [0,14]
+  // DiffFrontClutchLsdCoastRampRange=,,
+
+DiffFrontClutchLsdCoastRampSetting  // id=[05 A4 AB 0A] (0x0aaba405)  t=byte  [4]
+  // DiffFrontClutchLsdCoastRampSetting=
+
+DiffFrontClutchLsdOption  // id=[41 E0 CD AE] (0xaecde041)  t=compound  [0,1], [0,1], [0,1]
+  // DiffFrontClutchLsdOption=,,
+
+DiffFrontClutchLsdPowerRampRange  // id=[CD 58 72 0A] (0x0a7258cd)  t=compound  [0..70] (avg 36.7857), [0,5], [0,14]
+  // DiffFrontClutchLsdPowerRampRange=,,
+
+DiffFrontClutchLsdPowerRampSetting  // id=[09 AD 40 97] (0x9740ad09)  t=byte  [4]
+  // DiffFrontClutchLsdPowerRampSetting=
+
+DiffFrontClutchLsdPreloadRange  // id=[F3 3F D6 98] (0x98d63ff3)  t=compound  [0..70] (avg 54.4444), [0], [0]
+  // DiffFrontClutchLsdPreloadRange=,,
+
+DiffFrontClutchLsdPreloadSetting  // id=[2A F6 3D 02] (0x023df62a)  t=byte  [100]
+  // DiffFrontClutchLsdPreloadSetting=
+
+DiffFrontClutchLsdSetting  // id=[4F A8 A9 16] (0x16a9a84f)  t=null/flag
+  // DiffFrontClutchLsdSetting=
+
+DiffFrontClutchNumClutchesSetting  // id=[AB FF 0F D6] (0xd60fffab)  t=byte  [2]
+  // DiffFrontClutchLsd#ofClutchesSetting=
+
+// --- clutch lsd ---
+
+DiffRearClutchLsdOption  // id=[04 80 3B 71] (0x713b8004)  t=compound  [0,1], [0,1], [0,1]
+  // DiffRearClutchLsdOption=,, // Rear Diff Clutch LSD Option (off/on)
+
+DiffRearClutchLsdSetting  // id=[18 9A 45 B8] (0xb8459a18)  t=byte  [1]
+  // DiffRearClutchLsdSetting= // Rear Diff Clutch LSD Setting
+
+// --- clutches ---
+
+DiffRearClutchLsd#ofClutchesRange  // id=[1C 63 D7 1C] (0x1cd7631c)  t=compound  [0..6] (avg 1.8384), [0,2], [0,4]
+  // DiffRearClutchLsd#ofClutchesRange=,, // Rear Diff Clutch LSD # of Clutches Range
+
+DiffRearClutchLsd#ofClutchesSetting  // id=[D9 D4 45 63] (0x6345d4d9)  t=byte  [1,2,3]
+  // DiffRearClutchLsd#ofClutchesSetting= // Rear Diff Clutch LSD # of Clutches Setting
+
+DiffRearViscousLockRange  // id=[1E 6F 8D B1] (0xb18d6f1e)  t=compound  [0..30] (avg 0.466), [0,1], [0]
+  // DiffRearViscousLockRange=,, // Note: 2nd value is x50. So "1" x50 = x50nm multiplier per ViscousLsdSetting
+
+DiffRearViscousLsdOption  // id=[F4 97 51 CF] (0xcf5197f4)  t=compound  [0,1], [0,1], [0]
+  // DiffRearViscousLsdOption=,, // Rear Diff Viscous LSD Option (off/on)
+
+DiffRearViscousLsdOptionSetting  // id=[5A 2F 78 7C] (0x7c782f5a)  t=null/flag
+  // DiffRearViscousLsdOptionSetting= // Rear Diff Viscous LSD Setting
+
+DiffRearViscousLsdSetting  // id=[E0 EE A4 80] (0x80a4eee0)  t=byte  [4]
+  // DiffRearViscousLsdSetting= // a setting of "4" yields 4 x50 = 200nm lock
+
+// --- coast ---
+
+DiffRearClutchLsdCoastRampRange  // id=[A6 F6 18 10] (0x1018f6a6)  t=compound  [0..90] (avg 34.5688), [0,1,5], [0,14,64]
+  // DiffRearClutchLsdCoastRampRange=,, // Rear Diff Clutch LSD Coast(decel) Ramp Range
+
+DiffRearClutchLsdCoastRampSetting  // id=[71 BB 6F 28] (0x286fbb71)  t=byte  [4..55] (avg 21.375)
+  // DiffRearClutchLsdCoastRampSetting= // Rear Diff Clutch LSD Coast(decel) Ramp Setting
+
+// --- geared ---
+
+DiffCenterBiasRatioCoastRange  // id=[3A 92 1E B0] (0xb01e923a)  t=compound
+  // DiffCenterBiasRatioCoastRange=,,
+
+DiffCenterBiasRatioCoastSetting  // id=[FA EC CB BF] (0xbfcbecfa)  t=null/flag  [36]
+  // DiffCenterBiasRatioCoastSetting=
+
+DiffCenterBiasRatioPowerRange  // id=[E1 71 4A 7B] (0x7b4a71e1)  t=compound
+  // DiffCenterBiasRatioPowerRange=,,
+
+DiffCenterBiasRatioPowerSetting  // id=[66 5F E2 43] (0x43e25f66)  t=null/flag
+  // DiffCenterBiasRatioPowerSetting=
+
+DiffCenterGearedLsdOption  // id=[5E D1 39 36] (0x3639d15e)  t=compound  [1], [0], [0]
+  // DiffCenterGearedLsdOption=,,
+
+DiffCenterGearedLsdSetting  // id=[BF 2A 7E 62] (0x627e2abf)  t=null/flag
+  // DiffCenterGearedLsdSetting=
+
+DiffFrontBiasRatioCoastRange  // id=[1D 41 94 BF] (0xbf94411d)  t=compound
+  // DiffFrontBiasRatioCoastRange=,,
+
+DiffFrontBiasRatioCoastSetting  // id=[19 55 52 B5] (0xb5525519)  t=byte
+  // DiffFrontBiasRatioCoastSetting=
+
+DiffFrontBiasRatioPowerRange  // id=[8D A5 C0 7B] (0x7bc0a58d)  t=compound
+  // DiffFrontBiasRatioPowerRange=,,
+
+DiffFrontBiasRatioPowerSetting  // id=[8A F4 79 B8] (0xb879f48a)  t=byte
+  // DiffFrontBiasRatioPowerSetting=
+
+DiffFrontGearedLsdOption  // id=[37 9D CD EF] (0xefcd9d37)  t=compound  [0], [0], [0]
+  // DiffFrontGearedLsdOption=,,
+
+DiffFrontGearedLsdSetting  // id=[90 F8 1A C8] (0xc81af890)  t=byte
+  // DiffFrontGearedLsdSetting=
+
+DiffRearBiasRatioCoastRange  // id=[29 7D 8B D8] (0xd88b7d29)  t=compound  [0,1], [0.1], [0]
+  // DiffRearBiasRatioCoastRange=,, // Rear Diff Bias Ratio Coast(decel) Range
+
+DiffRearBiasRatioCoastSetting  // id=[76 86 1F CA] (0xca1f8676)  t=byte  [2..30] (avg 25.9167)
+  // DiffRearBiasRatioCoastSetting= // Rear Diff Bias Ratio Coast(decel) Setting
+
+DiffRearBiasRatioPowerRange  // id=[25 9E 18 D6] (0xd6189e25)  t=compound  [0,1], [0.1], [0]
+  // DiffRearBiasRatioPowerRange=,, // Rear Diff Bias Ratio Pwr(accel) Range
+
+DiffRearBiasRatioPowerSetting  // id=[0A C0 52 BA] (0xba52c00a)  t=byte  [11..30] (avg 27.2917)
+  // DiffRearBiasRatioPowerSetting= //
+
+DiffRearGearedLsdOption  // id=[9B E9 BD BB] (0xbbbde99b)  t=compound  [0,1], [0,1], [0,1]
+  // DiffRearGearedLsdOption=,, // Rear Diff Geared LSD Option off/on
+
+DiffRearGearedLsdSetting  // id=[DC 47 B2 CE] (0xceb247dc)  t=byte  [1]
+  // DiffRearGearedLsdSetting= // Rear Diff Geared LSD setting.
+
+// --- power ---
+
+DiffRearClutchLsdPowerRampRange  // id=[16 B6 6F 96] (0x966fb616)  t=compound  [0..90] (avg 36.1134), [0,1,5], [0,14,64]
+  // DiffRearClutchLsdPowerRampRange=,, // Rear Diff Clutch LSD Pwr(accel) Ramp Range
+
+DiffRearClutchLsdPowerRampSetting  // id=[81 2D 38 81] (0x81382d81)  t=byte  [4..45] (avg 35.7847)
+  // DiffRearClutchLsdPowerRampSetting= // Rear Diff Clutch LSD Pwr(Accel) Ramp Setting
+
+// --- power balance ---
+
+RearPowerBalance  // id=[05 9C B8 6E] (0x6eb89c05)  t=compound
+  // RearPowerBalance=,,
+
+RearPowerBalanceSettinh  // id=[5A D1 7D 93] (0x937dd15a)  t=byte
+  // RearPowerBalanceSettinh=
+
+// --- preload ---
+
+DiffRearClutchLsdPreloadRange  // id=[AE 9E A6 41] (0x41a69eae)  t=compound  [0..100] (avg 20.8197), [0,1,2], [0,99]
+  // DiffRearClutchLsdPreloadRange=,, // Rear Diff Clutch LSD Preload Range
+
+DiffRearClutchLsdPreloadSetting  // id=[67 71 FD BF] (0xbffd7167)  t=byte  [10..120] (avg 78.8006)
+  // DiffRearClutchLsdPreloadSetting= // Rear Diff Clutch LSD Preload Setting
+
+// --- ratcheting ---
+
+DiffCenterRatchetingRange  // id=[AB 12 1A 20] (0x201a12ab)  t=compound  [0], [0], [0]
+  // DiffCenterRatchetingRange=,,
+
+DiffCenterRatchetingSetting  // id=[74 65 6C DA] (0xda6c6574)  t=null/flag
+  // DiffCenterRatchetingSetting=
+
+DiffRearRatchetingOption  // id=[A6 12 F9 62] (0x62f912a6)  t=compound  [0,1], [0,1], [0,1]
+  // DiffRearRatchetingOption=,, // Rear Diff Ratcheting Option (on/off)
+
+DiffRearRatchetingSetting  // id=[F1 8A 0F 35] (0x350f8af1)  t=null/flag
+  // DiffRearRatchetingSetting= // Rear Diff Ratcheting Setting. No byte in code, which means zero(off)
+
+// --- spool ---
+
+DiffCenterSpoolOption  // id=[B2 DD 18 AC] (0xac18ddb2)  t=compound  [0], [0], [0]
+  // DiffCenterSpoolOption=,,
+
+DiffCenterSpoolSetting  // id=[70 21 63 66] (0x66632170)  t=null/flag
+  // DiffCenterSpoolSetting=
+
+DiffFrontSpoolOption  // id=[39 9D AB CC] (0xccab9d39)  t=compound  [0], [0], [0]
+  // DiffFrontSpoolOption=,,
+
+DiffFrontSpoolSetting  // id=[54 97 E2 18] (0x18e29754)  t=null/flag
+  // DiffFrontSpoolSetting=
+
+DiffRearSpoolOption  // id=[EE 7A B8 C2] (0xc2b87aee)  t=compound  [0,1], [0,1], [0,1,2]
+  // DiffRearSpoolOption=,, // Rear Diff Spool Option off/on
+
+DiffRearSpoolSetting  // id=[5C 91 A5 85] (0x85a5915c)  t=null/flag
+  // DiffRearSpoolSetting= // Rear Diff Spool setting. No byte in code means zero (off)
+
+// --- viscous ---
+
+DiffCenterViscousLockRange  // id=[C4 A7 09 F9] (0xf909a7c4)  t=compound  [6,7], [0], [0]
+  // DiffCenterViscousLockRange=,,
+
+DiffCenterViscousLsdOption  // id=[AF 28 23 3F] (0x3f2328af)  t=compound  [1], [0], [0]
+  // DiffCenterViscousLsdOption=,,
+
+DiffCenterViscousLsdOptionSetting  // id=[6A 83 DD EA] (0xeadd836a)  t=null/flag
+  // DiffCenterViscousLsdOptionSetting=
+
+DiffCenterViscousLsdSetting  // id=[B2 B4 67 3D] (0x3d67b4b2)  t=byte
+  // DiffCenterViscousLsdSetting=
+
+DiffFrontRatcheting_ZeroSetting  // id=[45 17 11 37] (0x37111745)  t=null/flag
+  // [SPECULATIVE] 28-prefix zero marker.
+
+DiffFrontRatchetingRange  // id=[68 29 C2 1B] (0x1bc22968)  t=compound  [0], [0], [0]
+  // DiffFrontRatchetingRange=,,
+
+DiffFrontViscousLockRange  // id=[EC C5 0A D7] (0xd70ac5ec)  t=compound  [0,6], [0], [0]
+  // DiffFrontViscousLockRange=,,
+
+DiffFrontViscousLsdOption  // id=[FB 34 85 B9] (0xb98534fb)  t=compound  [0,1], [0], [0]
+  // DiffFrontViscousLsdOption=,,
+
+DiffFrontViscousLsdOptionSetting  // id=[81 B8 D8 08] (0x08d8b881)  t=null/flag
+  // DiffFrontViscousLsdOptionSetting=
+
+DiffFrontViscousLsdSetting  // id=[41 35 D2 61] (0x61d23541)  t=byte
+  // DiffFrontViscousLsdSetting=
+
+
+==============================================================================
+SECTION 16: [FRONTWING2 — Front Right Wing (Secondary Aero)]
+==============================================================================
+// 20 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- FRONT RIGHT WING ---
+
+FRWAft  // id=[57 1E 68 BD] (0xbd681e57)  t=compound
+  // FWAft=(0.0, 0.02, -0.2)
+
+FRWCenter  // id=[87 7F E1 43] (0x43e17f87)  t=compound
+  // FWCenter=(0.00, -0.100, -0.50)
+
+FRWDown  // id=[41 68 8B 03] (0x038b6841)  t=compound
+  // FWDown=(0.0, 0.15, 0.001)
+
+FRWDragParams  // id=[CF 8B E1 A1] (0xa1e18bcf)  t=compound
+  // FWDragParams=(0.005, 0.003, 0.00)
+
+FRWFore  // id=[91 B8 03 C5] (0xc503b891)  t=compound
+  // FWFore=(0.0, 0.0, 0.0)
+
+FRWLeft  // id=[A3 72 BD EE] (0xeebd72a3)  t=compound
+  // FWLeft=(-0.20, 0.0, 0.0)
+
+FRWLiftHeight  // id=[4B 1A 06 AD] (0xad061a4b)  t=compound
+  // FWLiftHeight=0.335
+
+FRWLiftParams  // id=[76 29 1C 37] (0x371c2976)  t=compound
+  // FWLiftParams=(-0.000, -0.030, 0.00)
+
+FRWLiftSideways  // id=[81 05 80 FE] (0xfe800581)  t=compound  [0.4,0.7,1]
+  // FWLiftSideways=0.00
+
+FRWMaxHeight  // id=[29 1A 69 42] (0x42691a29)  t=compound  [0.2,0.25]
+  // FWMaxHeight=0.10
+
+FRWParam_24_7D_2B  // id=[7D 2B 67 E8] (0xe8672b7d)  t=compound  [0]
+  // Front right wing related param
+
+FRWRange  // id=[96 A7 D0 8D] (0x8dd0a796)  t=compound  [0], [0.1,1], [0..100] (avg 50)
+  // FWRange=(0, 1.0, 10)
+
+FRWRight  // id=[E3 C5 15 C2] (0xc215c5e3)  t=compound
+  // FWRight=(0.20, 0.0, 0.0)
+
+FRWRot  // id=[7B 00 64 6A] (0x6a64007b)  t=compound
+  // FWRot=(0.5, 0.25, 0.35)
+
+FRWSetting  // id=[B5 E8 1B 09] (0x091be8b5)  t=byte
+  // RWSetting=1
+
+FRWUp  // id=[68 D5 13 6E] (0x6e13d568)  t=compound
+  // FWUp=(0.0, -0.30, -0.001)
+
+FW_DRS_Button  // id=[A3 37 75 01] (0x017537a3)  t=compound
+  // FW DRS Button
+
+FWSettingBraking  // id=[BA 8F 41 41] (0x41418fba)  t=compound
+  // FWSettingBraking
+
+FWSettingSpeed  // id=[87 8C 07 BE] (0xbe078c87)  t=compound
+  // FWSettingSpeed
+
+FWSettingThrottle  // id=[7C 98 63 3A] (0x3a63987c)  t=compound
+  // FWSettingThrottle
+
+
+==============================================================================
+SECTION 17: [REARWING2 — Rear Right Wing (Secondary Aero)]
+==============================================================================
+// 15 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- REAR RIGHT WING ---
+
+RRWAft  // id=[46 77 39 74] (0x74397746)  t=compound  [0], [0], [0]
+  // RWAft=00 00 00
+
+RRWCenter  // id=[8D 6C 15 A3] (0xa3156c8d)  t=compound  [0], [0.5..0.75] (avg 0.6882), [-0.7..1.2] (avg -0.0706)
+  // RWCenter=00 00 00 00 3F CD CC 4C 3F
+
+RRWDown  // id=[51 EE 77 72] (0x7277ee51)  t=compound  [0], [0], [0]
+  // RWDown=00 00 00
+
+RRWDragParams  // id=[6B 20 03 55] (0x5503206b)  t=compound
+  // RWDragParams=CD CC CC 3D 00 00
+
+RRWFore  // id=[2B 7E E4 47] (0x47e47e2b)  t=compound  [0], [0], [0]
+  // RWFore=00 00 00
+
+RRWLeft  // id=[22 45 69 35] (0x35694522)  t=compound  [0], [0], [0]
+  // RWLeft=00 00 00
+
+RRWLiftParams  // id=[B8 2D 4D C4] (0xc44d2db8)  t=compound  [0], [0], [0]
+  // RWLiftParams=00 00 00
+
+RRWLiftSideways  // id=[0A 2B 9B 22] (0x229b2b0a)  t=compound  [0]
+  // RWLiftSideways=00
+
+RRWPeakYaw  // id=[BD CD 13 89] (0x8913cdbd)  t=compound  [0], [0]
+  // RWPeakYaw=00 00
+
+RRWRange  // id=[1F 3D 69 0C] (0x0c693d1f)  t=compound  [0], [0,1], [0,100]
+  // RWRange=00 00 00
+
+RRWRight  // id=[51 1B 19 80] (0x80191b51)  t=compound  [0], [0], [0]
+  // RWRight=00 00 00
+
+RRWRot  // id=[99 E7 CC 64] (0x64cce799)  t=compound  [0], [0], [0]
+  // RWRot=00 00 00
+
+RRWUp  // id=[86 1A F2 5C] (0x5cf21a86)  t=compound  [0], [0], [0]
+  // RWUp=00 00 00
+
+RWSetting  // id=[85 98 3C 01] (0x013c9885)  t=null/flag
+  // RWSetting=
+
+Section_RearRightWing  // id=[3D D3 DA 1B] (0x1bdad33d)  t=section-marker
+  // REAR RIGHT WING begins
+
+
+==============================================================================
+SECTION 18: [PC2 ASSISTS — Project Cars 2 Authentic Driving Assists]
+==============================================================================
+// 36 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- AUTHENTIC DRIVING ASSIST OPTIONS ---
+
+PC2_AidRange10  // id=[67 8C A5 99] (0x99a58c67)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). No setting follows. V1.4 L401.
+
+PC2_AidRange11  // id=[8E 47 3C 20] (0x203c478e)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). No setting follows. V1.4 L404.
+
+PC2_AidRange12  // id=[23 F0 43 98] (0x9843f023)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). No setting follows. V1.4 L407.
+
+PC2_AidRange13  // id=[E7 6C F5 65] (0x65f56ce7)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). V1.4 L410.
+
+PC2_AidRange6  // id=[09 DE B7 68] (0x68b7de09)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L387.
+
+PC2_AidRange7  // id=[4B D5 82 72] (0x7282d54b)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L390.
+
+PC2_AidRange8  // id=[22 AC 0C 3A] (0x3a0cac22)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L393.
+
+PC2_AidRange9  // id=[9F C7 1E D1] (0xd11ec79f)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L397.
+
+PC2_AidSetting8  // id=[17 7A 98 F5] (0xf5987a17)  t=byte
+  // [SPECULATIVE] 100. V1.4 L395.
+
+PC2_AidSetting9  // id=[C7 D5 99 C6] (0xc699d5c7)  t=byte
+  // [SPECULATIVE] 100. V1.4 L399.
+
+PC2_DiffLockRange1  // id=[64 70 F5 FD] (0xfdf57064)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). PC2-era range param. V1.4 L351.
+
+PC2_DiffLockRange2  // id=[C8 1B AC AF] (0xafac1bc8)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). PC2-era range param. V1.4 L355.
+
+PC2_DiffLockRange3  // id=[D2 2F 18 AF] (0xaf182fd2)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). PC2-era range param. V1.4 L359.
+
+PC2_DiffLockRange4  // id=[B3 85 4E E0] (0xe04e85b3)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L363.
+
+PC2_DiffLockRange5  // id=[72 DE E1 17] (0x17e1de72)  t=compound
+  // [SPECULATIVE] (0, 0.01, 200). V1.4 L367.
+
+PC2_DiffLockSetting1  // id=[34 76 EE E3] (0xe3ee7634)  t=byte
+  // [SPECULATIVE] 25. Setting for PC2_DiffLockRange1. V1.4 L353.
+
+PC2_DiffLockSetting2  // id=[61 5A 10 D6] (0xd6105a61)  t=byte
+  // [SPECULATIVE] 100. Setting for PC2_DiffLockRange2. V1.4 L357.
+
+PC2_DiffLockSetting3  // id=[4D CA 34 17] (0x1734ca4d)  t=byte
+  // [SPECULATIVE] 100. Setting for PC2_DiffLockRange3. V1.4 L361.
+
+PC2_DiffLockSetting4  // id=[6C E5 6E 1B] (0x1b6ee56c)  t=byte
+  // [SPECULATIVE] 100. V1.4 L365.
+
+PC2_DiffLockSetting5  // id=[99 3F 2A 3F] (0x3f2a3f99)  t=byte
+  // [SPECULATIVE] 100. V1.4 L369.
+
+PC2_SteeringAidRange1  // id=[5A AE 27 42] (0x4227ae5a)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). V1.4 L371.
+
+PC2_SteeringAidRange2  // id=[7A 49 7E 24] (0x247e497a)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). No setting follows. V1.4 L375.
+
+PC2_SteeringAidRange3  // id=[25 8E 3F 20] (0x203f8e25)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). No setting follows. V1.4 L378.
+
+PC2_SteeringAidRange4  // id=[6A 7D 42 63] (0x63427d6a)  t=compound
+  // [SPECULATIVE] (0, 0.1, 20). No setting follows. V1.4 L381.
+
+PC2_SteeringAidRange5  // id=[98 CA 4E 61] (0x614eca98)  t=compound
+  // [SPECULATIVE] (0, 1.0, 45). V1.4 L384.
+
+PC2_SteeringAidSetting1  // id=[25 F7 FA 9E] (0x9efaf725)  t=byte
+  // [SPECULATIVE] 1. V1.4 L373.
+
+PC2_SteeringAidSetting5  // id=[77 E8 4F 5C] (0x5c4fe877)  t=byte
+  // [SPECULATIVE] . Setting for PC2_SteeringAidRange5.
+
+ZeroMarker_28_31_6F  // id=[31 6F DC CC] (0xccdc6f31)  t=null/flag
+  // ams2 section above is removed
+
+ZeroMarker_28_3C_50  // id=[3C 50 F8 D7] (0xd7f8503c)  t=null/flag
+
+ZeroMarker_28_99_85  // id=[99 85 60 E9] (0xe9608599)  t=null/flag
+
+ZeroMarker_28_A9_F7  // id=[A9 F7 13 BD] (0xbd13f7a9)  t=null/flag
+  // ************************************
+
+ZeroMarker_28_BE_A1  // id=[BE A1 5C E1] (0xe15ca1be)  t=null/flag
+
+ZeroMarker_28_CA_E1  // id=[CA E1 FE 39] (0x39fee1ca)  t=null/flag
+
+ZeroMarker_28_E5_12  // id=[E5 12 C1 5D] (0x5dc112e5)  t=null/flag
+
+ZeroMarker_28_ED_5F  // id=[ED 5F B5 79] (0x79b55fed)  t=null/flag
+
+ZeroMarker_28_FF_26  // id=[FF 26 A3 2B] (0x2ba326ff)  t=null/flag
+
+
+==============================================================================
+SECTION 19: [PC2 NEW SECTION — PC2-specific Damage/Parameters]
+==============================================================================
+// 9 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- NEW SECTION FOR PC2 ---
+
+PC2_FloatParam0  // id=[AF AB 0F 8E] (0x8e0fabaf)  t=float  [0.3,0.7,1.3]
+  // [SPECULATIVE] PC2-era general param.
+
+PC2_FloatParam3  // id=[2C 1D 1F 2F] (0x2f1f1d2c)  t=float  [0.3..1.4] (avg 0.9619)
+  // [SPECULATIVE] PC2-era general param.
+
+PC2_IntParam1  // id=[D1 35 A6 C8] (0xc8a635d1)  t=decimal  [400,600,1000]
+  // [SPECULATIVE] PC2-era general param.
+
+PC2_IntParam2  // id=[2D D9 FE 0F] (0x0ffed92d)  t=decimal  [400,1200]
+  // [SPECULATIVE] PC2-era general param.
+
+PC2_IntParam250  // id=[AE BE 7F FA] (0xfa7fbeae)  t=decimal  [250]
+  // [SPECULATIVE] PC2-era general param.
+
+PC2_IntParam500  // id=[42 FD F1 BF] (0xbff1fd42)  t=decimal  [500]
+  // [SPECULATIVE] PC2-era general param.
+
+PC2NewSection_Float0_9_1  // id=[37 F3 B5 B2] (0xb2b5f337)  t=float
+  // 0.9 — PC2 new section param
+
+PC2NewSection_Float0_9_2  // id=[6A BC 43 1B] (0x1b43bc6a)  t=float
+  // 0.9 — PC2 new section param
+
+Section_E0_12_BC_36_7D  // id=[12 BC 36 7D] (0x7d36bc12)  t=section-marker
+
+
+==============================================================================
+SECTION 20: [UNKNOWNS — Unplaced Entries]
+==============================================================================
+// 2 entries from cdf-hex-map.xml. Not present in V2.0.
+
+// --- UNKNOWNS ---
+
+RWMaxHeight_Alt  // id=[DC 76 52 9B] (0x9b5276dc)  t=compound
+  // Rear wing max height alternate. value=100
+
+RWSettingParam  // id=[13 BF E2 BA] (0xbae2bf13)  t=compound
+  // Could be RWSettingLongG/LateralG/ForwardVel. Float5: 17.9, 0.5, 1000, -30, 30
